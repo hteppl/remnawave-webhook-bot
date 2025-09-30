@@ -35,9 +35,9 @@ field-password = Password
 field-squads = Squads
 
 # Date formatting
-date-in-days = in {$days} days
-date-days-ago = {$days} days ago
-date-in-hours = in {$hours} hours
+date-in-days = in {$days} d.
+date-days-ago = {$days} d. ago
+date-in-hours = in {$hours} h.
 date-today = today
 date-unlimited = Unlimited
 

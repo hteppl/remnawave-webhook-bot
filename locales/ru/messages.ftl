@@ -35,9 +35,9 @@ field-password = Пароль
 field-squads = Сквады
 
 # Форматирование дат
-date-in-days = через {$days} дней
-date-days-ago = {$days} дней назад
-date-in-hours = через {$hours} часов
+date-in-days = через {$days} дн.
+date-days-ago = {$days} дн. назад
+date-in-hours = через {$hours} ч.
 date-today = сегодня
 date-unlimited = Без лимита
 
