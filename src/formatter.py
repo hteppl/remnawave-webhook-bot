@@ -13,7 +13,7 @@ class MessageFormatter:
         self.crm_formatter = CRMEventFormatter()
         self.service_formatter = ServiceEventFormatter()
 
-    def format_webhook_message(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
+    async def format_webhook_message(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
         """
         Format webhook data into a readable Telegram message.
 
@@ -36,13 +36,13 @@ class MessageFormatter:
 
         # Format based on event category
         if event_type.startswith("user."):
-            message += self.user_formatter.format(event_type, data, timestamp)
+            message += await self.user_formatter.format(event_type, data, timestamp)
         elif event_type.startswith("node."):
-            message += self.node_formatter.format(event_type, data, timestamp)
+            message += await self.node_formatter.format(event_type, data, timestamp)
         elif event_type.startswith("crm."):
-            message += self.crm_formatter.format(event_type, data, timestamp)
+            message += await self.crm_formatter.format(event_type, data, timestamp)
         elif event_type.startswith("service."):
-            message += self.service_formatter.format(event_type, data, timestamp)
+            message += await self.service_formatter.format(event_type, data, timestamp)
         else:
             # Fallback for unknown events
             data_label = _("message-header-data-label")

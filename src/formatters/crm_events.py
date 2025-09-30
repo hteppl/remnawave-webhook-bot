@@ -7,7 +7,7 @@ from src.i18n import get_translation as _
 class CRMEventFormatter(BaseEventFormatter):
     """Formatter for CRM-related events."""
 
-    def format(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
+    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
         """Format CRM event data."""
         event_name = self.get_event_name(event_type)
 

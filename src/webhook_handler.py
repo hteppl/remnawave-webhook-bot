@@ -102,7 +102,7 @@ class WebhookHandler:
                 return web.Response(status=200, text="OK - event disabled")
 
             # Format and send message
-            message = self.formatter.format_webhook_message(event_type, event_data, event_timestamp)
+            message = await self.formatter.format_webhook_message(event_type, event_data, event_timestamp)
             await self.send_notification(message, event_type)
 
             return web.Response(status=200, text="OK")

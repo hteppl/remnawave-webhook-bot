@@ -7,7 +7,7 @@ from src.i18n import get_translation as _
 class UserEventFormatter(BaseEventFormatter):
     """Formatter for user-related events."""
 
-    def format(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
+    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
         """Format user event data."""
         event_name = self.get_event_name(event_type)
 

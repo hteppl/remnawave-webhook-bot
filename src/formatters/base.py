@@ -7,7 +7,7 @@ class BaseEventFormatter(ABC):
     """Base class for event formatters."""
 
     @abstractmethod
-    def format(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
+    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
         """
         Format the event data into a message.
 
