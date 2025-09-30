@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import logging
+from typing import Dict, Any, List
 
 from aiogram import Bot
 from aiohttp import web
@@ -8,6 +9,7 @@ from aiohttp import web
 from src.config import config
 from src.event_filter import event_filter
 from src.formatter import MessageFormatter
+from src.utils.billing_aggregator import BillingAggregator
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +21,9 @@ class WebhookHandler:
         self.bot = bot
         self.formatter = MessageFormatter()
         self.event_filter = event_filter
+        self.billing_aggregator = BillingAggregator(
+            window_seconds=3, send_callback=self._send_aggregated_billing_notification
+        )
 
     @staticmethod
     def verify_signature(payload: bytes, signature: str, secret: str) -> bool:
@@ -59,6 +64,45 @@ class WebhookHandler:
                 logger.info("Notification sent successfully")
         except Exception as e:
             logger.error(f"Failed to send Telegram notification: {e}")
+
+    async def _send_aggregated_billing_notification(self, events: List[Dict[str, Any]]):
+        """
+        Send aggregated billing notification.
+
+        Args:
+            events: List of billing events to send
+        """
+        try:
+            if not events:
+                return
+
+            if len(events) > 1:
+                # Multiple events - send aggregated message
+                aggregated_msg = self.billing_aggregator.format_aggregated_message(events)
+                if aggregated_msg:
+                    # Use the first event's type for topic routing
+                    event_type = events[0]["event_type"]
+                    await self.send_notification(aggregated_msg, event_type)
+                    logger.info(f"Sent aggregated billing notification for {len(events)} events")
+                else:
+                    logger.error(f"Failed to format aggregated message for {len(events)} events")
+                    # Fallback: Send individual messages
+                    for event in events:
+                        message = await self.formatter.format_webhook_message(
+                            event["event_type"], event["data"], event["timestamp"]
+                        )
+                        await self.send_notification(message, event["event_type"])
+            else:
+                # Single event - send individual message
+                event = events[0]
+                message = await self.formatter.format_webhook_message(
+                    event["event_type"], event["data"], event["timestamp"]
+                )
+                await self.send_notification(message, event["event_type"])
+                logger.info("Sent individual billing notification")
+
+        except Exception as e:
+            logger.error(f"Error sending aggregated billing notification: {e}")
 
     async def handle_webhook(self, request: web.Request) -> web.Response:
         """
@@ -101,9 +145,18 @@ class WebhookHandler:
                 logger.info(f"Event {event_type} is disabled, skipping notification")
                 return web.Response(status=200, text="OK - event disabled")
 
-            # Format and send message
-            message = await self.formatter.format_webhook_message(event_type, event_data, event_timestamp)
-            await self.send_notification(message, event_type)
+            # Check if this is a billing event that should be aggregated
+            if event_type and "infra_billing" in event_type:
+                logger.info(f"Processing billing event for aggregation: {event_type}")
+                # Add to aggregator - it will handle scheduling the notification
+                event_id = await self.billing_aggregator.add_event(event_type, event_data, event_timestamp)
+                logger.info(f"Added billing event to aggregator: {event_id}")
+                # Don't send individual notification - aggregator will handle it
+            else:
+                # Format and send message normally for non-billing events
+                logger.debug(f"Non-billing event, sending immediate notification: {event_type}")
+                message = await self.formatter.format_webhook_message(event_type, event_data, event_timestamp)
+                await self.send_notification(message, event_type)
 
             return web.Response(status=200, text="OK")
 

@@ -90,22 +90,34 @@ event-node-traffic-notify-message = Уведомление о трафике у�
 event-crm-header-icon = 💰
 event-crm-header-title = Информация о биллинге
 
+# Метки полей биллинга
+billing-field-node = Узел
+billing-field-provider = Провайдер
+billing-field-billing-date = Дата оплаты
+billing-field-login-to-provider = Панель {$provider}
+billing-field-total-nodes = Всего узлов
+billing-field-nodes = узлов
+
+# Агрегирование биллинга
+billing-aggregated-title = Несколько уведомлений о биллинге
+
+# Индивидуальные события биллинга
 event-crm-infra-billing-node-payment-in-7-days-icon = 📅
 event-crm-infra-billing-node-payment-in-7-days-message = Оплата узла через 7 дней
 
-event-crm-infra-billing-node-payment-in-48hrs-icon = ⏰
+event-crm-infra-billing-node-payment-in-48hrs-icon = 🔵
 event-crm-infra-billing-node-payment-in-48hrs-message = Оплата узла через 48 часов
 
-event-crm-infra-billing-node-payment-in-24hrs-icon = ⚠️
+event-crm-infra-billing-node-payment-in-24hrs-icon = 🟡
 event-crm-infra-billing-node-payment-in-24hrs-message = Оплата узла через 24 часа
 
-event-crm-infra-billing-node-payment-due-today-icon = ‼️
+event-crm-infra-billing-node-payment-due-today-icon = 🟡
 event-crm-infra-billing-node-payment-due-today-message = Оплата узла сегодня
 
-event-crm-infra-billing-node-payment-overdue-24hrs-icon = ❌
+event-crm-infra-billing-node-payment-overdue-24hrs-icon = 🟠
 event-crm-infra-billing-node-payment-overdue-24hrs-message = Просрочка оплаты узла на 24 часа
 
-event-crm-infra-billing-node-payment-overdue-48hrs-icon = 🚨
+event-crm-infra-billing-node-payment-overdue-48hrs-icon = 🔴
 event-crm-infra-billing-node-payment-overdue-48hrs-message = Просрочка оплаты узла на 48 часов
 
 event-crm-infra-billing-node-payment-overdue-7-days-icon = 🔴

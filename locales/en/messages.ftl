@@ -90,22 +90,34 @@ event-node-traffic-notify-message = Node traffic notification
 event-crm-header-icon = 💰
 event-crm-header-title = Billing Details
 
+# Billing field labels
+billing-field-node = Node
+billing-field-provider = Provider
+billing-field-billing-date = Billing Date
+billing-field-login-to-provider = Payment panel {$provider}
+billing-field-total-nodes = Total Nodes
+billing-field-nodes = nodes
+
+# Billing aggregation
+billing-aggregated-title = Multiple Billing Notifications
+
+# Individual billing events
 event-crm-infra-billing-node-payment-in-7-days-icon = 📅
 event-crm-infra-billing-node-payment-in-7-days-message = Node payment due in 7 days
 
-event-crm-infra-billing-node-payment-in-48hrs-icon = ⏰
+event-crm-infra-billing-node-payment-in-48hrs-icon = 🔵
 event-crm-infra-billing-node-payment-in-48hrs-message = Node payment due in 48 hours
 
-event-crm-infra-billing-node-payment-in-24hrs-icon = ⚠️
+event-crm-infra-billing-node-payment-in-24hrs-icon = 🟡
 event-crm-infra-billing-node-payment-in-24hrs-message = Node payment due in 24 hours
 
-event-crm-infra-billing-node-payment-due-today-icon = ‼️
+event-crm-infra-billing-node-payment-due-today-icon = 🟡
 event-crm-infra-billing-node-payment-due-today-message = Node payment due today
 
-event-crm-infra-billing-node-payment-overdue-24hrs-icon = ❌
+event-crm-infra-billing-node-payment-overdue-24hrs-icon = 🟠
 event-crm-infra-billing-node-payment-overdue-24hrs-message = Node payment overdue by 24 hours
 
-event-crm-infra-billing-node-payment-overdue-48hrs-icon = 🚨
+event-crm-infra-billing-node-payment-overdue-48hrs-icon = 🔴
 event-crm-infra-billing-node-payment-overdue-48hrs-message = Node payment overdue by 48 hours
 
 event-crm-infra-billing-node-payment-overdue-7-days-icon = 🔴
