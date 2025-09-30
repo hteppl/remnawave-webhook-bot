@@ -10,8 +10,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src/
 COPY locales/ ./locales/
 
-# Expose webhook port
-EXPOSE 8089
-
 # Run the bot
 CMD ["python", "-m", "src"]
