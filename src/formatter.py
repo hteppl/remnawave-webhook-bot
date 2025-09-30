@@ -91,13 +91,20 @@ class MessageFormatter:
 
         # Build message
         msg = f"{event_icon} <b>{action_label}:</b> {event_message}\n\n"
-        msg += f"<b>{header_icon} {header_title}</b>\n\n"
 
-        # Add data fields
-        msg += MessageFormatter._format_data_fields(data, field_sep)
+        # Add category header and data fields (skip for service.panel_started)
+        show_data = category != "service" or event_type in ["service.login_attempt_failed", "service.login_attempt_success"]
+
+        if show_data:
+            # Show header for non-service events
+            if category != "service":
+                msg += f"<b>{header_icon} {header_title}</b>\n\n"
+
+            msg += MessageFormatter._format_data_fields(data, field_sep)
+            msg += "\n"
 
         # Add timestamp at the end
-        msg += f"\n{time_icon} <b>{time_label}:</b> {timestamp}"
+        msg += f"{time_icon} <b>{time_label}:</b> {timestamp}"
 
         return msg
 
