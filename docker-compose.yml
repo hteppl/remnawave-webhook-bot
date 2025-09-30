@@ -1,0 +1,21 @@
+services:
+  webhook-bot:
+    build: .
+    container_name: remnawave-webhook-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+      - ./locales:/app/locales
+    networks:
+      - remnawave-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  remnawave-network:
+    external: true
