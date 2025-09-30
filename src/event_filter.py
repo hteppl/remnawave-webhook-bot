@@ -9,48 +9,48 @@ class EventFilter:
 
     # All possible event types from Remnawave documentation
     USER_EVENTS = [
-        'user.created',
-        'user.modified',
-        'user.deleted',
-        'user.revoked',
-        'user.disabled',
-        'user.enabled',
-        'user.limited',
-        'user.expired',
-        'user.traffic_reset',
-        'user.expires_in_72_hours',
-        'user.expires_in_48_hours',
-        'user.expires_in_24_hours',
-        'user.expired_24_hours_ago',
-        'user.first_connected',
-        'user.bandwidth_usage_threshold_reached',
+        "user.created",
+        "user.modified",
+        "user.deleted",
+        "user.revoked",
+        "user.disabled",
+        "user.enabled",
+        "user.limited",
+        "user.expired",
+        "user.traffic_reset",
+        "user.expires_in_72_hours",
+        "user.expires_in_48_hours",
+        "user.expires_in_24_hours",
+        "user.expired_24_hours_ago",
+        "user.first_connected",
+        "user.bandwidth_usage_threshold_reached",
     ]
 
     NODE_EVENTS = [
-        'node.created',
-        'node.modified',
-        'node.disabled',
-        'node.enabled',
-        'node.deleted',
-        'node.connection_lost',
-        'node.connection_restored',
-        'node.traffic_notify',
+        "node.created",
+        "node.modified",
+        "node.disabled",
+        "node.enabled",
+        "node.deleted",
+        "node.connection_lost",
+        "node.connection_restored",
+        "node.traffic_notify",
     ]
 
     BILLING_EVENTS = [
-        'crm.infra_billing_node_payment_in_7_days',
-        'crm.infra_billing_node_payment_in_48hrs',
-        'crm.infra_billing_node_payment_in_24hrs',
-        'crm.infra_billing_node_payment_due_today',
-        'crm.infra_billing_node_payment_overdue_24hrs',
-        'crm.infra_billing_node_payment_overdue_48hrs',
-        'crm.infra_billing_node_payment_overdue_7_days',
+        "crm.infra_billing_node_payment_in_7_days",
+        "crm.infra_billing_node_payment_in_48hrs",
+        "crm.infra_billing_node_payment_in_24hrs",
+        "crm.infra_billing_node_payment_due_today",
+        "crm.infra_billing_node_payment_overdue_24hrs",
+        "crm.infra_billing_node_payment_overdue_48hrs",
+        "crm.infra_billing_node_payment_overdue_7_days",
     ]
 
     SERVICE_EVENTS = [
-        'service.panel_started',
-        'service.login_attempt_failed',
-        'service.login_attempt_success',
+        "service.panel_started",
+        "service.login_attempt_failed",
+        "service.login_attempt_success",
     ]
 
     ALL_EVENTS = USER_EVENTS + NODE_EVENTS + BILLING_EVENTS + SERVICE_EVENTS
@@ -67,10 +67,10 @@ class EventFilter:
         for event in self.ALL_EVENTS:
             # Convert event name to env variable format: user.created -> NOTIFY_USER_CREATED
             env_var = f"NOTIFY_{event.upper().replace('.', '_')}"
-            value = os.getenv(env_var, 'true').lower()
+            value = os.getenv(env_var, "true").lower()
 
             # Consider enabled if not explicitly set to false/no/0
-            if value not in ('false', 'no', '0', 'off'):
+            if value not in ("false", "no", "0", "off"):
                 enabled.add(event)
 
         return enabled

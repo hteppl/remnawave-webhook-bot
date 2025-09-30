@@ -9,7 +9,7 @@ from src.webhook_handler import WebhookHandler
 # Configure logging
 logging.basicConfig(
     level=getattr(logging, config.LOG_LEVEL, logging.INFO),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s [%(levelname)s] [%(name)s] - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ async def on_startup(app):
 
 async def on_cleanup(app):
     """Application cleanup handler."""
-    bot = app['bot']
+    bot = app["bot"]
     await bot.session.close()
     logger.info("Bot stopped")
 
@@ -43,7 +43,7 @@ def main():
     app = web.Application()
     app["bot"] = bot
     app.router.add_post(config.WEBHOOK_PATH, webhook_handler.handle_webhook)
-    app.router.add_get('/health', webhook_handler.health_check)
+    app.router.add_get("/health", webhook_handler.health_check)
     app.on_startup.append(on_startup)
     app.on_cleanup.append(on_cleanup)
 
@@ -51,5 +51,5 @@ def main():
     web.run_app(app, host=config.WEBHOOK_HOST, port=config.WEBHOOK_PORT)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

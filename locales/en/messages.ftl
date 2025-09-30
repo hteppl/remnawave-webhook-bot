@@ -23,6 +23,7 @@ field-ip = IP
 field-user-agent = User Agent
 field-description = Description
 field-password = Password
+field-squads = Squads
 
 # User events
 event-user-header-icon = 👤

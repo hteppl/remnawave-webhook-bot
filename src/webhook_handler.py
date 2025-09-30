@@ -33,11 +33,7 @@ class WebhookHandler:
         Returns:
             True if signature is valid, False otherwise
         """
-        expected_signature = hmac.new(
-            secret.encode(),
-            payload,
-            hashlib.sha256
-        ).hexdigest()
+        expected_signature = hmac.new(secret.encode(), payload, hashlib.sha256).hexdigest()
         return hmac.compare_digest(signature, expected_signature)
 
     async def send_notification(self, message: str, event_type: str):
@@ -54,10 +50,7 @@ class WebhookHandler:
 
             # Send message
             await self.bot.send_message(
-                chat_id=config.TELEGRAM_CHAT_ID,
-                text=message,
-                parse_mode='HTML',
-                message_thread_id=message_thread_id
+                chat_id=config.TELEGRAM_CHAT_ID, text=message, parse_mode="HTML", message_thread_id=message_thread_id
             )
 
             if message_thread_id:
@@ -79,8 +72,8 @@ class WebhookHandler:
         """
         try:
             # Get signature from headers
-            signature = request.headers.get('X-Remnawave-Signature')
-            timestamp = request.headers.get('X-Remnawave-Timestamp')
+            signature = request.headers.get("X-Remnawave-Signature")
+            timestamp = request.headers.get("X-Remnawave-Timestamp")
 
             if not signature:
                 logger.warning("Missing signature header")
@@ -96,9 +89,9 @@ class WebhookHandler:
 
             # Parse JSON
             data = await request.json()
-            event_type = data.get('event')
-            event_data = data.get('data', {})
-            event_timestamp = data.get('timestamp', timestamp)
+            event_type = data.get("event")
+            event_data = data.get("data", {})
+            event_timestamp = data.get("timestamp", timestamp)
 
             logger.info(f"Received webhook: {event_type}")
             logger.debug(f"Event data: {event_data}")
@@ -109,9 +102,7 @@ class WebhookHandler:
                 return web.Response(status=200, text="OK - event disabled")
 
             # Format and send message
-            message = self.formatter.format_webhook_message(
-                event_type, event_data, event_timestamp
-            )
+            message = self.formatter.format_webhook_message(event_type, event_data, event_timestamp)
             await self.send_notification(message, event_type)
 
             return web.Response(status=200, text="OK")

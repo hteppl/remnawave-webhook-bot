@@ -23,6 +23,7 @@ field-ip = IP
 field-user-agent = User Agent
 field-description = Описание
 field-password = Пароль
+field-squads = Сквады
 
 # События пользователей
 event-user-header-icon = 👤

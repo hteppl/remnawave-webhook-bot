@@ -30,14 +30,14 @@ class MessageFormatter:
         message += f"{event_icon} <b>{event_label}:</b> <code>{event_type}</code>\n"
 
         # Format based on event category
-        if event_type.startswith('user.'):
-            message += MessageFormatter._format_event(event_type, data, 'user', timestamp)
-        elif event_type.startswith('node.'):
-            message += MessageFormatter._format_event(event_type, data, 'node', timestamp)
-        elif event_type.startswith('crm.'):
-            message += MessageFormatter._format_event(event_type, data, 'crm', timestamp)
-        elif event_type.startswith('service.'):
-            message += MessageFormatter._format_event(event_type, data, 'service', timestamp)
+        if event_type.startswith("user."):
+            message += MessageFormatter._format_event(event_type, data, "user", timestamp)
+        elif event_type.startswith("node."):
+            message += MessageFormatter._format_event(event_type, data, "node", timestamp)
+        elif event_type.startswith("crm."):
+            message += MessageFormatter._format_event(event_type, data, "crm", timestamp)
+        elif event_type.startswith("service."):
+            message += MessageFormatter._format_event(event_type, data, "service", timestamp)
         else:
             # Fallback for unknown events
             data_label = _("message-header-data-label")
@@ -61,36 +61,33 @@ class MessageFormatter:
             Formatted message section
         """
         # Extract event name from type (e.g., "created" from "user.created")
-        event_parts = event_type.split('.')
-        event_name = '-'.join(event_parts[1:]).replace('_', '-')  # Handle multi-part names and replace underscores
+        event_parts = event_type.split(".")
+        event_name = "-".join(event_parts[1:]).replace("_", "-")  # Handle multi-part names and replace underscores
 
         # Get localized strings
         action_icon = _("message-header-action-icon")
         action_label = _("message-header-action-label")
-        header_icon = _(f'event-{category}-header-icon')
-        header_title = _(f'event-{category}-header-title')
+        header_icon = _(f"event-{category}-header-icon")
+        header_title = _(f"event-{category}-header-title")
         time_icon = _("message-header-time-icon")
         time_label = _("message-header-time-label")
 
-        event_icon_key = f'event-{category}-{event_name}-icon'
-        event_message_key = f'event-{category}-{event_name}-message'
+        event_icon_key = f"event-{category}-{event_name}-icon"
+        event_message_key = f"event-{category}-{event_name}-message"
 
         # Try to get event icon (optional)
         try:
             event_icon = _(event_icon_key)
             # Check if it's just the key returned (no translation found)
             if event_icon == event_icon_key:
-                event_icon = "📌"
-        except:
-            event_icon = "📌"
+                event_icon = action_icon
+        except (Exception,):
+            event_icon = action_icon
 
         # Get event message with parameters
-        event_message = _(
-            event_message_key,
-            usage_percentage=data.get('usage_percentage', 0)
-        )
+        event_message = _(event_message_key, usage_percentage=data.get("usage_percentage", 0))
 
-        field_sep = _('message-separator-field')
+        field_sep = _("message-separator-field")
 
         # Build message
         msg = f"{event_icon} <b>{action_label}:</b> {event_message}\n\n"
@@ -120,32 +117,38 @@ class MessageFormatter:
 
         # Common fields mapping
         field_mapping = {
-            'username': 'username',
-            'email': 'email',
-            'status': 'status',
-            'data_limit': 'data-limit',
-            'expire': 'expire',
-            'name': 'name',
-            'address': 'address',
-            'ip': 'ip',
-            'userAgent': 'user-agent',
-            'description': 'description',
-            'password': 'password',
+            "username": "username",
+            "email": "email",
+            "status": "status",
+            "data_limit": "data-limit",
+            "expire": "expire",
+            "name": "name",
+            "address": "address",
+            "ip": "ip",
+            "userAgent": "user-agent",
+            "description": "description",
+            "password": "password",
         }
 
         for data_key, i18n_key in field_mapping.items():
             if data_key in flattened_data:
-                field_label = _(f'field-{i18n_key}')
+                field_label = _(f"field-{i18n_key}")
                 value = flattened_data[data_key]
 
                 # Escape HTML entities to prevent parsing errors
                 escaped_value = escape(str(value))
 
                 # Code formatting for sensitive fields
-                if data_key in ['username', 'name', 'ip', 'password']:
+                if data_key in ["username", "name", "ip", "password"]:
                     msg += f"{field_sep}{field_label}: <code>{escaped_value}</code>\n"
                 else:
                     msg += f"{field_sep}{field_label}: {escaped_value}\n"
+
+        # Add active squads if present
+        if "activeInternalSquads" in data and data["activeInternalSquads"]:
+            squads = ", ".join([squad["name"] for squad in data["activeInternalSquads"]])
+            field_label = _("field-squads")
+            msg += f"{field_sep}{field_label}: <code>{squads}</code>\n"
 
         return msg
 
@@ -153,7 +156,7 @@ class MessageFormatter:
     def _format_dict(d: Dict[str, Any], indent: int = 0) -> str:
         """Format dictionary for display (fallback for unknown events)."""
         lines = []
-        indent_str = '  ' * indent
+        indent_str = "  " * indent
 
         for key, value in d.items():
             if isinstance(value, dict):
@@ -162,4 +165,4 @@ class MessageFormatter:
             else:
                 lines.append(f"{indent_str}{key}: {value}")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
