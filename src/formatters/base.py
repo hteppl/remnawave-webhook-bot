@@ -21,12 +21,14 @@ class BaseEventFormatter(ABC):
         """
         pass
 
-    def get_event_name(self, event_type: str) -> str:
+    @staticmethod
+    def get_event_name(event_type: str) -> str:
         """Extract event name from type (e.g., "created" from "user.created")."""
         event_parts = event_type.split(".")
         return "-".join(event_parts[1:]).replace("_", "-")
 
-    def escape_value(self, value: Any) -> str:
+    @staticmethod
+    def escape_value(value: Any) -> str:
         """Escape HTML entities to prevent parsing errors."""
         return escape(str(value))
 

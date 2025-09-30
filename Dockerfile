@@ -14,4 +14,4 @@ COPY locales/ ./locales/
 EXPOSE 8089
 
 # Run the bot
-CMD ["python", "-m", "src.main"]
+CMD ["python", "-m", "src"]
