@@ -1,14 +1,19 @@
-from html import escape
 from typing import Dict, Any
 
+from src.formatters import UserEventFormatter, NodeEventFormatter, CRMEventFormatter, ServiceEventFormatter
 from src.i18n import get_translation as _
 
 
 class MessageFormatter:
     """Format webhook data into readable Telegram messages."""
 
-    @staticmethod
-    def format_webhook_message(event_type: str, data: Dict[str, Any], timestamp: str) -> str:
+    def __init__(self):
+        self.user_formatter = UserEventFormatter()
+        self.node_formatter = NodeEventFormatter()
+        self.crm_formatter = CRMEventFormatter()
+        self.service_formatter = ServiceEventFormatter()
+
+    def format_webhook_message(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
         """
         Format webhook data into a readable Telegram message.
 
@@ -31,133 +36,20 @@ class MessageFormatter:
 
         # Format based on event category
         if event_type.startswith("user."):
-            message += MessageFormatter._format_event(event_type, data, "user", timestamp)
+            message += self.user_formatter.format(event_type, data, timestamp)
         elif event_type.startswith("node."):
-            message += MessageFormatter._format_event(event_type, data, "node", timestamp)
+            message += self.node_formatter.format(event_type, data, timestamp)
         elif event_type.startswith("crm."):
-            message += MessageFormatter._format_event(event_type, data, "crm", timestamp)
+            message += self.crm_formatter.format(event_type, data, timestamp)
         elif event_type.startswith("service."):
-            message += MessageFormatter._format_event(event_type, data, "service", timestamp)
+            message += self.service_formatter.format(event_type, data, timestamp)
         else:
             # Fallback for unknown events
             data_label = _("message-header-data-label")
             message += f"<b>{data_label}:</b>\n"
-            message += f"<pre>{MessageFormatter._format_dict(data)}</pre>"
+            message += f"<pre>{self._format_dict(data)}</pre>"
 
         return message
-
-    @staticmethod
-    def _format_event(event_type: str, data: Dict[str, Any], category: str, timestamp: str) -> str:
-        """
-        Format event message using i18n.
-
-        Args:
-            event_type: Full event type (e.g., user.created)
-            data: Event data
-            category: Event category (user, node, crm, service)
-            timestamp: Event timestamp
-
-        Returns:
-            Formatted message section
-        """
-        # Extract event name from type (e.g., "created" from "user.created")
-        event_parts = event_type.split(".")
-        event_name = "-".join(event_parts[1:]).replace("_", "-")  # Handle multi-part names and replace underscores
-
-        # Get localized strings
-        action_icon = _("message-header-action-icon")
-        action_label = _("message-header-action-label")
-        header_icon = _(f"event-{category}-header-icon")
-        header_title = _(f"event-{category}-header-title")
-        time_icon = _("message-header-time-icon")
-        time_label = _("message-header-time-label")
-
-        event_icon_key = f"event-{category}-{event_name}-icon"
-        event_message_key = f"event-{category}-{event_name}-message"
-
-        # Try to get event icon (optional)
-        try:
-            event_icon = _(event_icon_key)
-            # Check if it's just the key returned (no translation found)
-            if event_icon == event_icon_key:
-                event_icon = action_icon
-        except (Exception,):
-            event_icon = action_icon
-
-        # Get event message with parameters
-        event_message = _(event_message_key, usage_percentage=data.get("usage_percentage", 0))
-
-        field_sep = _("message-separator-field")
-
-        # Build message
-        msg = f"{event_icon} <b>{action_label}:</b> {event_message}\n\n"
-
-        # Add category header and data fields (skip for service.panel_started)
-        show_data = category != "service" or event_type in ["service.login_attempt_failed", "service.login_attempt_success"]
-
-        if show_data:
-            # Show header for non-service events
-            if category != "service":
-                msg += f"<b>{header_icon} {header_title}</b>\n\n"
-
-            msg += MessageFormatter._format_data_fields(data, field_sep)
-            msg += "\n"
-
-        # Add timestamp at the end
-        msg += f"{time_icon} <b>{time_label}:</b> {timestamp}"
-
-        return msg
-
-    @staticmethod
-    def _format_data_fields(data: Dict[str, Any], field_sep: str) -> str:
-        """Format data fields using i18n field labels."""
-        msg = ""
-
-        # Flatten nested objects (e.g., loginAttempt)
-        flattened_data = {}
-        for key, value in data.items():
-            if isinstance(value, dict):
-                # Merge nested dict into flattened_data
-                flattened_data.update(value)
-            else:
-                flattened_data[key] = value
-
-        # Common fields mapping
-        field_mapping = {
-            "username": "username",
-            "email": "email",
-            "status": "status",
-            "data_limit": "data-limit",
-            "expire": "expire",
-            "name": "name",
-            "address": "address",
-            "ip": "ip",
-            "userAgent": "user-agent",
-            "description": "description",
-            "password": "password",
-        }
-
-        for data_key, i18n_key in field_mapping.items():
-            if data_key in flattened_data:
-                field_label = _(f"field-{i18n_key}")
-                value = flattened_data[data_key]
-
-                # Escape HTML entities to prevent parsing errors
-                escaped_value = escape(str(value))
-
-                # Code formatting for sensitive fields
-                if data_key in ["username", "name", "ip", "password"]:
-                    msg += f"{field_sep}{field_label}: <code>{escaped_value}</code>\n"
-                else:
-                    msg += f"{field_sep}{field_label}: {escaped_value}\n"
-
-        # Add active squads if present
-        if "activeInternalSquads" in data and data["activeInternalSquads"]:
-            squads = ", ".join([squad["name"] for squad in data["activeInternalSquads"]])
-            field_label = _("field-squads")
-            msg += f"{field_sep}{field_label}: <code>{squads}</code>\n"
-
-        return msg
 
     @staticmethod
     def _format_dict(d: Dict[str, Any], indent: int = 0) -> str:
