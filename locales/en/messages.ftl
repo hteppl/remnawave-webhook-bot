@@ -20,6 +20,9 @@ field-usage-percentage = Usage percentage
 field-name = Name
 field-address = Address
 field-ip = IP
+field-user-agent = User Agent
+field-description = Description
+field-password = Password
 
 # User events
 event-user-header-icon = 👤

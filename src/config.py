@@ -16,8 +16,7 @@ class Config:
     # Set to None or empty string to disable topic routing
     TOPIC_USER = os.getenv('TOPIC_USER') or None
     TOPIC_NODE = os.getenv('TOPIC_NODE') or None
-    TOPIC_INFRA = os.getenv('TOPIC_INFRA') or None
-    TOPIC_BILLING = os.getenv('TOPIC_BILLING') or None
+    TOPIC_CRM = os.getenv('TOPIC_CRM') or None
     TOPIC_SERVICE = os.getenv('TOPIC_SERVICE') or None
 
     @classmethod
@@ -35,10 +34,8 @@ class Config:
             return int(cls.TOPIC_USER) if cls.TOPIC_USER else None
         elif event_type.startswith('node.'):
             return int(cls.TOPIC_NODE) if cls.TOPIC_NODE else None
-        elif event_type.startswith('infra.'):
-            return int(cls.TOPIC_INFRA) if cls.TOPIC_INFRA else None
-        elif event_type.startswith('billing.'):
-            return int(cls.TOPIC_BILLING) if cls.TOPIC_BILLING else None
+        elif event_type.startswith('crm.'):
+            return int(cls.TOPIC_CRM) if cls.TOPIC_CRM else None
         elif event_type.startswith('service.'):
             return int(cls.TOPIC_SERVICE) if cls.TOPIC_SERVICE else None
         return None
@@ -52,6 +49,9 @@ class Config:
     # Internationalization
     LANGUAGE = os.getenv('LANGUAGE', 'en')
     LOCALES_DIR = os.getenv('LOCALES_DIR', 'locales')
+
+    # Logging
+    LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 
     @classmethod
     def validate(cls):

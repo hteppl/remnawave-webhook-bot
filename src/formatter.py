@@ -1,3 +1,4 @@
+from html import escape
 from typing import Dict, Any
 
 from src.i18n import get_translation as _
@@ -108,6 +109,15 @@ class MessageFormatter:
         """Format data fields using i18n field labels."""
         msg = ""
 
+        # Flatten nested objects (e.g., loginAttempt)
+        flattened_data = {}
+        for key, value in data.items():
+            if isinstance(value, dict):
+                # Merge nested dict into flattened_data
+                flattened_data.update(value)
+            else:
+                flattened_data[key] = value
+
         # Common fields mapping
         field_mapping = {
             'username': 'username',
@@ -118,18 +128,24 @@ class MessageFormatter:
             'name': 'name',
             'address': 'address',
             'ip': 'ip',
+            'userAgent': 'user-agent',
+            'description': 'description',
+            'password': 'password',
         }
 
         for data_key, i18n_key in field_mapping.items():
-            if data_key in data:
+            if data_key in flattened_data:
                 field_label = _(f'field-{i18n_key}')
-                value = data[data_key]
+                value = flattened_data[data_key]
+
+                # Escape HTML entities to prevent parsing errors
+                escaped_value = escape(str(value))
 
                 # Code formatting for sensitive fields
-                if data_key in ['username', 'name', 'ip']:
-                    msg += f"{field_sep}{field_label}: <code>{value}</code>\n"
+                if data_key in ['username', 'name', 'ip', 'password']:
+                    msg += f"{field_sep}{field_label}: <code>{escaped_value}</code>\n"
                 else:
-                    msg += f"{field_sep}{field_label}: {value}\n"
+                    msg += f"{field_sep}{field_label}: {escaped_value}\n"
 
         return msg
 

@@ -20,6 +20,9 @@ field-usage-percentage = Процент использования
 field-name = Название
 field-address = Адрес
 field-ip = IP
+field-user-agent = User Agent
+field-description = Описание
+field-password = Пароль
 
 # События пользователей
 event-user-header-icon = 👤

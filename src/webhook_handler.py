@@ -101,6 +101,7 @@ class WebhookHandler:
             event_timestamp = data.get('timestamp', timestamp)
 
             logger.info(f"Received webhook: {event_type}")
+            logger.debug(f"Event data: {event_data}")
 
             # Check if event is enabled
             if not self.event_filter.is_enabled(event_type):
