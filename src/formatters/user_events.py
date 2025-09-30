@@ -2,6 +2,7 @@ from typing import Dict, Any
 
 from src.formatters.base import BaseEventFormatter
 from src.i18n import get_translation as _
+from src.utils import format_date_with_days
 
 
 class UserEventFormatter(BaseEventFormatter):
@@ -57,15 +58,45 @@ class UserEventFormatter(BaseEventFormatter):
             field_label = _("field-status")
             msg += self.format_field(field_sep, field_label, data["status"])
 
-        # Data limit
-        if "data_limit" in data:
-            field_label = _("field-data-limit")
-            msg += self.format_field(field_sep, field_label, data["data_limit"])
+        # Used traffic
+        if "usedTrafficBytes" in data:
+            field_label = _("field-used-traffic")
+            # Convert bytes to human-readable format
+            used_bytes = int(data.get("usedTrafficBytes", 0))
+            if used_bytes == 0:
+                used_str = "0 GB"
+            elif used_bytes < 1024**3:  # Less than 1 GB
+                used_mb = used_bytes / (1024**2)
+                used_str = f"{used_mb:.2f} MB"
+            else:
+                used_gb = used_bytes / (1024**3)
+                used_str = f"{used_gb:.2f} GB"
+            msg += self.format_field(field_sep, field_label, used_str)
 
-        # Expire
-        if "expire" in data:
+        # Data limit (using trafficLimitBytes from the webhook data)
+        if "trafficLimitBytes" in data:
+            field_label = _("field-data-limit")
+            # Convert bytes to human-readable format
+            limit_bytes = int(data.get("trafficLimitBytes", 0))
+            if limit_bytes == 0:
+                limit_str = _("date-unlimited")
+            else:
+                # Convert to GB
+                limit_gb = limit_bytes / (1024**3)
+                limit_str = f"{limit_gb:.2f} GB"
+            msg += self.format_field(field_sep, field_label, limit_str)
+
+        # Expire (using expireAt from webhook data)
+        if "expireAt" in data and data["expireAt"]:
             field_label = _("field-expire")
-            msg += self.format_field(field_sep, field_label, data["expire"])
+            formatted_date = format_date_with_days(data["expireAt"], _)
+            msg += self.format_field(field_sep, field_label, formatted_date)
+
+        # Created date
+        if "createdAt" in data and data["createdAt"]:
+            field_label = _("field-created-at")
+            formatted_date = format_date_with_days(data["createdAt"], _)
+            msg += self.format_field(field_sep, field_label, formatted_date)
 
         # Active squads
         if "activeInternalSquads" in data and data["activeInternalSquads"]:

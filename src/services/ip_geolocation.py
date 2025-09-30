@@ -25,9 +25,7 @@ class IPGeolocationService:
         try:
             # ip-api.com free tier doesn't require API key
             # Fields we want: country, countryCode, regionName, city, isp
-            params = {
-                "fields": "status,country,countryCode,regionName,city,isp,query"
-            }
+            params = {"fields": "status,country,countryCode,regionName,city,isp,query"}
 
             url = f"{IPGeolocationService.BASE_URL}/{ip}"
 
@@ -41,7 +39,7 @@ class IPGeolocationService:
                                 "countryCode": data.get("countryCode", ""),
                                 "regionName": data.get("regionName", ""),
                                 "city": data.get("city", ""),
-                                "isp": data.get("isp", "")
+                                "isp": data.get("isp", ""),
                             }
                         else:
                             logger.warning(f"IP geolocation lookup failed for {ip}: {data}")

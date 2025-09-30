@@ -78,7 +78,11 @@ class ServiceEventFormatter(BaseEventFormatter):
                 # Country
                 if geo_data.get("country"):
                     field_label = _("field-geo-country")
-                    value = f"{geo_data['country']} ({geo_data['countryCode']})" if geo_data.get('countryCode') else geo_data['country']
+                    value = (
+                        f"{geo_data['country']} ({geo_data['countryCode']})"
+                        if geo_data.get("countryCode")
+                        else geo_data["country"]
+                    )
                     msg += self.format_field(field_sep, field_label, value)
 
                 # Region/City

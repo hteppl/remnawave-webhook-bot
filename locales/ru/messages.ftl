@@ -14,8 +14,10 @@ message-separator-field = {"  "}•{" "}
 field-username = Имя пользователя
 field-email = Email
 field-status = Статус
+field-used-traffic = Использовано трафика
 field-data-limit = Лимит трафика
 field-expire = Истекает
+field-created-at = Создан
 field-usage-percentage = Процент использования
 field-name = Название
 field-node-name = Название узла
@@ -31,6 +33,13 @@ field-user-agent = User Agent
 field-description = Описание
 field-password = Пароль
 field-squads = Сквады
+
+# Форматирование дат
+date-in-days = через {$days} дней
+date-days-ago = {$days} дней назад
+date-in-hours = через {$hours} часов
+date-today = сегодня
+date-unlimited = Без лимита
 
 # События пользователей
 event-user-header-icon = 👤

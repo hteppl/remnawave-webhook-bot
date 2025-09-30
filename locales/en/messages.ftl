@@ -14,8 +14,10 @@ message-separator-field = {"  "}•{" "}
 field-username = Username
 field-email = Email
 field-status = Status
+field-used-traffic = Used Traffic
 field-data-limit = Data Limit
 field-expire = Expires
+field-created-at = Created
 field-usage-percentage = Usage percentage
 field-name = Name
 field-node-name = Node Name
@@ -31,6 +33,13 @@ field-user-agent = User Agent
 field-description = Description
 field-password = Password
 field-squads = Squads
+
+# Date formatting
+date-in-days = in {$days} days
+date-days-ago = {$days} days ago
+date-in-hours = in {$hours} hours
+date-today = today
+date-unlimited = Unlimited
 
 # User events
 event-user-header-icon = 👤
