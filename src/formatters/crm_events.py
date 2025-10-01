@@ -1,5 +1,5 @@
-from typing import Dict, Any
 from datetime import datetime
+from typing import Dict, Any
 
 from src.formatters.base import BaseEventFormatter
 from src.i18n import get_translation as _
