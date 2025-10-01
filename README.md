@@ -178,6 +178,6 @@ cd /opt/remnawave && docker compose down && docker compose up -d
 - `service.login_attempt_failed` - Неудачная попытка входа
 - `service.login_attempt_success` - Успешный вход
 
-### 📄 Лицензия
+## 📄 Лицензия
 
 [LICENSE](LICENSE)
