@@ -79,6 +79,9 @@ class NodeEventFormatter(BaseEventFormatter):
 
             msg += self.format_field(field_sep, field_label, inbound_info)
 
+        # Inbound tags
+        msg += self._format_inbound_tags(data, field_sep)
+
         return msg
 
     def _format_node_fields(self, data: Dict[str, Any], field_sep: str) -> str:
@@ -95,6 +98,16 @@ class NodeEventFormatter(BaseEventFormatter):
             field_label = _("field-address")
             msg += self.format_field(field_sep, field_label, data["address"])
 
+        # Port
+        if "port" in data:
+            field_label = _("field-port")
+            msg += self.format_field(field_sep, field_label, data["port"])
+
+        # Provider
+        if "provider" in data and isinstance(data["provider"], dict) and "name" in data["provider"]:
+            field_label = _("field-provider")
+            msg += self.format_field(field_sep, field_label, data["provider"]["name"], use_code=True)
+
         # Status
         if "status" in data:
             field_label = _("field-status")
@@ -105,9 +118,61 @@ class NodeEventFormatter(BaseEventFormatter):
             field_label = _("field-last-status-message")
             msg += self.format_field(field_sep, field_label, data["lastStatusMessage"])
 
-        # Description
-        if "description" in data:
-            field_label = _("field-description")
-            msg += self.format_field(field_sep, field_label, data["description"])
+        # Xray Version
+        if "xrayVersion" in data:
+            field_label = _("field-xray-version")
+            msg += self.format_field(field_sep, field_label, data["xrayVersion"], use_code=True)
+
+        # Node Version
+        if "nodeVersion" in data:
+            field_label = _("field-node-version")
+            msg += self.format_field(field_sep, field_label, data["nodeVersion"], use_code=True)
+
+        # Traffic Used (convert to TB)
+        if "trafficUsedBytes" in data:
+            field_label = _("field-traffic-used")
+            try:
+                traffic_bytes = int(data["trafficUsedBytes"])
+                traffic_tb = traffic_bytes / (1024**4)  # Convert bytes to TB
+                traffic_str = f"{traffic_tb:.2f} TB"
+            except (ValueError, TypeError):
+                traffic_str = str(data["trafficUsedBytes"])
+            msg += self.format_field(field_sep, field_label, traffic_str)
+
+        # CPU Model
+        if "cpuModel" in data:
+            field_label = _("field-cpu-model")
+            msg += self.format_field(field_sep, field_label, data["cpuModel"])
+
+        # CPU Count
+        if "cpuCount" in data:
+            field_label = _("field-cpu-count")
+            msg += self.format_field(field_sep, field_label, data["cpuCount"])
+
+        # Total RAM
+        if "totalRam" in data:
+            field_label = _("field-total-ram")
+            msg += self.format_field(field_sep, field_label, data["totalRam"])
+
+        # Inbound tags
+        msg += self._format_inbound_tags(data, field_sep)
+
+        return msg
+
+    def _format_inbound_tags(self, data: Dict[str, Any], field_sep: str) -> str:
+        """Format inbound tags from activeInbounds array."""
+        msg = ""
+
+        if "activeInbounds" in data and data["activeInbounds"]:
+            # Extract all tags from activeInbounds
+            tags = []
+            for inbound in data["activeInbounds"]:
+                if "tag" in inbound:
+                    tags.append(inbound["tag"])
+
+            if tags:
+                field_label = _("field-inbound-tags")
+                tags_str = ", ".join(tags)
+                msg += self.format_field(field_sep, field_label, tags_str, use_code=True)
 
         return msg
