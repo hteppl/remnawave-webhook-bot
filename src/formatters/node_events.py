@@ -7,7 +7,7 @@ from src.i18n import get_translation as _
 class NodeEventFormatter(BaseEventFormatter):
     """Formatter for node-related events."""
 
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
+    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, connection_stats: str = None) -> str:
         """Format node event data."""
         event_name = self.get_event_name(event_type)
 
@@ -41,6 +41,15 @@ class NodeEventFormatter(BaseEventFormatter):
             msg += self._format_node_fields(data, field_sep)
 
         msg += f"\n{time_icon} <b>{time_label}:</b> {timestamp}"
+
+        # Add connection loss statistics postfix if available
+        if event_type == "node.connection_lost" and connection_stats:
+            from src.config import config
+
+            stats_icon = _("connection-stats-icon")
+            stats_title = _("connection-stats-title", hours=config.CONNECTION_LOSS_STATS_HOURS)
+            msg += f"\n\n{stats_icon} <b>{stats_title}</b>\n"
+            msg += f"<pre>{connection_stats}</pre>"
 
         return msg
 

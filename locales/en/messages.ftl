@@ -87,6 +87,10 @@ event-node-connection-restored-icon = ✅
 event-node-connection-restored-message = Node connection restored
 event-node-traffic-notify-message = Node traffic notification
 
+# Connection loss statistics
+connection-stats-icon = 📊
+connection-stats-title = Connection Losses (last {$hours}h)
+
 # Billing events
 event-crm-header-icon = 💰
 event-crm-header-title = Billing Details

@@ -87,6 +87,10 @@ event-node-connection-restored-icon = ✅
 event-node-connection-restored-message = Соединение с узлом восстановлено
 event-node-traffic-notify-message = Уведомление о трафике узла
 
+# Статистика потерь соединения
+connection-stats-icon = 📊
+connection-stats-title = Потери соединения (за {$hours}ч)
+
 # События биллинга
 event-crm-header-icon = 💰
 event-crm-header-title = Информация о биллинге

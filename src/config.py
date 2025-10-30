@@ -53,6 +53,10 @@ class Config:
     # Logging
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
+    # Connection Loss Tracking
+    ENABLE_CONNECTION_LOSS_STATS = os.getenv("ENABLE_CONNECTION_LOSS_STATS", "false").lower() in ("true", "yes", "1")
+    CONNECTION_LOSS_STATS_HOURS = int(os.getenv("CONNECTION_LOSS_STATS_HOURS", "24"))
+
     @classmethod
     def validate(cls):
         """Validate required configuration."""
