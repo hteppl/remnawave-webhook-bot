@@ -37,8 +37,6 @@ class ServiceEventFormatter(BaseEventFormatter):
 
     async def _format_service_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format service-specific fields with geolocation."""
-        msg = ""
-
         # Flatten nested objects (e.g., loginAttempt)
         flattened_data = {}
         for key, value in data.items():
@@ -47,20 +45,20 @@ class ServiceEventFormatter(BaseEventFormatter):
             else:
                 flattened_data[key] = value
 
-        # IP Address
-        ip_address = None
-        if "ip" in flattened_data:
-            ip_address = flattened_data["ip"]
-            field_label = _("field-ip")
-            msg += self.format_field(field_sep, field_label, ip_address, use_code=True)
+        # Format basic fields
+        field_configs = [
+            ('ip', 'field-ip', True),
+        ]
 
-        # Fetch and add geolocation data if we have an IP
+        msg = self._format_fields(flattened_data, field_sep, field_configs)
+
+        # Add geolocation data if IP exists
+        ip_address = flattened_data.get("ip")
         if ip_address:
-            # Use async geolocation lookup
             geo_data = await self.geo_service.get_location(ip_address)
 
             if geo_data:
-                # Country
+                # Format country
                 if geo_data.get("country"):
                     field_label = _("field-geo-country")
                     value = (
@@ -70,7 +68,7 @@ class ServiceEventFormatter(BaseEventFormatter):
                     )
                     msg += self.format_field(field_sep, field_label, value)
 
-                # Region/City
+                # Format region/city
                 if geo_data.get("city") or geo_data.get("regionName"):
                     field_label = _("field-geo-city")
                     parts = []
@@ -81,24 +79,18 @@ class ServiceEventFormatter(BaseEventFormatter):
                     value = ", ".join(parts)
                     msg += self.format_field(field_sep, field_label, value)
 
-                # ISP
+                # Format ISP
                 if geo_data.get("isp"):
                     field_label = _("field-geo-isp")
                     msg += self.format_field(field_sep, field_label, geo_data["isp"])
 
-        # User Agent
-        if "userAgent" in flattened_data:
-            field_label = _("field-user-agent")
-            msg += self.format_field(field_sep, field_label, flattened_data["userAgent"])
+        # Format remaining fields
+        remaining_configs = [
+            ('userAgent', 'field-user-agent', False),
+            ('username', 'field-username', True),
+            ('password', 'field-password', True),
+        ]
 
-        # Username (for login attempts)
-        if "username" in flattened_data:
-            field_label = _("field-username")
-            msg += self.format_field(field_sep, field_label, flattened_data["username"], use_code=True)
-
-        # Password (if shown in failed login attempts)
-        if "password" in flattened_data:
-            field_label = _("field-password")
-            msg += self.format_field(field_sep, field_label, flattened_data["password"], use_code=True)
+        msg += self._format_fields(flattened_data, field_sep, remaining_configs)
 
         return msg

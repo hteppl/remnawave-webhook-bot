@@ -25,67 +25,68 @@ class UserEventFormatter(BaseEventFormatter):
 
     def _format_user_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format user-specific fields."""
-        msg = ""
-
-        # Username
-        if "username" in data:
-            field_label = _("field-username")
-            msg += self.format_field(field_sep, field_label, data["username"], use_code=True)
-
-        # Email
-        if "email" in data:
-            field_label = _("field-email")
-            msg += self.format_field(field_sep, field_label, data["email"])
-
-        # Status
-        if "status" in data:
-            field_label = _("field-status")
-            msg += self.format_field(field_sep, field_label, data["status"])
-
-        # Used traffic
-        if "usedTrafficBytes" in data:
-            field_label = _("field-used-traffic")
-            # Convert bytes to human-readable format
-            used_bytes = int(data.get("usedTrafficBytes", 0))
+        def format_used_traffic(value):
+            """Convert bytes to human-readable format (MB/GB)."""
+            used_bytes = int(value)
             if used_bytes == 0:
-                used_str = "0 GB"
+                return "0 GB"
             elif used_bytes < 1024 ** 3:  # Less than 1 GB
                 used_mb = used_bytes / (1024 ** 2)
-                used_str = f"{used_mb:.2f} MB"
+                return f"{used_mb:.2f} MB"
             else:
                 used_gb = used_bytes / (1024 ** 3)
-                used_str = f"{used_gb:.2f} GB"
-            msg += self.format_field(field_sep, field_label, used_str)
+                return f"{used_gb:.2f} GB"
 
-        # Data limit (using trafficLimitBytes from the webhook data)
-        if "trafficLimitBytes" in data:
-            field_label = _("field-data-limit")
-            # Convert bytes to human-readable format
-            limit_bytes = int(data.get("trafficLimitBytes", 0))
+        def format_traffic_limit(value):
+            """Convert bytes to human-readable format (GB or Unlimited)."""
+            limit_bytes = int(value)
             if limit_bytes == 0:
-                limit_str = _("date-unlimited")
+                return _("date-unlimited")
             else:
-                # Convert to GB
                 limit_gb = limit_bytes / (1024 ** 3)
-                limit_str = f"{limit_gb:.2f} GB"
-            msg += self.format_field(field_sep, field_label, limit_str)
+                return f"{limit_gb:.2f} GB"
 
-        # Expire (using expireAt from webhook data)
-        if "expireAt" in data and data["expireAt"]:
-            field_label = _("field-expire")
-            formatted_date = format_date_with_days(data["expireAt"], _)
-            msg += self.format_field(field_sep, field_label, formatted_date)
+        def format_date(value):
+            """Format date with days."""
+            return format_date_with_days(value, _)
 
-        # Created date
-        if "createdAt" in data and data["createdAt"]:
-            field_label = _("field-created-at")
-            formatted_date = format_date_with_days(data["createdAt"], _)
-            msg += self.format_field(field_sep, field_label, formatted_date)
+        def format_squads(value):
+            """Format squads list."""
+            return ", ".join([squad["name"] for squad in value])
 
-        # Active squads
-        if "activeInternalSquads" in data and data["activeInternalSquads"]:
-            squads = ", ".join([squad["name"] for squad in data["activeInternalSquads"]])
-            field_label = _("field-squads")
-            msg += self.format_field(field_sep, field_label, squads, use_code=True)
+        field_configs = [
+            ('username', 'field-username', True),
+            ('email', 'field-email', False),
+            ('status', 'field-status', False),
+            {
+                'data_key': 'usedTrafficBytes',
+                'translation_key': 'field-used-traffic',
+                'formatter': format_used_traffic,
+            },
+            {
+                'data_key': 'trafficLimitBytes',
+                'translation_key': 'field-data-limit',
+                'formatter': format_traffic_limit,
+            },
+            {
+                'data_key': 'expireAt',
+                'translation_key': 'field-expire',
+                'formatter': format_date,
+                'condition': lambda d: d.get('expireAt'),
+            },
+            {
+                'data_key': 'createdAt',
+                'translation_key': 'field-created-at',
+                'formatter': format_date,
+                'condition': lambda d: d.get('createdAt'),
+            },
+            {
+                'data_key': 'activeInternalSquads',
+                'translation_key': 'field-squads',
+                'use_code': True,
+                'formatter': format_squads,
+                'condition': lambda d: d.get('activeInternalSquads'),
+            },
+        ]
 
-        return msg
+        return self._format_fields(data, field_sep, field_configs)

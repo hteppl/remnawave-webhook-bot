@@ -1,3 +1,4 @@
+import inspect
 from abc import ABC, abstractmethod
 from html import escape
 from typing import Dict, Any
@@ -47,6 +48,84 @@ class BaseEventFormatter(ABC):
             return f"{field_sep}{field_label}: <code>{escaped_value}</code>\n"
         else:
             return f"{field_sep}{field_label}: {escaped_value}\n"
+
+    def _format_fields(self, data: Dict[str, Any], field_sep: str, field_configs: list) -> str:
+        """
+        Format multiple fields based on configuration.
+
+        Args:
+            data: Event data dictionary
+            field_sep: Field separator string
+            field_configs: List of field configurations. Each config can be:
+                - Tuple: (data_key, translation_key, use_code)
+                - Dict: {
+                    'data_key': str,           # Key to look for in data
+                    'translation_key': str,    # Translation key for label
+                    'use_code': bool,          # Whether to use code formatting (default False)
+                    'formatter': callable,     # Optional custom formatter function
+                    'nested': str,             # Optional nested key path (e.g., 'provider.name')
+                    'condition': callable,     # Optional condition function to check before formatting
+                  }
+
+        Returns:
+            Formatted fields string
+        """
+        msg = ""
+
+        for config in field_configs:
+            # Handle tuple format (simple)
+            if isinstance(config, tuple):
+                data_key, translation_key, use_code = config
+                if data_key in data:
+                    field_label = _(translation_key)
+                    msg += self.format_field(field_sep, field_label, data[data_key], use_code)
+                continue
+
+            # Handle dict format (advanced)
+            data_key = config['data_key']
+            translation_key = config['translation_key']
+            use_code = config.get('use_code', False)
+            formatter = config.get('formatter')
+            nested = config.get('nested')
+            condition = config.get('condition')
+
+            # Check condition if provided
+            if condition and not condition(data):
+                continue
+
+            # Get value from data
+            value = None
+            if nested:
+                # Handle nested key path like 'provider.name'
+                obj = data
+                for key in nested.split('.'):
+                    if isinstance(obj, dict) and key in obj:
+                        obj = obj[key]
+                    else:
+                        obj = None
+                        break
+                value = obj
+            elif data_key in data:
+                value = data[data_key]
+
+            # Skip if no value found
+            if value is None:
+                continue
+
+            # Apply custom formatter if provided
+            if formatter:
+                # Support both (value) and (value, data) signatures
+                sig = inspect.signature(formatter)
+                if len(sig.parameters) == 1:
+                    value = formatter(value)
+                else:
+                    value = formatter(value, data)
+
+            # Format the field
+            field_label = _(translation_key)
+            msg += self.format_field(field_sep, field_label, value, use_code)
+
+        return msg
 
     def get_common_translations(self) -> Dict[str, str]:
         """Get common translation strings used across all formatters."""

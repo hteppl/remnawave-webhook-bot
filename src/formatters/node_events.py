@@ -36,37 +36,17 @@ class NodeEventFormatter(BaseEventFormatter):
 
     def _format_node_created_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format fields specifically for node.created event."""
-        msg = ""
-
-        # Node Name
-        if "name" in data:
-            field_label = _("field-node-name") if _("field-node-name") != "field-node-name" else "Node Name"
-            msg += self.format_field(field_sep, field_label, data["name"], use_code=True)
-
-        # Address (combine address and port)
-        if "address" in data:
-            field_label = _("field-address")
-            address = data["address"]
+        def format_address_with_port(value, data):
+            """Combine address with port."""
             if "port" in data:
-                address = f"{address}:{data['port']}"
-            msg += self.format_field(field_sep, field_label, address)
+                return f"{value}:{data['port']}"
+            return value
 
-        # Location (from country code)
-        if "countryCode" in data:
-            field_label = _("field-location") if _("field-location") != "field-location" else "Location"
-            msg += self.format_field(field_sep, field_label, data["countryCode"])
-
-        # Provider
-        if "provider" in data and isinstance(data["provider"], dict) and "name" in data["provider"]:
-            field_label = _("field-provider") if _("field-provider") != "field-provider" else "Provider"
-            msg += self.format_field(field_sep, field_label, data["provider"]["name"], use_code=True)
-
-        # Inbound information
-        if "activeInbounds" in data and data["activeInbounds"]:
-            inbound = data["activeInbounds"][0]  # Get first inbound
-            field_label = _("field-inbound") if _("field-inbound") != "field-inbound" else "Inbound"
-
-            # Extract protocol, security, and port
+        def format_inbound_info(value):
+            """Format first inbound information."""
+            if not value:
+                return None
+            inbound = value[0]  # Get first inbound
             protocol = inbound.get("type", "").upper()
             security = inbound.get("security", "")
             port = inbound.get("port", "")
@@ -76,85 +56,71 @@ class NodeEventFormatter(BaseEventFormatter):
                 inbound_info += f" with {security.capitalize()} security"
             if port:
                 inbound_info += f" on port {port}"
+            return inbound_info
 
-            msg += self.format_field(field_sep, field_label, inbound_info)
+        field_configs = [
+            ('name', 'field-node-name', True),
+            {
+                'data_key': 'address',
+                'translation_key': 'field-address',
+                'formatter': format_address_with_port,
+            },
+            ('countryCode', 'field-location', False),
+            {
+                'data_key': 'provider',
+                'translation_key': 'field-provider',
+                'use_code': True,
+                'nested': 'provider.name',
+            },
+            {
+                'data_key': 'activeInbounds',
+                'translation_key': 'field-inbound',
+                'formatter': format_inbound_info,
+                'condition': lambda d: d.get('activeInbounds'),
+            },
+        ]
 
-        # Inbound tags
+        msg = self._format_fields(data, field_sep, field_configs)
         msg += self._format_inbound_tags(data, field_sep)
 
         return msg
 
     def _format_node_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format standard node fields for other node events."""
-        msg = ""
-
-        # Name
-        if "name" in data:
-            field_label = _("field-name")
-            msg += self.format_field(field_sep, field_label, data["name"], use_code=True)
-
-        # Address
-        if "address" in data:
-            field_label = _("field-address")
-            msg += self.format_field(field_sep, field_label, data["address"])
-
-        # Port
-        if "port" in data:
-            field_label = _("field-port")
-            msg += self.format_field(field_sep, field_label, data["port"])
-
-        # Provider
-        if "provider" in data and isinstance(data["provider"], dict) and "name" in data["provider"]:
-            field_label = _("field-provider")
-            msg += self.format_field(field_sep, field_label, data["provider"]["name"], use_code=True)
-
-        # Status
-        if "status" in data:
-            field_label = _("field-status")
-            msg += self.format_field(field_sep, field_label, data["status"])
-
-        # Last Status Message
-        if "lastStatusMessage" in data:
-            field_label = _("field-last-status-message")
-            msg += self.format_field(field_sep, field_label, data["lastStatusMessage"])
-
-        # Xray Version
-        if "xrayVersion" in data:
-            field_label = _("field-xray-version")
-            msg += self.format_field(field_sep, field_label, data["xrayVersion"], use_code=True)
-
-        # Node Version
-        if "nodeVersion" in data:
-            field_label = _("field-node-version")
-            msg += self.format_field(field_sep, field_label, data["nodeVersion"], use_code=True)
-
-        # Traffic Used (convert to TB)
-        if "trafficUsedBytes" in data:
-            field_label = _("field-traffic-used")
+        def format_traffic(value):
+            """Convert bytes to TB."""
             try:
-                traffic_bytes = int(data["trafficUsedBytes"])
-                traffic_tb = traffic_bytes / (1024**4)  # Convert bytes to TB
-                traffic_str = f"{traffic_tb:.2f} TB"
+                traffic_bytes = int(value)
+                traffic_tb = traffic_bytes / (1024**4)
+                return f"{traffic_tb:.2f} TB"
             except (ValueError, TypeError):
-                traffic_str = str(data["trafficUsedBytes"])
-            msg += self.format_field(field_sep, field_label, traffic_str)
+                return str(value)
 
-        # CPU Model
-        if "cpuModel" in data:
-            field_label = _("field-cpu-model")
-            msg += self.format_field(field_sep, field_label, data["cpuModel"])
+        field_configs = [
+            ('name', 'field-name', True),
+            ('address', 'field-address', False),
+            ('port', 'field-port', False),
+            {
+                'data_key': 'provider',
+                'translation_key': 'field-provider',
+                'use_code': True,
+                'nested': 'provider.name',
+            },
+            ('status', 'field-status', False),
+            ('lastStatusMessage', 'field-last-status-message', False),
+            ('xrayVersion', 'field-xray-version', True),
+            ('nodeVersion', 'field-node-version', True),
+            {
+                'data_key': 'trafficUsedBytes',
+                'translation_key': 'field-traffic-used',
+                'formatter': format_traffic,
+            },
+            ('cpuModel', 'field-cpu-model', False),
+            ('cpuCount', 'field-cpu-count', False),
+            ('totalRam', 'field-total-ram', False),
+        ]
 
-        # CPU Count
-        if "cpuCount" in data:
-            field_label = _("field-cpu-count")
-            msg += self.format_field(field_sep, field_label, data["cpuCount"])
-
-        # Total RAM
-        if "totalRam" in data:
-            field_label = _("field-total-ram")
-            msg += self.format_field(field_sep, field_label, data["totalRam"])
-
-        # Inbound tags
+        msg = self._format_fields(data, field_sep, field_configs)
         msg += self._format_inbound_tags(data, field_sep)
 
         return msg
