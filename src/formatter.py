@@ -14,7 +14,7 @@ class MessageFormatter:
         self.service_formatter = ServiceEventFormatter()
 
     async def format_webhook_message(
-        self, event_type: str, data: Dict[str, Any], timestamp: str, connection_stats: str = None
+            self, event_type: str, data: Dict[str, Any], timestamp: str, connection_stats: str = None
     ) -> str:
         """
         Format webhook data into a readable Telegram message.

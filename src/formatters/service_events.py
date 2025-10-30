@@ -14,39 +14,24 @@ class ServiceEventFormatter(BaseEventFormatter):
     def __init__(self):
         self.geo_service = IPGeolocationService()
 
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
+    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
         """Format service event data."""
-        event_name = self.get_event_name(event_type)
+        translations = self.get_common_translations()
+        event_icon = self.get_event_icon(event_type)
+        event_message = self.get_event_message(event_type)
 
-        # Get localized strings
-        action_icon = _("message-header-action-icon")
-        action_label = _("message-header-action-label")
-        time_icon = _("message-header-time-icon")
-        time_label = _("message-header-time-label")
-        field_sep = _("message-separator-field")
-
-        # Try to get event-specific icon
-        event_icon_key = f"event-service-{event_name}-icon"
-        event_icon = _(event_icon_key)
-        if event_icon == event_icon_key:
-            event_icon = action_icon
-
-        # Get event message
-        event_message_key = f"event-service-{event_name}-message"
-        event_message = _(event_message_key)
-
-        # Build message
-        msg = f"{event_icon} <b>{action_label}:</b> {event_message}\n\n"
+        # Build message without category header for service events
+        msg = f"{event_icon} <b>{translations['action_label']}:</b> {event_message}\n\n"
 
         # Only show data for specific service events
         show_data = event_type in ["service.login_attempt_failed", "service.login_attempt_success"]
 
         if show_data:
             # Get formatted fields with geolocation
-            msg += await self._format_service_fields(data, field_sep)
+            msg += await self._format_service_fields(data, translations["field_sep"])
             msg += "\n"
 
-        msg += f"{time_icon} <b>{time_label}:</b> {timestamp}"
+        msg += f"{translations['time_icon']} <b>{translations['time_label']}:</b> {timestamp}"
 
         return msg
 

@@ -70,7 +70,7 @@ class EventFilter:
             value = os.getenv(env_var, "true").lower()
 
             # Consider enabled if not explicitly set to false/no/0
-            if value not in ("false", "no", "0", "off"):
+            if value in ("true", "yes", "on", "1"):
                 enabled.add(event)
 
         return enabled

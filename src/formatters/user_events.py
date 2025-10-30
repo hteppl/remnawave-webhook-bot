@@ -8,36 +8,20 @@ from src.utils import format_date_with_days
 class UserEventFormatter(BaseEventFormatter):
     """Formatter for user-related events."""
 
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
+    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
         """Format user event data."""
-        event_name = self.get_event_name(event_type)
+        translations = self.get_common_translations()
+        fields_content = self._format_user_fields(data, translations["field_sep"])
 
-        # Get localized strings
-        action_icon = _("message-header-action-icon")
-        action_label = _("message-header-action-label")
-        header_icon = _("event-user-header-icon")
-        header_title = _("event-user-header-title")
-        time_icon = _("message-header-time-icon")
-        time_label = _("message-header-time-label")
-        field_sep = _("message-separator-field")
+        # Pass usage_percentage for bandwidth events
+        event_message_kwargs = {"usage_percentage": data.get("usage_percentage", 0)}
 
-        # Try to get event-specific icon
-        event_icon_key = f"event-user-{event_name}-icon"
-        event_icon = _(event_icon_key)
-        if event_icon == event_icon_key:
-            event_icon = action_icon
-
-        # Get event message with parameters
-        event_message_key = f"event-user-{event_name}-message"
-        event_message = _(event_message_key, usage_percentage=data.get("usage_percentage", 0))
-
-        # Build message
-        msg = f"{event_icon} <b>{action_label}:</b> {event_message}\n\n"
-        msg += f"<b>{header_icon} {header_title}</b>\n\n"
-        msg += self._format_user_fields(data, field_sep)
-        msg += f"\n{time_icon} <b>{time_label}:</b> {timestamp}"
-
-        return msg
+        return self.build_standard_message(
+            event_type=event_type,
+            timestamp=timestamp,
+            fields_content=fields_content,
+            event_message_kwargs=event_message_kwargs,
+        )
 
     def _format_user_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format user-specific fields."""
@@ -65,11 +49,11 @@ class UserEventFormatter(BaseEventFormatter):
             used_bytes = int(data.get("usedTrafficBytes", 0))
             if used_bytes == 0:
                 used_str = "0 GB"
-            elif used_bytes < 1024**3:  # Less than 1 GB
-                used_mb = used_bytes / (1024**2)
+            elif used_bytes < 1024 ** 3:  # Less than 1 GB
+                used_mb = used_bytes / (1024 ** 2)
                 used_str = f"{used_mb:.2f} MB"
             else:
-                used_gb = used_bytes / (1024**3)
+                used_gb = used_bytes / (1024 ** 3)
                 used_str = f"{used_gb:.2f} GB"
             msg += self.format_field(field_sep, field_label, used_str)
 
@@ -82,7 +66,7 @@ class UserEventFormatter(BaseEventFormatter):
                 limit_str = _("date-unlimited")
             else:
                 # Convert to GB
-                limit_gb = limit_bytes / (1024**3)
+                limit_gb = limit_bytes / (1024 ** 3)
                 limit_str = f"{limit_gb:.2f} GB"
             msg += self.format_field(field_sep, field_label, limit_str)
 

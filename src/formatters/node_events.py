@@ -7,51 +7,32 @@ from src.i18n import get_translation as _
 class NodeEventFormatter(BaseEventFormatter):
     """Formatter for node-related events."""
 
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, connection_stats: str = None) -> str:
+    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, connection_stats: str = None,
+                     **kwargs) -> str:
         """Format node event data."""
-        event_name = self.get_event_name(event_type)
-
-        # Get localized strings
-        action_icon = _("message-header-action-icon")
-        action_label = _("message-header-action-label")
-        header_icon = _("event-node-header-icon")
-        header_title = _("event-node-header-title")
-        time_icon = _("message-header-time-icon")
-        time_label = _("message-header-time-label")
-        field_sep = _("message-separator-field")
-
-        # Try to get event-specific icon
-        event_icon_key = f"event-node-{event_name}-icon"
-        event_icon = _(event_icon_key)
-        if event_icon == event_icon_key:
-            event_icon = action_icon
-
-        # Get event message
-        event_message_key = f"event-node-{event_name}-message"
-        event_message = _(event_message_key)
-
-        # Build message
-        msg = f"{event_icon} <b>{action_label}:</b> {event_message}\n\n"
-        msg += f"<b>{header_icon} {header_title}</b>\n\n"
+        translations = self.get_common_translations()
 
         # Use special formatting for node.created
         if event_type == "node.created":
-            msg += self._format_node_created_fields(data, field_sep)
+            fields_content = self._format_node_created_fields(data, translations["field_sep"])
         else:
-            msg += self._format_node_fields(data, field_sep)
+            fields_content = self._format_node_fields(data, translations["field_sep"])
 
-        msg += f"\n{time_icon} <b>{time_label}:</b> {timestamp}"
-
-        # Add connection loss statistics postfix if available
+        # Add connection loss statistics if available
+        additional_content = None
         if event_type == "node.connection_lost" and connection_stats:
             from src.config import config
 
             stats_icon = _("connection-stats-icon")
             stats_title = _("connection-stats-title", hours=config.CONNECTION_LOSS_STATS_HOURS)
-            msg += f"\n\n{stats_icon} <b>{stats_title}</b>\n"
-            msg += f"<pre>{connection_stats}</pre>"
+            additional_content = f"\n{stats_icon} <b>{stats_title}</b>\n<pre>{connection_stats}</pre>"
 
-        return msg
+        return self.build_standard_message(
+            event_type=event_type,
+            timestamp=timestamp,
+            fields_content=fields_content,
+            additional_content=additional_content,
+        )
 
     def _format_node_created_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format fields specifically for node.created event."""

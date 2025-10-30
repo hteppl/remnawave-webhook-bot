@@ -26,7 +26,7 @@
 Минимальный набор файлов проекта для начала процесса установки:
 
 ```text
-src, locales, docker-compose.yml, Dockerfile, requiremnts.txt, .env.example
+src, locales, docker-compose.yml, Dockerfile, requiremnts.txt, pyproject.toml, .env.example
 ```
 
 ### Шаг 2: Настройка конфигурации
@@ -110,6 +110,8 @@ https://panel.your_address.com {
 }
 ```
 
+После различных манипуляций с caddy или nginx, сервисы требуется перезапустить для применения настроек!
+
 ### Шаг 2: Проверка работоспособности:
 
 ```bash
@@ -175,8 +177,8 @@ cd /opt/remnawave && docker compose down && docker compose up -d
 ### Сервисные события (`service.*`)
 
 - `service.panel_started` - Запуск панели
-- `service.login_attempt_failed` - Неудачная попытка входа
 - `service.login_attempt_success` - Успешный вход
+- `service.login_attempt_failed` - Неудачная попытка входа
 
 ## 📄 Лицензия
 

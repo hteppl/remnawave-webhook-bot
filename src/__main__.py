@@ -4,6 +4,7 @@ from aiogram import Bot
 from aiohttp import web
 
 from src.config import config
+from src.version import __version__
 from src.webhook_handler import WebhookHandler
 
 # Configure logging
@@ -16,6 +17,9 @@ logger = logging.getLogger(__name__)
 
 async def on_startup(app):
     """Application startup handler."""
+    logger.info(f"Remnawave Webhook Bot v{__version__}")
+    logger.info("Project sources: https://t.me/morkowniy_bot")
+    logger.info("-----")
     logger.info("Bot started successfully")
     logger.info(f"Listening on {config.WEBHOOK_HOST}:{config.WEBHOOK_PORT}{config.WEBHOOK_PATH}")
     logger.info(f"Language: {config.LANGUAGE}")
