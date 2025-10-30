@@ -1,6 +1,4 @@
 # Заголовок и разделители
-message-header-icon = 🔔
-message-header-title = Событие Remnawave
 message-header-event-icon = 📋
 message-header-event-label = Событие
 message-header-action-icon = 📌
@@ -14,7 +12,7 @@ message-separator-field = {"  "}•{" "}
 field-username = Имя пользователя
 field-email = Email
 field-status = Статус
-field-used-traffic = Использовано трафика
+field-used-traffic = Трафик
 field-data-limit = Лимит трафика
 field-expire = Истекает
 field-created-at = Создан

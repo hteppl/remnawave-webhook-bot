@@ -28,14 +28,11 @@ class MessageFormatter:
         Returns:
             Formatted HTML message
         """
-        # Build message header
-        header_icon = _("message-header-icon")
-        header_title = _("message-header-title")
+        # Build message header with event type
         event_icon = _("message-header-event-icon")
         event_label = _("message-header-event-label")
 
-        message = f"{header_icon} <b>{header_title}</b>\n\n"
-        message += f"{event_icon} <b>{event_label}:</b> <code>{event_type}</code>\n"
+        message = f"{event_icon} <b>{event_label}:</b> <code>{event_type}</code>\n"
 
         # Format based on event category
         if event_type.startswith("user."):

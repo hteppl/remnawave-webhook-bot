@@ -1,6 +1,4 @@
 # Header and separators
-message-header-icon = 🔔
-message-header-title = Remnawave Event
 message-header-event-icon = 📋
 message-header-event-label = Event
 message-header-action-icon = 📌
