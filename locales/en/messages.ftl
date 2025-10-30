@@ -31,6 +31,7 @@ field-geo-city = City/Region
 field-geo-isp = ISP
 field-user-agent = User Agent
 field-description = Description
+field-last-status-message = Last Status Message
 field-password = Password
 field-squads = Squads
 

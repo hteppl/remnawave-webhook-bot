@@ -110,6 +110,11 @@ class NodeEventFormatter(BaseEventFormatter):
             field_label = _("field-status")
             msg += self.format_field(field_sep, field_label, data["status"])
 
+        # Last Status Message
+        if "lastStatusMessage" in data:
+            field_label = _("field-last-status-message")
+            msg += self.format_field(field_sep, field_label, data["lastStatusMessage"])
+
         # Description
         if "description" in data:
             field_label = _("field-description")

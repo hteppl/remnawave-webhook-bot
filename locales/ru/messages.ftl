@@ -31,6 +31,7 @@ field-geo-city = Город/Регион
 field-geo-isp = Провайдер
 field-user-agent = User Agent
 field-description = Описание
+field-last-status-message = Последний статус
 field-password = Пароль
 field-squads = Сквады
 
