@@ -134,7 +134,8 @@ class BaseEventFormatter(ABC):
 
         return msg
 
-    def get_common_translations(self) -> Dict[str, str]:
+    @staticmethod
+    def get_common_translations() -> Dict[str, str]:
         """Get common translation strings used across all formatters."""
         return {
             "action_icon": _("message-header-action-icon"),
@@ -233,6 +234,6 @@ class BaseEventFormatter(ABC):
         if additional_content:
             msg += f"\n{additional_content}"
 
-        msg += f"\n{translations['time_icon']} <b>{translations['time_label']}:</b> {timestamp}"
+        msg += f"\n\n{translations['time_icon']} <b>{translations['time_label']}:</b> {timestamp}"
 
         return msg
