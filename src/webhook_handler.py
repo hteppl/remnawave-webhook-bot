@@ -162,8 +162,6 @@ class WebhookHandler:
                 logger.info(f"Added billing event to aggregator: {event_id}")
                 # Don't send individual notification - aggregator will handle it
             else:
-                # Format and send message normally for non-billing events
-                logger.debug(f"Non-billing event, sending immediate notification: {event_type}")
                 # Get connection loss stats if this is a node.connection_lost event
                 connection_stats = None
                 if event_type == "node.connection_lost" and config.ENABLE_CONNECTION_LOSS_STATS:

@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class TimestampedStorage:
             timestamp: Optional timestamp (defaults to now)
         """
         if timestamp is None:
-            timestamp = datetime.utcnow()
+            timestamp = datetime.now(timezone.utc)
 
         self._storage[key].append((timestamp, value))
         logger.debug(f"Added to storage: key={key}, value={value}, timestamp={timestamp}")
@@ -53,7 +53,7 @@ class TimestampedStorage:
         Returns:
             List of (timestamp, value) tuples within the time window
         """
-        cutoff_time = datetime.utcnow() - timedelta(hours=hours)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
 
         if key not in self._storage:
             return []
