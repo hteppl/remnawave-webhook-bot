@@ -47,7 +47,7 @@ class ServiceEventFormatter(BaseEventFormatter):
 
         # Format basic fields
         field_configs = [
-            ('ip', 'field-ip', True),
+            ("ip", "field-ip", True),
         ]
 
         msg = self._format_fields(flattened_data, field_sep, field_configs)
@@ -86,9 +86,9 @@ class ServiceEventFormatter(BaseEventFormatter):
 
         # Format remaining fields
         remaining_configs = [
-            ('userAgent', 'field-user-agent', False),
-            ('username', 'field-username', True),
-            ('password', 'field-password', True),
+            ("userAgent", "field-user-agent", False),
+            ("username", "field-username", True),
+            ("password", "field-password", True),
         ]
 
         msg += self._format_fields(flattened_data, field_sep, remaining_configs)

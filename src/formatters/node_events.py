@@ -7,8 +7,9 @@ from src.i18n import get_translation as _
 class NodeEventFormatter(BaseEventFormatter):
     """Formatter for node-related events."""
 
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, connection_stats: str = None,
-                     **kwargs) -> str:
+    async def format(
+        self, event_type: str, data: Dict[str, Any], timestamp: str, connection_stats: str = None, **kwargs
+    ) -> str:
         """Format node event data."""
         translations = self.get_common_translations()
 
@@ -36,6 +37,7 @@ class NodeEventFormatter(BaseEventFormatter):
 
     def _format_node_created_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format fields specifically for node.created event."""
+
         def format_address_with_port(value, data):
             """Combine address with port."""
             if "port" in data:
@@ -59,24 +61,24 @@ class NodeEventFormatter(BaseEventFormatter):
             return inbound_info
 
         field_configs = [
-            ('name', 'field-node-name', True),
+            ("name", "field-node-name", True),
             {
-                'data_key': 'address',
-                'translation_key': 'field-address',
-                'formatter': format_address_with_port,
+                "data_key": "address",
+                "translation_key": "field-address",
+                "formatter": format_address_with_port,
             },
-            ('countryCode', 'field-location', False),
+            ("countryCode", "field-location", False),
             {
-                'data_key': 'provider',
-                'translation_key': 'field-provider',
-                'use_code': True,
-                'nested': 'provider.name',
+                "data_key": "provider",
+                "translation_key": "field-provider",
+                "use_code": True,
+                "nested": "provider.name",
             },
             {
-                'data_key': 'activeInbounds',
-                'translation_key': 'field-inbound',
-                'formatter': format_inbound_info,
-                'condition': lambda d: d.get('activeInbounds'),
+                "data_key": "activeInbounds",
+                "translation_key": "field-inbound",
+                "formatter": format_inbound_info,
+                "condition": lambda d: d.get("activeInbounds"),
             },
         ]
 
@@ -87,6 +89,7 @@ class NodeEventFormatter(BaseEventFormatter):
 
     def _format_node_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format standard node fields for other node events."""
+
         def format_traffic(value):
             """Convert bytes to TB."""
             try:
@@ -97,27 +100,27 @@ class NodeEventFormatter(BaseEventFormatter):
                 return str(value)
 
         field_configs = [
-            ('name', 'field-name', True),
-            ('address', 'field-address', False),
-            ('port', 'field-port', False),
+            ("name", "field-name", True),
+            ("address", "field-address", False),
+            ("port", "field-port", False),
             {
-                'data_key': 'provider',
-                'translation_key': 'field-provider',
-                'use_code': True,
-                'nested': 'provider.name',
+                "data_key": "provider",
+                "translation_key": "field-provider",
+                "use_code": True,
+                "nested": "provider.name",
             },
-            ('status', 'field-status', False),
-            ('lastStatusMessage', 'field-last-status-message', False),
-            ('xrayVersion', 'field-xray-version', True),
-            ('nodeVersion', 'field-node-version', True),
+            ("status", "field-status", False),
+            ("lastStatusMessage", "field-last-status-message", False),
+            ("xrayVersion", "field-xray-version", True),
+            ("nodeVersion", "field-node-version", True),
             {
-                'data_key': 'trafficUsedBytes',
-                'translation_key': 'field-traffic-used',
-                'formatter': format_traffic,
+                "data_key": "trafficUsedBytes",
+                "translation_key": "field-traffic-used",
+                "formatter": format_traffic,
             },
-            ('cpuModel', 'field-cpu-model', False),
-            ('cpuCount', 'field-cpu-count', False),
-            ('totalRam', 'field-total-ram', False),
+            ("cpuModel", "field-cpu-model", False),
+            ("cpuCount", "field-cpu-count", False),
+            ("totalRam", "field-total-ram", False),
         ]
 
         msg = self._format_fields(data, field_sep, field_configs)

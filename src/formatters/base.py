@@ -82,12 +82,12 @@ class BaseEventFormatter(ABC):
                 continue
 
             # Handle dict format (advanced)
-            data_key = config['data_key']
-            translation_key = config['translation_key']
-            use_code = config.get('use_code', False)
-            formatter = config.get('formatter')
-            nested = config.get('nested')
-            condition = config.get('condition')
+            data_key = config["data_key"]
+            translation_key = config["translation_key"]
+            use_code = config.get("use_code", False)
+            formatter = config.get("formatter")
+            nested = config.get("nested")
+            condition = config.get("condition")
 
             # Check condition if provided
             if condition and not condition(data):
@@ -98,7 +98,7 @@ class BaseEventFormatter(ABC):
             if nested:
                 # Handle nested key path like 'provider.name'
                 obj = data
-                for key in nested.split('.'):
+                for key in nested.split("."):
                     if isinstance(obj, dict) and key in obj:
                         obj = obj[key]
                     else:
@@ -192,12 +192,12 @@ class BaseEventFormatter(ABC):
         }
 
     def build_standard_message(
-            self,
-            event_type: str,
-            timestamp: str,
-            fields_content: str,
-            additional_content: str = None,
-            event_message_kwargs: Dict[str, Any] = None,
+        self,
+        event_type: str,
+        timestamp: str,
+        fields_content: str,
+        additional_content: str = None,
+        event_message_kwargs: Dict[str, Any] = None,
     ) -> str:
         """
         Build a standard formatted message.

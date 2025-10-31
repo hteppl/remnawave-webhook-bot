@@ -66,10 +66,10 @@ class CRMEventFormatter(BaseEventFormatter):
     def _format_crm_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format CRM-specific fields."""
         field_configs = [
-            ('username', 'field-username', True),
-            ('email', 'field-email', False),
-            ('description', 'field-description', False),
-            ('status', 'field-status', False),
+            ("username", "field-username", True),
+            ("email", "field-email", False),
+            ("description", "field-description", False),
+            ("status", "field-status", False),
         ]
 
         return self._format_fields(data, field_sep, field_configs)

@@ -25,16 +25,17 @@ class UserEventFormatter(BaseEventFormatter):
 
     def _format_user_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format user-specific fields."""
+
         def format_used_traffic(value):
             """Convert bytes to human-readable format (MB/GB)."""
             used_bytes = int(value)
             if used_bytes == 0:
                 return "0 GB"
-            elif used_bytes < 1024 ** 3:  # Less than 1 GB
-                used_mb = used_bytes / (1024 ** 2)
+            elif used_bytes < 1024**3:  # Less than 1 GB
+                used_mb = used_bytes / (1024**2)
                 return f"{used_mb:.2f} MB"
             else:
-                used_gb = used_bytes / (1024 ** 3)
+                used_gb = used_bytes / (1024**3)
                 return f"{used_gb:.2f} GB"
 
         def format_traffic_limit(value):
@@ -43,7 +44,7 @@ class UserEventFormatter(BaseEventFormatter):
             if limit_bytes == 0:
                 return _("date-unlimited")
             else:
-                limit_gb = limit_bytes / (1024 ** 3)
+                limit_gb = limit_bytes / (1024**3)
                 return f"{limit_gb:.2f} GB"
 
         def format_date(value):
@@ -55,37 +56,37 @@ class UserEventFormatter(BaseEventFormatter):
             return ", ".join([squad["name"] for squad in value])
 
         field_configs = [
-            ('username', 'field-username', True),
-            ('email', 'field-email', False),
-            ('status', 'field-status', False),
+            ("username", "field-username", True),
+            ("email", "field-email", False),
+            ("status", "field-status", False),
             {
-                'data_key': 'usedTrafficBytes',
-                'translation_key': 'field-used-traffic',
-                'formatter': format_used_traffic,
+                "data_key": "usedTrafficBytes",
+                "translation_key": "field-used-traffic",
+                "formatter": format_used_traffic,
             },
             {
-                'data_key': 'trafficLimitBytes',
-                'translation_key': 'field-data-limit',
-                'formatter': format_traffic_limit,
+                "data_key": "trafficLimitBytes",
+                "translation_key": "field-data-limit",
+                "formatter": format_traffic_limit,
             },
             {
-                'data_key': 'expireAt',
-                'translation_key': 'field-expire',
-                'formatter': format_date,
-                'condition': lambda d: d.get('expireAt'),
+                "data_key": "expireAt",
+                "translation_key": "field-expire",
+                "formatter": format_date,
+                "condition": lambda d: d.get("expireAt"),
             },
             {
-                'data_key': 'createdAt',
-                'translation_key': 'field-created-at',
-                'formatter': format_date,
-                'condition': lambda d: d.get('createdAt'),
+                "data_key": "createdAt",
+                "translation_key": "field-created-at",
+                "formatter": format_date,
+                "condition": lambda d: d.get("createdAt"),
             },
             {
-                'data_key': 'activeInternalSquads',
-                'translation_key': 'field-squads',
-                'use_code': True,
-                'formatter': format_squads,
-                'condition': lambda d: d.get('activeInternalSquads'),
+                "data_key": "activeInternalSquads",
+                "translation_key": "field-squads",
+                "use_code": True,
+                "formatter": format_squads,
+                "condition": lambda d: d.get("activeInternalSquads"),
             },
         ]
 
