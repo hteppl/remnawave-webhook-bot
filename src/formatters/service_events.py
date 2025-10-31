@@ -93,8 +93,9 @@ class ServiceEventFormatter(BaseEventFormatter):
                 field_label = _("field-device")
                 msg += self.format_field(field_sep, field_label, device_info)
 
-        # Format remaining fields
+        # Format remaining fields (User Agent, username, password)
         remaining_configs = [
+            ("userAgent", "field-user-agent", False),
             ("username", "field-username", True),
             ("password", "field-password", True),
         ]
