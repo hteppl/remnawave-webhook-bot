@@ -4,6 +4,7 @@ from typing import Dict, Any
 from src.formatters.base import BaseEventFormatter
 from src.i18n import get_translation as _
 from src.services import IPGeolocationService
+from src.utils.user_agent_parser import get_device_info
 
 logger = logging.getLogger(__name__)
 
@@ -84,9 +85,16 @@ class ServiceEventFormatter(BaseEventFormatter):
                     field_label = _("field-geo-isp")
                     msg += self.format_field(field_sep, field_label, geo_data["isp"])
 
+        # Parse and format device info from user agent
+        user_agent = flattened_data.get("userAgent")
+        if user_agent:
+            device_info = get_device_info(user_agent)
+            if device_info:
+                field_label = _("field-device")
+                msg += self.format_field(field_sep, field_label, device_info)
+
         # Format remaining fields
         remaining_configs = [
-            ("userAgent", "field-user-agent", False),
             ("username", "field-username", True),
             ("password", "field-password", True),
         ]

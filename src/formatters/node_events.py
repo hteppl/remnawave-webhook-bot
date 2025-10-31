@@ -19,20 +19,31 @@ class NodeEventFormatter(BaseEventFormatter):
         else:
             fields_content = self._format_node_fields(data, translations["field_sep"])
 
+        # Build additional content sections
+        additional_content = ""
+
+        # Add last status message if available
+        if "lastStatusMessage" in data and data["lastStatusMessage"]:
+            status_msg = data["lastStatusMessage"]
+            # Only show if not None or empty
+            if status_msg and str(status_msg).strip().lower() not in ["none", ""]:
+                status_icon = _("field-last-status-icon")
+                status_label = _("field-last-status-message")
+                additional_content += f"\n\n{status_icon} <b>{status_label}:</b>\n<pre>{self.escape_value(status_msg)}</pre>"
+
         # Add connection loss statistics if available
-        additional_content = None
         if event_type == "node.connection_lost" and connection_stats:
             from src.config import config
 
             stats_icon = _("connection-stats-icon")
             stats_title = _("connection-stats-title", hours=config.CONNECTION_LOSS_STATS_HOURS)
-            additional_content = f"\n{stats_icon} <b>{stats_title}</b>\n<pre>{connection_stats}</pre>"
+            additional_content += f"\n\n{stats_icon} <b>{stats_title}</b>\n<pre>{connection_stats}</pre>"
 
         return self.build_standard_message(
             event_type=event_type,
             timestamp=timestamp,
             fields_content=fields_content,
-            additional_content=additional_content,
+            additional_content=additional_content if additional_content else None,
         )
 
     def _format_node_created_fields(self, data: Dict[str, Any], field_sep: str) -> str:
@@ -66,6 +77,7 @@ class NodeEventFormatter(BaseEventFormatter):
                 "data_key": "address",
                 "translation_key": "field-address",
                 "formatter": format_address_with_port,
+                "use_code": True,
             },
             ("countryCode", "field-location", False),
             {
@@ -101,8 +113,8 @@ class NodeEventFormatter(BaseEventFormatter):
 
         field_configs = [
             ("name", "field-name", True),
-            ("address", "field-address", False),
-            ("port", "field-port", False),
+            ("address", "field-address", True),
+            ("port", "field-port", True),
             {
                 "data_key": "provider",
                 "translation_key": "field-provider",
@@ -110,17 +122,14 @@ class NodeEventFormatter(BaseEventFormatter):
                 "nested": "provider.name",
             },
             ("status", "field-status", False),
-            ("lastStatusMessage", "field-last-status-message", False),
             ("xrayVersion", "field-xray-version", True),
             ("nodeVersion", "field-node-version", True),
             {
                 "data_key": "trafficUsedBytes",
                 "translation_key": "field-traffic-used",
                 "formatter": format_traffic,
+                "use_code": True,
             },
-            ("cpuModel", "field-cpu-model", False),
-            ("cpuCount", "field-cpu-count", False),
-            ("totalRam", "field-total-ram", False),
         ]
 
         msg = self._format_fields(data, field_sep, field_configs)

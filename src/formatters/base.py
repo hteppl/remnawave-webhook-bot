@@ -39,6 +39,8 @@ class BaseEventFormatter(ABC):
     @staticmethod
     def escape_value(value: Any) -> str:
         """Escape HTML entities to prevent parsing errors."""
+        if value is None or str(value).strip().lower() == 'none':
+            return "-"
         return escape(str(value))
 
     def format_field(self, field_sep: str, field_label: str, value: Any, use_code: bool = False) -> str:
@@ -76,9 +78,11 @@ class BaseEventFormatter(ABC):
             # Handle tuple format (simple)
             if isinstance(config, tuple):
                 data_key, translation_key, use_code = config
+                # Only skip if key doesn't exist, allow None values
                 if data_key in data:
                     field_label = _(translation_key)
-                    msg += self.format_field(field_sep, field_label, data[data_key], use_code)
+                    value = data[data_key]
+                    msg += self.format_field(field_sep, field_label, value, use_code)
                 continue
 
             # Handle dict format (advanced)
@@ -95,6 +99,7 @@ class BaseEventFormatter(ABC):
 
             # Get value from data
             value = None
+            value_found = False
             if nested:
                 # Handle nested key path like 'provider.name'
                 obj = data
@@ -105,11 +110,13 @@ class BaseEventFormatter(ABC):
                         obj = None
                         break
                 value = obj
+                value_found = True  # Consider nested path as found even if None
             elif data_key in data:
                 value = data[data_key]
+                value_found = True
 
-            # Skip if no value found
-            if value is None:
+            # Skip if key not found in data (but allow None values)
+            if not value_found:
                 continue
 
             # Apply custom formatter if provided
@@ -221,10 +228,11 @@ class BaseEventFormatter(ABC):
         msg = f"{event_icon} <b>{translations['action_label']}:</b> {event_message}\n\n"
         msg += f"<b>{header['icon']} {header['title']}</b>\n\n"
         msg += fields_content
-        msg += f"\n{translations['time_icon']} <b>{translations['time_label']}:</b> {timestamp}"
 
-        # Add additional content if provided
+        # Add additional content if provided (before time)
         if additional_content:
             msg += f"\n{additional_content}"
+
+        msg += f"\n{translations['time_icon']} <b>{translations['time_label']}:</b> {timestamp}"
 
         return msg
