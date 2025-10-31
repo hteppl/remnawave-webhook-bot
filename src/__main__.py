@@ -19,10 +19,9 @@ async def on_startup(app):
     """Application startup handler."""
     logger.info(f"Remnawave Webhook Bot v{__version__}")
     logger.info("Project sources: https://t.me/morkowniy_bot")
-    logger.info("-----")
-    logger.info("Bot started successfully")
     logger.info(f"Listening on {config.WEBHOOK_HOST}:{config.WEBHOOK_PORT}{config.WEBHOOK_PATH}")
     logger.info(f"Language: {config.LANGUAGE}")
+    logger.info("Bot started successfully!")
 
 
 async def on_cleanup(app):
