@@ -29,7 +29,9 @@ class NodeEventFormatter(BaseEventFormatter):
             if status_msg and str(status_msg).strip().lower() not in ["none", ""]:
                 status_icon = _("field-last-status-icon")
                 status_label = _("field-last-status-message")
-                additional_content += f"\n\n{status_icon} <b>{status_label}:</b>\n<pre>{self.escape_value(status_msg)}</pre>"
+                additional_content += (
+                    f"\n\n{status_icon} <b>{status_label}:</b>\n<pre>{self.escape_value(status_msg)}</pre>"
+                )
 
         # Add connection loss statistics if available
         if event_type == "node.connection_lost" and connection_stats:

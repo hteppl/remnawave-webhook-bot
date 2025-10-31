@@ -39,7 +39,7 @@ class BaseEventFormatter(ABC):
     @staticmethod
     def escape_value(value: Any) -> str:
         """Escape HTML entities to prevent parsing errors."""
-        if value is None or str(value).strip().lower() == 'none':
+        if value is None or str(value).strip().lower() == "none":
             return "-"
         return escape(str(value))
 
