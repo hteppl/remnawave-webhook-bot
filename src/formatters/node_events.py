@@ -39,7 +39,10 @@ class NodeEventFormatter(BaseEventFormatter):
 
             stats_icon = _("connection-stats-icon")
             stats_title = _("connection-stats-title", hours=config.CONNECTION_LOSS_STATS_HOURS)
-            additional_content += f"\n{stats_icon} <b>{stats_title}:</b>\n{connection_stats}"
+            # Wrap each stat line in code tags
+            stats_lines = connection_stats.split('\n')
+            stats_formatted = '\n'.join([f"<code>{line}</code>" for line in stats_lines if line])
+            additional_content += f"\n{stats_icon} <b>{stats_title}:</b>\n{stats_formatted}"
 
         return self.build_standard_message(
             event_type=event_type,
