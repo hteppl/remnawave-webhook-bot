@@ -6,6 +6,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy pyproject file
+COPY pyproject.toml .
+
 # Copy application code
 COPY src/ ./src/
 COPY locales/ ./locales/
