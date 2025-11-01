@@ -9,6 +9,7 @@ from aiogram import Bot
 from src.config import config
 from src.i18n import get_translation as _
 from src.utils.connection_tracker import ConnectionLossTracker
+from src.utils.timezone_helper import get_current_timestamp
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ class StatusReporter:
         stats_title = _("connection-stats-title", hours=config.CONNECTION_LOSS_STATS_HOURS)
         time_icon = _("message-header-time-icon")
         time_label = _("message-header-time-label")
-        timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        timestamp = get_current_timestamp()
 
         # Wrap each stat line in code tags
         stats_lines = stats_summary.split('\n')

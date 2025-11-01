@@ -4,6 +4,7 @@ from html import escape
 from typing import Dict, Any
 
 from src.i18n import get_translation as _
+from src.utils.timezone_helper import format_timestamp
 
 
 class BaseEventFormatter(ABC):
@@ -234,6 +235,8 @@ class BaseEventFormatter(ABC):
         if additional_content:
             msg += f"\n{additional_content}\n"
 
-        msg += f"\n{translations['time_icon']} <b>{translations['time_label']}:</b> {timestamp}"
+        # Format timestamp to configured timezone
+        formatted_timestamp = format_timestamp(timestamp)
+        msg += f"\n{translations['time_icon']} <b>{translations['time_label']}:</b> {formatted_timestamp}"
 
         return msg

@@ -51,6 +51,9 @@ class Config:
     LANGUAGE = os.getenv("LANGUAGE", "en")
     LOCALES_DIR = os.getenv("LOCALES_DIR", "locales")
 
+    # Timezone for message timestamps
+    TIMEZONE = os.getenv("TIMEZONE", "UTC")
+
     # Logging
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
