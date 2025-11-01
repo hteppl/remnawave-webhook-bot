@@ -7,9 +7,7 @@ from src.i18n import get_translation as _
 class NodeEventFormatter(BaseEventFormatter):
     """Formatter for node-related events."""
 
-    async def format(
-        self, event_type: str, data: Dict[str, Any], timestamp: str, connection_stats: str = None, **kwargs
-    ) -> str:
+    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
         """Format node event data."""
         translations = self.get_common_translations()
 

@@ -145,3 +145,6 @@ event-service-login-attempt-failed-message = Failed login attempt
 
 event-service-login-attempt-success-icon = ✅
 event-service-login-attempt-success-message = Successful login
+
+# Topic startup messages
+topic-startup-message = ✅ Topic {$topic_name} configured!

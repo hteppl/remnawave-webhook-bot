@@ -145,3 +145,6 @@ event-service-login-attempt-failed-message = Неудачная попытка �
 
 event-service-login-attempt-success-icon = ✅
 event-service-login-attempt-success-message = Успешный вход
+
+# Сообщения при запуске топиков
+topic-startup-message = ✅ Топик {$topic_name} настроен!

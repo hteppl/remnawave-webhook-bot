@@ -162,14 +162,8 @@ class WebhookHandler:
                 logger.info(f"Added billing event to aggregator: {event_id}")
                 # Don't send individual notification - aggregator will handle it
             else:
-                # Get connection loss stats if this is a node.connection_lost event
-                connection_stats = None
-                if event_type == "node.connection_lost" and config.ENABLE_CONNECTION_LOSS_STATS:
-                    connection_stats = self.connection_tracker.format_statistics_summary()
-
-                message = await self.formatter.format_webhook_message(
-                    event_type, event_data, event_timestamp, connection_stats=connection_stats
-                )
+                # Format and send notification
+                message = await self.formatter.format_webhook_message(event_type, event_data, event_timestamp)
                 await self.send_notification(message, event_type)
 
             return web.Response(status=200, text="OK")
