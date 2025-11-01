@@ -5,34 +5,19 @@ from src.i18n import get_translation as _
 
 
 class NodeEventFormatter(BaseEventFormatter):
-    """Formatter for node-related events."""
-
     async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
-        """Format node event data."""
-        translations = self.get_common_translations()
+        t = self.get_common_translations()
+        fields_content = (
+            self._format_node_created_fields(data, t["field_sep"])
+            if event_type == "node.created"
+            else self._format_node_fields(data, t["field_sep"])
+        )
 
-        # Use special formatting for node.created
-        if event_type == "node.created":
-            fields_content = self._format_node_created_fields(data, translations["field_sep"])
-        else:
-            fields_content = self._format_node_fields(data, translations["field_sep"])
-
-        # Build additional content sections
         additional_content = ""
-
-        # Add last status message if available
         if "lastStatusMessage" in data and data["lastStatusMessage"]:
             status_msg = data["lastStatusMessage"]
-            # Only show if not None or empty
             if status_msg and str(status_msg).strip().lower() not in ["none", ""]:
-                status_icon = _("field-last-status-icon")
-                status_label = _("field-last-status-message")
-                additional_content += (
-                    f"{status_icon} <b>{status_label}:</b> {self.escape_value(status_msg)}"
-                )
-
-        # Connection stats are no longer added to individual node messages
-        # They will be sent as periodic status reports to TOPIC_STATUS
+                additional_content = f"{_('field-last-status-icon')} <b>{_('field-last-status-message')}:</b> {self.escape_value(status_msg)}"
 
         return self.build_standard_message(
             event_type=event_type,
@@ -42,29 +27,19 @@ class NodeEventFormatter(BaseEventFormatter):
         )
 
     def _format_node_created_fields(self, data: Dict[str, Any], field_sep: str) -> str:
-        """Format fields specifically for node.created event."""
-
         def format_address_with_port(value, data):
-            """Combine address with port."""
-            if "port" in data:
-                return f"{value}:{data['port']}"
-            return value
+            return f"{value}:{data['port']}" if "port" in data else value
 
         def format_inbound_info(value):
-            """Format first inbound information."""
             if not value:
                 return None
-            inbound = value[0]  # Get first inbound
-            protocol = inbound.get("type", "").upper()
-            security = inbound.get("security", "")
-            port = inbound.get("port", "")
-
-            inbound_info = f"{protocol} protocol"
-            if security:
-                inbound_info += f" with {security.capitalize()} security"
-            if port:
-                inbound_info += f" on port {port}"
-            return inbound_info
+            inbound = value[0]
+            info = f"{inbound.get('type', '').upper()} protocol"
+            if security := inbound.get("security"):
+                info += f" with {security.capitalize()} security"
+            if port := inbound.get("port"):
+                info += f" on port {port}"
+            return info
 
         field_configs = [
             ("name", "field-node-name", True),
@@ -95,14 +70,9 @@ class NodeEventFormatter(BaseEventFormatter):
         return msg
 
     def _format_node_fields(self, data: Dict[str, Any], field_sep: str) -> str:
-        """Format standard node fields for other node events."""
-
         def format_traffic(value):
-            """Convert bytes to TB."""
             try:
-                traffic_bytes = int(value)
-                traffic_tb = traffic_bytes / (1024**4)
-                return f"{traffic_tb:.2f} TB"
+                return f"{int(value) / (1024**4):.2f} TB"
             except (ValueError, TypeError):
                 return str(value)
 
@@ -133,19 +103,8 @@ class NodeEventFormatter(BaseEventFormatter):
         return msg
 
     def _format_inbound_tags(self, data: Dict[str, Any], field_sep: str) -> str:
-        """Format inbound tags from activeInbounds array."""
-        msg = ""
-
         if "activeInbounds" in data and data["activeInbounds"]:
-            # Extract all tags from activeInbounds
-            tags = []
-            for inbound in data["activeInbounds"]:
-                if "tag" in inbound:
-                    tags.append(inbound["tag"])
-
+            tags = [inbound["tag"] for inbound in data["activeInbounds"] if "tag" in inbound]
             if tags:
-                field_label = _("field-inbound-tags")
-                tags_str = ", ".join(tags)
-                msg += self.format_field(field_sep, field_label, tags_str, use_code=True)
-
-        return msg
+                return self.format_field(field_sep, _("field-inbound-tags"), ", ".join(tags), use_code=True)
+        return ""

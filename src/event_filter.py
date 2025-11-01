@@ -5,9 +5,6 @@ logger = logging.getLogger(__name__)
 
 
 class EventFilter:
-    """Filter webhook events based on configuration."""
-
-    # All possible event types from Remnawave documentation
     USER_EVENTS = [
         "user.created",
         "user.modified",
@@ -56,50 +53,25 @@ class EventFilter:
     ALL_EVENTS = USER_EVENTS + NODE_EVENTS + BILLING_EVENTS + SERVICE_EVENTS
 
     def __init__(self):
-        """Initialize event filter with configuration from environment."""
         self.enabled_events = self._load_enabled_events()
-        logger.info(f"Event filter initialized with {len(self.enabled_events)} enabled events")
+        logger.info(f"Event filter initialized ({len(self.enabled_events)} events enabled)")
 
     def _load_enabled_events(self) -> set:
-        """Load enabled events from environment variables."""
         enabled = set()
-
         for event in self.ALL_EVENTS:
-            # Convert event name to env variable format: user.created -> NOTIFY_USER_CREATED
             env_var = f"NOTIFY_{event.upper().replace('.', '_')}"
-            value = os.getenv(env_var, "true").lower()
-
-            # Consider enabled if not explicitly set to false/no/0
-            if value in ("true", "yes", "on", "1"):
+            if os.getenv(env_var, "true").lower() in ("true", "yes", "on", "1"):
                 enabled.add(event)
-
         return enabled
 
     def is_enabled(self, event_type: str) -> bool:
-        """
-        Check if event type is enabled.
-
-        Args:
-            event_type: Event type to check
-
-        Returns:
-            True if event is enabled, False otherwise
-        """
-        is_enabled = event_type in self.enabled_events
-
-        if not is_enabled:
-            logger.debug(f"Event {event_type} is disabled, skipping notification")
-
-        return is_enabled
+        return event_type in self.enabled_events
 
     def get_disabled_events(self) -> list:
-        """Get list of disabled events."""
         return [event for event in self.ALL_EVENTS if event not in self.enabled_events]
 
     def get_enabled_events(self) -> list:
-        """Get list of enabled events."""
         return list(self.enabled_events)
 
 
-# Global event filter instance
 event_filter = EventFilter()
