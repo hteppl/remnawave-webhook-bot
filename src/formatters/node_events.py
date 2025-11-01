@@ -30,19 +30,11 @@ class NodeEventFormatter(BaseEventFormatter):
                 status_icon = _("field-last-status-icon")
                 status_label = _("field-last-status-message")
                 additional_content += (
-                    f"\n{status_icon} <b>{status_label}:</b> {self.escape_value(status_msg)}"
+                    f"{status_icon} <b>{status_label}:</b> {self.escape_value(status_msg)}"
                 )
 
-        # Add connection loss statistics if available
-        if event_type == "node.connection_lost" and connection_stats:
-            from src.config import config
-
-            stats_icon = _("connection-stats-icon")
-            stats_title = _("connection-stats-title", hours=config.CONNECTION_LOSS_STATS_HOURS)
-            # Wrap each stat line in code tags
-            stats_lines = connection_stats.split('\n')
-            stats_formatted = '\n'.join([f"<code>{line}</code>" for line in stats_lines if line])
-            additional_content += f"\n{stats_icon} <b>{stats_title}:</b>\n{stats_formatted}"
+        # Connection stats are no longer added to individual node messages
+        # They will be sent as periodic status reports to TOPIC_STATUS
 
         return self.build_standard_message(
             event_type=event_type,

@@ -18,6 +18,7 @@ class Config:
     TOPIC_NODE = os.getenv("TOPIC_NODE") or None
     TOPIC_CRM = os.getenv("TOPIC_CRM") or None
     TOPIC_SERVICE = os.getenv("TOPIC_SERVICE") or None
+    TOPIC_STATUS = os.getenv("TOPIC_STATUS") or None
 
     @classmethod
     def get_topic_for_event(cls, event_type: str) -> int | None:
@@ -61,6 +62,7 @@ class Config:
         "1",
     )
     CONNECTION_LOSS_STATS_HOURS = int(os.getenv("CONNECTION_LOSS_STATS_HOURS", "24"))
+    CONNECTION_LOSS_REPORT_INTERVAL_HOURS = int(os.getenv("CONNECTION_LOSS_REPORT_INTERVAL_HOURS", "24"))
 
     @classmethod
     def validate(cls):
