@@ -232,8 +232,8 @@ class BaseEventFormatter(ABC):
 
         # Add additional content if provided (before time)
         if additional_content:
-            msg += f"\n{additional_content}"
+            msg += f"\n{additional_content}\n"
 
-        msg += f"\n\n{translations['time_icon']} <b>{translations['time_label']}:</b> {timestamp}"
+        msg += f"\n{translations['time_icon']} <b>{translations['time_label']}:</b> {timestamp}"
 
         return msg
