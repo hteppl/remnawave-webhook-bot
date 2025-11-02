@@ -84,12 +84,14 @@ class WebhookHandler:
             event_data = data.get("data", {})
             event_timestamp = data.get("timestamp", request.headers.get("X-Remnawave-Timestamp"))
 
+            if not self.event_filter.is_enabled(event_type):
+                if config.LOG_DISABLED_EVENTS:
+                    logger.debug(f"Event {event_type} disabled")
+                    logger.debug(f"Event data: {event_data}")
+                return web.Response(status=200, text="OK")
+
             logger.info(f"Received webhook: {event_type}")
             logger.debug(f"Event data: {event_data}")
-
-            if not self.event_filter.is_enabled(event_type):
-                logger.info(f"Event {event_type} disabled")
-                return web.Response(status=200, text="OK - event disabled")
 
             if config.ENABLE_CONNECTION_LOSS_STATS:
                 if event_type == "node.connection_lost":

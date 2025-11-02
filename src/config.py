@@ -38,6 +38,7 @@ class Config:
     TIMEZONE = os.getenv("TIMEZONE", "UTC")
 
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+    LOG_DISABLED_EVENTS = os.getenv("LOG_DISABLED_EVENTS", "true").lower() in ("true", "yes", "on", "1")
 
     ENABLE_CONNECTION_LOSS_STATS = os.getenv("ENABLE_CONNECTION_LOSS_STATS", "false").lower() in (
         "true",
