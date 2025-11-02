@@ -17,11 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 async def on_startup(app):
-    logger.info(f"Remnawave Webhook Bot v{__version__}")
-    logger.info("Project sources: https://t.me/morkowniy_bot")
-    logger.info(f"Listening on {config.WEBHOOK_HOST}:{config.WEBHOOK_PORT}{config.WEBHOOK_PATH}")
-    logger.info(f"Language: {config.LANGUAGE}")
-
     bot = app["bot"]
     topics = {
         "TOPIC_USER": config.TOPIC_USER,
@@ -57,6 +52,11 @@ async def on_cleanup(app):
 
 
 def main():
+    logger.info(f"Remnawave Webhook Bot v{__version__}")
+    logger.info("Project sources: https://t.me/morkowniy_bot")
+    logger.info(f"Listening on {config.WEBHOOK_HOST}:{config.WEBHOOK_PORT}{config.WEBHOOK_PATH}")
+    logger.info(f"Language: {config.LANGUAGE}")
+
     config.validate()
     bot = Bot(token=config.TELEGRAM_BOT_TOKEN)
     webhook_handler = WebhookHandler(bot)

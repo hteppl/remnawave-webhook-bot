@@ -2,11 +2,11 @@ FROM python:3.12-alpine
 
 WORKDIR /app
 
-# Copy requirements and install dependencies
+# Copy and install dependencies (cached layer)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy pyproject file
+# Copy project metadata
 COPY pyproject.toml .
 
 # Copy application code

@@ -26,7 +26,7 @@
 Минимальный набор файлов проекта для начала процесса установки:
 
 ```text
-src, locales, docker-compose.yml, Dockerfile, requiremnts.txt, pyproject.toml, .env.example
+src, locales, docker-compose.yml, Dockerfile, requirements.txt, pyproject.toml, .env.example
 ```
 
 ### Шаг 2: Настройка конфигурации
