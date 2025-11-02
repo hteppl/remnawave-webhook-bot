@@ -45,12 +45,12 @@ class StatusReporter:
                 logger.error(f"Error in status report: {e}", exc_info=True)
 
     async def _send_status_report(self):
-        stats = self.connection_tracker.format_statistics_summary()
-        if not stats:
+        stats_lines = self.connection_tracker.get_statistics_lines()
+        if not stats_lines:
             logger.debug("No statistics to report")
             return
 
-        stats_formatted = "\n".join([f"<code>{line}</code>" for line in stats.split("\n") if line])
+        stats_formatted = "\n".join([line for line in stats_lines])
         message = (
             f"{_('connection-stats-icon')} <b>{_('connection-stats-title', hours=config.CONNECTION_LOSS_STATS_HOURS)}</b>\n"
             f"{stats_formatted}\n\n"
