@@ -37,6 +37,8 @@ field-user-agent = User Agent
 field-description = Описание
 field-last-status-message = Последний статус
 field-last-status-icon = 📝
+field-downtime = Время простоя
+field-downtime-icon = ⏱
 field-password = Пароль
 field-squads = Сквады
 

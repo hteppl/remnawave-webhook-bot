@@ -13,10 +13,10 @@ class MessageFormatter:
             "service.": ServiceEventFormatter(),
         }
 
-    async def format_webhook_message(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
+    async def format_webhook_message(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
         for prefix, formatter in self.formatters.items():
             if event_type.startswith(prefix):
-                return await formatter.format(event_type, data, timestamp)
+                return await formatter.format(event_type, data, timestamp, **kwargs)
 
         return (
             f"{_('message-header-event-icon')} <b>{_('message-header-event-label')}:</b> <code>{event_type}</code>\n"

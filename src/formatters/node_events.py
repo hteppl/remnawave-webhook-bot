@@ -14,10 +14,18 @@ class NodeEventFormatter(BaseEventFormatter):
         )
 
         additional_content = ""
+
+        if event_type == "node.connection_restored" and (tracker := kwargs.get("connection_tracker")):
+            node_name = data.get("name", "")
+            if downtime := tracker.get_downtime(node_name, timestamp):
+                additional_content = f"{_('field-downtime-icon')} <b>{_('field-downtime')}:</b> {downtime}"
+
         if "lastStatusMessage" in data and data["lastStatusMessage"]:
             status_msg = data["lastStatusMessage"]
             if status_msg and str(status_msg).strip().lower() not in ["none", ""]:
-                additional_content = f"{_('field-last-status-icon')} <b>{_('field-last-status-message')}:</b> {self.escape_value(status_msg)}"
+                if additional_content:
+                    additional_content += "\n\n"
+                additional_content += f"{_('field-last-status-icon')} <b>{_('field-last-status-message')}:</b> {self.escape_value(status_msg)}"
 
         return self.build_standard_message(
             event_type=event_type,

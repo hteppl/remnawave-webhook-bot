@@ -55,13 +55,13 @@ class WebhookHandler:
                 else:
                     for event in events:
                         msg = await self.formatter.format_webhook_message(
-                            event["event_type"], event["data"], event["timestamp"]
+                            event["event_type"], event["data"], event["timestamp"], connection_tracker=self.connection_tracker
                         )
                         await self.send_notification(msg, event["event_type"])
             else:
                 event = events[0]
                 msg = await self.formatter.format_webhook_message(
-                    event["event_type"], event["data"], event["timestamp"]
+                    event["event_type"], event["data"], event["timestamp"], connection_tracker=self.connection_tracker
                 )
                 await self.send_notification(msg, event["event_type"])
         except Exception as e:
@@ -91,14 +91,17 @@ class WebhookHandler:
                 logger.info(f"Event {event_type} disabled")
                 return web.Response(status=200, text="OK - event disabled")
 
-            if event_type == "node.connection_lost" and config.ENABLE_CONNECTION_LOSS_STATS:
-                self.connection_tracker.record_connection_loss(event_data.get("name", "Unknown"), event_timestamp)
+            if config.ENABLE_CONNECTION_LOSS_STATS:
+                if event_type == "node.connection_lost":
+                    self.connection_tracker.record_connection_loss(event_data.get("name", "Unknown"), event_timestamp)
 
             if "infra_billing" in event_type:
                 await self.billing_aggregator.add_event(event_type, event_data, event_timestamp)
                 logger.info("Added billing event to aggregator")
             else:
-                message = await self.formatter.format_webhook_message(event_type, event_data, event_timestamp)
+                message = await self.formatter.format_webhook_message(
+                    event_type, event_data, event_timestamp, connection_tracker=self.connection_tracker
+                )
                 await self.send_notification(message, event_type)
 
             return web.Response(status=200, text="OK")
