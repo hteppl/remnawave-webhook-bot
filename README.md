@@ -21,7 +21,7 @@
 ### Шаг 1: Загрузка файлов проекта на сервер
 
 **Примечание:** для корректной интеграции с системой бекапов remnawave-backup-restore, рекомендуется загрузить файлы
-проекта по пути `/opt/remnawave/webhook`
+проекта по пути `/opt/remnawave/webhook` (не обязательно)
 
 Минимальный набор файлов проекта для начала процесса установки:
 
@@ -34,13 +34,13 @@ src, locales, docker-compose.yml, Dockerfile, requirements.txt, pyproject.toml, 
 Создайте файл `.env` в корневой директории проекта:
 
 ```bash
-cp .env.example .env
+sudo cp .env.example .env
 ```
 
 **Примечание:** для корректного отображения айди чата ботом https://t.me/username_to_id_bot, следует превратить чат в
 супергруппу с топиками еще до приглашения бота!
 
-- `WEBHOOK_SECRET_HEADER` - переменная из окружения Remnawave: `nano /opt/remnawave/.env`
+- `WEBHOOK_SECRET_HEADER` - переменная из окружения Remnawave: `sudo nano /opt/remnawave/.env`
 
 В нижней части конфига доступна настройка фильтрации обрабатываемых уведомлений, используйте список из туториала, чтобы
 определиться с требуемыми событиями.
@@ -58,6 +58,8 @@ TOPIC_USER=
 TOPIC_NODE=
 TOPIC_CRM=
 TOPIC_SERVICE=
+# Топик для получения системных статусов, например CONNECTION_LOSS_STATS
+TOPIC_STATUS=
 
 # Настройки вебхука
 WEBHOOK_SECRET_HEADER=your_webhook_secret_here
@@ -68,26 +70,57 @@ WEBHOOK_PATH=/
 # Выбор языка (ru, en)
 LANGUAGE=ru
 LOCALES_DIR=locales
+
+# Таймзона для отображения времени (UTC, Europe/Moscow, Europe/Samara, Asia/Yekaterinburg итд)
+# Зоны: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+TIMEZONE=Europe/Moscow
+
+# Формат отображения времени (по умолчанию: %d.%m.%Y %H:%M:%S)
+# %d.%m.%Y %H:%M:%S = 01.11.2025 23:04:10
+# %Y-%m-%d %H:%M:%S = 2025-11-01 23:04:10
+TIME_FORMAT="%d.%m.%Y %H:%M:%S"
+
+# Сервис подсчета и вывода последних упавших нод (вывод в топик TOPIC_STATUS)
+ENABLE_CONNECTION_LOSS_STATS=false
+# Время хранения метрик падений в часах (по умолчанию: 24)
+CONNECTION_LOSS_STATS_HOURS=24
+# Интервал отправки отчетов о потерях соединения в часах (по умолчанию: 3)
+CONNECTION_LOSS_REPORT_INTERVAL_HOURS=3
 ```
+
+## 🚀 Обновление
+
+*Команды при установке в директорию `/opt/remnawave/webhook`*
+
+Удалите старые файлы: `cd /opt/remnawave/webhook && sudo rm -R src && sudo rm -R locales && sudo rm Dockerfile`
+
+Переменные окружения можно изменить/добавить в ручном режиме:
+
+- Сравниваем актуальный .env.example
+- Редактируем текущие переменные: `cd /opt/remnawave/webhook && sudo nano .env`
+
+Перейдите к этапу установки, описанному выше.
 
 ## ▶️ Сборка и запуск
 
 **Запуск осуществляется через подсистему Docker:**
 
+*Команды при установке в директорию `/opt/remnawave/webhook`*
+
 ```bash
-cd /opt/remnawave/webhook && docker compose up -d --build
+cd /opt/remnawave/webhook && sudo docker compose up -d --build
 ```
 
 **Перезапуск:**
 
 ```shell
-cd /opt/remnawave/webhook && docker compose down && docker compose up -d
+cd /opt/remnawave/webhook && sudo docker compose down && sudo docker compose up -d
 ```
 
 **Просмотр логов:**
 
 ```bash
-docker logs remnawave-webhook-bot
+sudo docker logs remnawave-webhook-bot
 ```
 
 ## 🔐 Настройка реверс прокси и Remnawave
@@ -121,7 +154,7 @@ curl https://panel.your_address.com/webhook/health
 
 ### Шаг 3: Добавление адреса обработчика в Remnawave:
 
-Настройте переменные окружения Remnawave: `nano /opt/remnawave/.env`
+Настройте переменные окружения Remnawave: `sudo nano /opt/remnawave/.env`
 
 ```dotenv
 ### WEBHOOK ###
@@ -133,7 +166,7 @@ WEBHOOK_SECRET_HEADER=a12m7ca8h...
 Перезагрузите Remnawave:
 
 ```bash
-cd /opt/remnawave && docker compose down && docker compose up -d
+cd /opt/remnawave && sudo docker compose down && sudo docker compose up -d
 ```
 
 ## 📊 Поддерживаемые события
