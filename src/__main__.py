@@ -8,6 +8,7 @@ from src.i18n import get_translation as _
 from src.services.status_reporter import StatusReporter
 from src.version import __version__
 from src.webhook_handler import WebhookHandler
+from src.utils.timezone_helper import get_current_timestamp
 
 logging.basicConfig(
     level=getattr(logging, config.LOG_LEVEL, logging.INFO),
@@ -55,6 +56,7 @@ def main():
     logger.info(f"Remnawave Webhook Bot v{__version__}")
     logger.info("Project sources: https://t.me/morkowniy_bot")
     logger.info(f"Listening on {config.WEBHOOK_HOST}:{config.WEBHOOK_PORT}{config.WEBHOOK_PATH}")
+    logger.info(f"Timezone: {config.TIMEZONE} ({get_current_timestamp()})")
     logger.info(f"Language: {config.LANGUAGE}")
 
     config.validate()

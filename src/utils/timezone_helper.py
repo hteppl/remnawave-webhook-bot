@@ -1,24 +1,36 @@
+import logging
 from datetime import datetime, timezone
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from src.config import config
+
+logger = logging.getLogger(__name__)
 
 
 def format_timestamp(timestamp_str: str) -> str:
     try:
         dt = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
-        tz = ZoneInfo(config.TIMEZONE)
-        dt_local = dt.astimezone(tz)
-        return dt_local.strftime(f"%Y-%m-%d %H:%M:%S {dt_local.strftime('%Z')}")
-    except Exception:
+        dt_local = dt.astimezone(ZoneInfo(config.TIMEZONE))
+        tz_abbr = dt_local.strftime('%Z')
+        return dt_local.strftime(f"{config.TIME_FORMAT} {tz_abbr}")
+    except ZoneInfoNotFoundError as e:
+        logger.error(f"Timezone '{config.TIMEZONE}' not found. Install tzdata package. Error: {e}")
+        return timestamp_str
+    except Exception as e:
+        logger.error(f"Failed to format timestamp with timezone {config.TIMEZONE}: {e}")
         return timestamp_str
 
 
 def get_current_timestamp() -> str:
     try:
-        tz = ZoneInfo(config.TIMEZONE)
-        dt = datetime.now(tz)
-        return dt.strftime(f"%Y-%m-%d %H:%M:%S {dt.strftime('%Z')}")
-    except Exception:
+        dt = datetime.now(ZoneInfo(config.TIMEZONE))
+        tz_abbr = dt.strftime('%Z')
+        return dt.strftime(f"{config.TIME_FORMAT} {tz_abbr}")
+    except ZoneInfoNotFoundError as e:
+        logger.error(f"Timezone '{config.TIMEZONE}' not found. Install tzdata package. Error: {e}")
         dt = datetime.now(timezone.utc)
-        return dt.strftime("%Y-%m-%d %H:%M:%S UTC")
+        return dt.strftime(f"{config.TIME_FORMAT} UTC")
+    except Exception as e:
+        logger.error(f"Failed to get current timestamp with timezone {config.TIMEZONE}: {e}")
+        dt = datetime.now(timezone.utc)
+        return dt.strftime(f"{config.TIME_FORMAT} UTC")

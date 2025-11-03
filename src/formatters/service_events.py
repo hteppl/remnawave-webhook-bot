@@ -5,6 +5,7 @@ from src.formatters.base import BaseEventFormatter
 from src.i18n import get_translation as _
 from src.services import IPGeolocationService
 from src.utils.user_agent_parser import get_device_info
+from src.utils.timezone_helper import format_timestamp
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class ServiceEventFormatter(BaseEventFormatter):
             msg += await self._format_service_fields(data, translations["field_sep"])
             msg += "\n"
 
-        msg += f"{translations['time_icon']} <b>{translations['time_label']}:</b> {timestamp}"
+        msg += f"{translations['time_icon']} <b>{translations['time_label']}:</b> {format_timestamp(timestamp)}"
 
         return msg
 

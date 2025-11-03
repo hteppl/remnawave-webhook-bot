@@ -3,6 +3,7 @@ from typing import Dict, Any
 
 from src.formatters.base import BaseEventFormatter
 from src.i18n import get_translation as _
+from src.utils.timezone_helper import format_timestamp
 
 
 class CRMEventFormatter(BaseEventFormatter):
@@ -59,7 +60,7 @@ class CRMEventFormatter(BaseEventFormatter):
             login_text = _("billing-field-login-to-provider", provider=provider_name)
             msg += f'\n<a href="{data["loginUrl"]}">{login_text}</a>\n'
 
-        msg += f"\n{time_icon} <b>{time_label}:</b> {timestamp}"
+        msg += f"\n{time_icon} <b>{time_label}:</b> {format_timestamp(timestamp)}"
 
         return msg
 
