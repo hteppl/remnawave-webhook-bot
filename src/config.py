@@ -36,7 +36,7 @@ class Config:
     LANGUAGE = os.getenv("LANGUAGE", "en")
     LOCALES_DIR = os.getenv("LOCALES_DIR", "locales")
     TIMEZONE = os.getenv("TIMEZONE", "UTC")
-    TIME_FORMAT = os.getenv("TIME_FORMAT", "%d.%m.%Y %H:%M:%S").strip('"\'')
+    TIME_FORMAT = os.getenv("TIME_FORMAT", "%d.%m.%Y %H:%M:%S").strip("\"'")
 
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
     LOG_DISABLED_EVENTS = os.getenv("LOG_DISABLED_EVENTS", "true").lower() in ("true", "yes", "on", "1")

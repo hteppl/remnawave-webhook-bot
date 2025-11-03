@@ -55,7 +55,10 @@ class WebhookHandler:
                 else:
                     for event in events:
                         msg = await self.formatter.format_webhook_message(
-                            event["event_type"], event["data"], event["timestamp"], connection_tracker=self.connection_tracker
+                            event["event_type"],
+                            event["data"],
+                            event["timestamp"],
+                            connection_tracker=self.connection_tracker,
                         )
                         await self.send_notification(msg, event["event_type"])
             else:

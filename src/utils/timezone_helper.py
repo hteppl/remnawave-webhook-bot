@@ -11,7 +11,7 @@ def format_timestamp(timestamp_str: str) -> str:
     try:
         dt = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
         dt_local = dt.astimezone(ZoneInfo(config.TIMEZONE))
-        tz_abbr = dt_local.strftime('%Z')
+        tz_abbr = dt_local.strftime("%Z")
         return dt_local.strftime(f"{config.TIME_FORMAT} {tz_abbr}")
     except ZoneInfoNotFoundError as e:
         logger.error(f"Timezone '{config.TIMEZONE}' not found. Install tzdata package. Error: {e}")
@@ -24,7 +24,7 @@ def format_timestamp(timestamp_str: str) -> str:
 def get_current_timestamp() -> str:
     try:
         dt = datetime.now(ZoneInfo(config.TIMEZONE))
-        tz_abbr = dt.strftime('%Z')
+        tz_abbr = dt.strftime("%Z")
         return dt.strftime(f"{config.TIME_FORMAT} {tz_abbr}")
     except ZoneInfoNotFoundError as e:
         logger.error(f"Timezone '{config.TIMEZONE}' not found. Install tzdata package. Error: {e}")

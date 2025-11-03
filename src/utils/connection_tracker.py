@@ -13,7 +13,10 @@ class ConnectionLossTracker:
         self.window_hours = window_hours
         self.storage = TimestampedStorage()
         self.down_times: Dict[str, datetime] = {}
-        logger.info(f"Connection loss tracker: {'enabled' if enabled else 'disabled'}" + (f" (window={window_hours}h)" if enabled else ""))
+        logger.info(
+            f"Connection loss tracker: {'enabled' if enabled else 'disabled'}"
+            + (f" (window={window_hours}h)" if enabled else "")
+        )
 
     def record_connection_loss(self, node_name: str, timestamp: str = None) -> None:
         if not self.enabled:
