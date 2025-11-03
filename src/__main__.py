@@ -6,9 +6,9 @@ from aiohttp import web
 from src.config import config
 from src.i18n import get_translation as _
 from src.services.status_reporter import StatusReporter
+from src.utils.timezone_helper import get_current_timestamp
 from src.version import __version__
 from src.webhook_handler import WebhookHandler
-from src.utils.timezone_helper import get_current_timestamp
 
 logging.basicConfig(
     level=getattr(logging, config.LOG_LEVEL, logging.INFO),
