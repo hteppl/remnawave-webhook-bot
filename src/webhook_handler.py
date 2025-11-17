@@ -98,7 +98,12 @@ class WebhookHandler:
 
             if config.ENABLE_CONNECTION_LOSS_STATS:
                 if event_type == "node.connection_lost":
-                    self.connection_tracker.record_connection_loss(event_data.get("name", "Unknown"), event_timestamp)
+                    node_name = event_data.get("name", "Unknown")
+                    provider = event_data.get("provider", {}).get("name") if isinstance(event_data.get("provider"), dict) else None
+                    country_code = event_data.get("countryCode")
+                    self.connection_tracker.record_connection_loss(
+                        node_name, event_timestamp, provider=provider, country_code=country_code
+                    )
 
             if "infra_billing" in event_type:
                 await self.billing_aggregator.add_event(event_type, event_data, event_timestamp)

@@ -97,6 +97,10 @@ event-node-traffic-notify-message = Уведомление о трафике у�
 # Статистика потерь соединения
 connection-stats-icon = 📊
 connection-stats-title = Потери соединения (за {$hours}ч)
+provider-stats-icon = 🏢
+provider-stats-title = По провайдерам
+country-stats-icon = 🌍
+country-stats-title = По странам
 
 # События биллинга
 event-crm-header-icon = 💰

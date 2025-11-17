@@ -97,6 +97,10 @@ event-node-traffic-notify-message = Node traffic notification
 # Connection loss statistics
 connection-stats-icon = 📊
 connection-stats-title = Connection Losses (last {$hours}h)
+provider-stats-icon = 🏢
+provider-stats-title = Connection Losses by Provider
+country-stats-icon = 🌍
+country-stats-title = Connection Losses by Country
 
 # Billing events
 event-crm-header-icon = 💰

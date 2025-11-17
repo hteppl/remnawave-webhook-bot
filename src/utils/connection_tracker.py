@@ -1,4 +1,6 @@
 import logging
+from collections import defaultdict
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
@@ -7,18 +9,29 @@ from src.utils.timestamped_storage import TimestampedStorage
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class NodeDowntime:
+    timestamp: datetime
+    provider: str
+    country: str
+
+
 class ConnectionLossTracker:
     def __init__(self, enabled: bool = False, window_hours: int = 24):
         self.enabled = enabled
         self.window_hours = window_hours
+        # Storage holds NodeDowntime objects for all connection losses (single source of truth)
         self.storage = TimestampedStorage()
+        # Track only timestamps of currently down nodes (for downtime calculation)
         self.down_times: Dict[str, datetime] = {}
         logger.info(
             f"Connection loss tracker: {'enabled' if enabled else 'disabled'}"
             + (f" (window={window_hours}h)" if enabled else "")
         )
 
-    def record_connection_loss(self, node_name: str, timestamp: str = None) -> None:
+    def record_connection_loss(
+        self, node_name: str, timestamp: str = None, provider: str = None, country_code: str = None
+    ) -> None:
         if not self.enabled:
             return
 
@@ -32,8 +45,17 @@ class ConnectionLossTracker:
         if dt is None:
             dt = datetime.now(timezone.utc)
 
-        self.storage.add(key=node_name, value=1, timestamp=dt)
+        # Store NodeDowntime object in storage (single source of truth for metadata)
+        node_downtime = NodeDowntime(
+            timestamp=dt,
+            provider=provider or "Unknown",
+            country=country_code or "Unknown",
+        )
+        self.storage.add(key=node_name, value=node_downtime, timestamp=dt)
+
+        # Track only timestamp for downtime calculation
         self.down_times[node_name] = dt
+
         logger.info(f"Recorded connection loss for node: {node_name}")
 
     def get_statistics(self) -> Dict[str, int]:
@@ -64,6 +86,38 @@ class ConnectionLossTracker:
 
     def get_storage_stats(self) -> Dict[str, int]:
         return self.storage.get_stats()
+
+    def get_provider_statistics(self) -> Dict[str, int]:
+        """Get connection loss counts grouped by provider."""
+        if not self.enabled:
+            return {}
+
+        provider_counts = defaultdict(int)
+
+        # Iterate through all nodes and their recent connection losses
+        for node_name in self.storage.get_all_keys():
+            recent_entries = self.storage.get_recent(node_name, self.window_hours)
+            for timestamp, node_downtime in recent_entries:
+                if isinstance(node_downtime, NodeDowntime):
+                    provider_counts[node_downtime.provider] += 1
+
+        return dict(provider_counts)
+
+    def get_country_statistics(self) -> Dict[str, int]:
+        """Get connection loss counts grouped by country code."""
+        if not self.enabled:
+            return {}
+
+        country_counts = defaultdict(int)
+
+        # Iterate through all nodes and their recent connection losses
+        for node_name in self.storage.get_all_keys():
+            recent_entries = self.storage.get_recent(node_name, self.window_hours)
+            for timestamp, node_downtime in recent_entries:
+                if isinstance(node_downtime, NodeDowntime):
+                    country_counts[node_downtime.country] += 1
+
+        return dict(country_counts)
 
     def get_downtime(self, node_name: str, restore_timestamp: str = None) -> Optional[str]:
         if not self.enabled or node_name not in self.down_times:
