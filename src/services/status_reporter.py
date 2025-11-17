@@ -50,20 +50,15 @@ class StatusReporter:
             logger.debug("No statistics to report")
             return
 
-        # Get provider and country statistics
         provider_stats = self.connection_tracker.get_provider_statistics()
         country_stats = self.connection_tracker.get_country_statistics()
-
-        # Format main node statistics
         stats_formatted = "\n".join([line for line in stats_lines])
 
-        # Build the message with sections
         message_parts = [
             f"{_('connection-stats-icon')} <b>{_('connection-stats-title', hours=config.CONNECTION_LOSS_STATS_HOURS)}</b>",
             stats_formatted,
         ]
 
-        # Add provider statistics if available
         if provider_stats:
             provider_lines = [
                 f"<code>{provider}</code> - x{count}" for provider, count in sorted(provider_stats.items(), key=lambda x: (-x[1], x[0]))
@@ -71,7 +66,6 @@ class StatusReporter:
             message_parts.append(f"\n{_('provider-stats-icon')} <b>{_('provider-stats-title')}:</b>")
             message_parts.append("\n".join(provider_lines))
 
-        # Add country statistics if available
         if country_stats:
             country_lines = [
                 f"<code>{country}</code> - x{count}" for country, count in sorted(country_stats.items(), key=lambda x: (-x[1], x[0]))
@@ -79,9 +73,7 @@ class StatusReporter:
             message_parts.append(f"\n{_('country-stats-icon')} <b>{_('country-stats-title')}:</b>")
             message_parts.append("\n".join(country_lines))
 
-        # Add timestamp
         message_parts.append(f"\n{_('message-header-time-icon')} <b>{_('message-header-time-label')}:</b> {get_current_timestamp()}")
-
         message = "\n".join(message_parts)
 
         try:

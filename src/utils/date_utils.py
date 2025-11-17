@@ -5,13 +5,7 @@ from typing import Callable, Optional
 def parse_iso_date(date_string: str) -> Optional[datetime]:
     """Parse ISO 8601 date string to datetime object."""
     try:
-        # Handle both with and without milliseconds
-        if "." in date_string:
-            # Has milliseconds
-            return datetime.fromisoformat(date_string.replace("Z", "+00:00"))
-        else:
-            # No milliseconds
-            return datetime.fromisoformat(date_string.replace("Z", "+00:00"))
+        return datetime.fromisoformat(date_string.replace("Z", "+00:00"))
     except (ValueError, AttributeError):
         return None
 
@@ -57,7 +51,6 @@ def format_date_with_days(date_string: str, translator: Callable, show_days: boo
     if not date:
         return date_string
 
-    # Format as readable date
     formatted = date.strftime("%Y-%m-%d %H:%M")
 
     if show_days:
@@ -65,7 +58,6 @@ def format_date_with_days(date_string: str, translator: Callable, show_days: boo
         delta = date - now
         days = delta.days
 
-        # Use localized strings
         if days > 0:
             days_text = translator("date-in-days", days=days)
             formatted += f" ({days_text})"
@@ -73,7 +65,6 @@ def format_date_with_days(date_string: str, translator: Callable, show_days: boo
             days_text = translator("date-days-ago", days=abs(days))
             formatted += f" ({days_text})"
         else:
-            # Same day
             hours = delta.seconds // 3600
             if hours > 0:
                 hours_text = translator("date-in-hours", hours=hours)

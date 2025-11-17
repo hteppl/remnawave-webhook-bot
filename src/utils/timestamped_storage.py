@@ -11,7 +11,6 @@ class TimestampedStorage:
 
     def __init__(self):
         """Initialize the storage."""
-        # Structure: {key: [(timestamp, value), ...]}
         self._storage: Dict[str, List[Tuple[datetime, Any]]] = defaultdict(list)
 
     def add(self, key: str, value: Any, timestamp: datetime = None) -> None:
@@ -58,17 +57,14 @@ class TimestampedStorage:
         if key not in self._storage:
             return []
 
-        # Filter and keep only recent entries
         all_values = self._storage[key]
         recent = [(ts, val) for ts, val in all_values if ts >= cutoff_time]
 
-        # Update storage with only recent entries (cleanup old data)
         if len(recent) != len(all_values):
             removed = len(all_values) - len(recent)
             self._storage[key] = recent
             logger.debug(f"Cleaned up {removed} old entries for key={key}")
 
-            # Remove key if empty
             if not recent:
                 del self._storage[key]
 

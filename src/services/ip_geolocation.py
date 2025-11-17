@@ -24,8 +24,6 @@ class IPGeolocationService:
             Dictionary with location data or None if lookup fails
         """
         try:
-            # ip-api.com free tier doesn't require API key
-            # Fields we want: country, countryCode, regionName, city, isp
             params = {"fields": "status,country,countryCode,regionName,city,isp,query"}
 
             url = f"{IPGeolocationService.BASE_URL}/{ip}"

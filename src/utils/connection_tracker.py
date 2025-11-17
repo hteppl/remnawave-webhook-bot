@@ -20,9 +20,7 @@ class ConnectionLossTracker:
     def __init__(self, enabled: bool = False, window_hours: int = 24):
         self.enabled = enabled
         self.window_hours = window_hours
-        # Storage holds NodeDowntime objects for all connection losses (single source of truth)
         self.storage = TimestampedStorage()
-        # Track only timestamps of currently down nodes (for downtime calculation)
         self.down_times: Dict[str, datetime] = {}
         logger.info(
             f"Connection loss tracker: {'enabled' if enabled else 'disabled'}"
@@ -45,15 +43,12 @@ class ConnectionLossTracker:
         if dt is None:
             dt = datetime.now(timezone.utc)
 
-        # Store NodeDowntime object in storage (single source of truth for metadata)
         node_downtime = NodeDowntime(
             timestamp=dt,
             provider=provider or "Unknown",
             country=country_code or "Unknown",
         )
         self.storage.add(key=node_name, value=node_downtime, timestamp=dt)
-
-        # Track only timestamp for downtime calculation
         self.down_times[node_name] = dt
 
         logger.info(f"Recorded connection loss for node: {node_name}")
@@ -88,13 +83,10 @@ class ConnectionLossTracker:
         return self.storage.get_stats()
 
     def get_provider_statistics(self) -> Dict[str, int]:
-        """Get connection loss counts grouped by provider."""
         if not self.enabled:
             return {}
 
         provider_counts = defaultdict(int)
-
-        # Iterate through all nodes and their recent connection losses
         for node_name in self.storage.get_all_keys():
             recent_entries = self.storage.get_recent(node_name, self.window_hours)
             for timestamp, node_downtime in recent_entries:
@@ -104,13 +96,10 @@ class ConnectionLossTracker:
         return dict(provider_counts)
 
     def get_country_statistics(self) -> Dict[str, int]:
-        """Get connection loss counts grouped by country code."""
         if not self.enabled:
             return {}
 
         country_counts = defaultdict(int)
-
-        # Iterate through all nodes and their recent connection losses
         for node_name in self.storage.get_all_keys():
             recent_entries = self.storage.get_recent(node_name, self.window_hours)
             for timestamp, node_downtime in recent_entries:

@@ -23,14 +23,12 @@ def get_device_info(user_agent_string: str) -> Optional[str]:
         ua = parse(user_agent_string)
         parts = []
 
-        # Browser
         if ua.browser.family and ua.browser.family != "Other":
             browser = ua.browser.family
             if ua.browser.version_string and ua.browser.version_string != "0":
                 browser += f" {ua.browser.version_string}"
             parts.append(browser)
 
-        # OS
         if ua.os.family and ua.os.family != "Other":
             os = ua.os.family
             if ua.os.version_string and ua.os.version_string != "0":

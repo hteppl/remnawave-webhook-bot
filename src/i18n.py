@@ -19,7 +19,6 @@ def setup_i18n() -> FluentLocalization:
     return FluentLocalization([config.LANGUAGE], ["messages.ftl"], loader)
 
 
-# Global i18n instance
 i18n = setup_i18n()
 
 

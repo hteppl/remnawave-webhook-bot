@@ -11,7 +11,6 @@ class CRMEventFormatter(BaseEventFormatter):
 
     async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
         """Format CRM event data."""
-        # Check if this is a billing event
         if "infra_billing" in event_type:
             return await self._format_billing_event(event_type, data, timestamp)
 
@@ -28,18 +27,15 @@ class CRMEventFormatter(BaseEventFormatter):
         """Format billing notification events."""
         event_name = self.get_event_name(event_type)
 
-        # Get event-specific translations
         event_icon = _(f"event-crm-{event_name}-icon")
         event_message = _(f"event-crm-{event_name}-message")
 
-        # Get general billing translations
         node_label = _("billing-field-node")
         provider_label = _("billing-field-provider")
         billing_date_label = _("billing-field-billing-date")
         time_icon = _("message-header-time-icon")
         time_label = _("message-header-time-label")
 
-        # Format billing date
         billing_date = data.get("nextBillingAt", "")
         formatted_date = ""
         if billing_date:
@@ -49,7 +45,6 @@ class CRMEventFormatter(BaseEventFormatter):
             except (Exception,):
                 formatted_date = billing_date
 
-        # Build message
         msg = f"{event_icon} <b>{event_message}</b>\n\n"
         msg += f"<b>{node_label}:</b> <code>{data.get('nodeName', 'Unknown')}</code>\n"
         msg += f"<b>{provider_label}:</b> {data.get('providerName', 'Unknown')}\n"
