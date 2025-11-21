@@ -101,6 +101,8 @@ provider-stats-icon = 🏢
 provider-stats-title = По провайдерам
 country-stats-icon = 🌍
 country-stats-title = По странам
+total-stats-icon = 📈
+total-stats-label = Всего
 
 # События биллинга
 event-crm-header-icon = 💰

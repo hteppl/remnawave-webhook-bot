@@ -101,6 +101,8 @@ provider-stats-icon = 🏢
 provider-stats-title = Connection Losses by Provider
 country-stats-icon = 🌍
 country-stats-title = Connection Losses by Country
+total-stats-icon = 📈
+total-stats-label = Total
 
 # Billing events
 event-crm-header-icon = 💰

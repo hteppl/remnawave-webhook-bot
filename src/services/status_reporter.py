@@ -246,6 +246,7 @@ class StatusReporter:
             logger.debug("No statistics to report")
             return
 
+        stats_dict = self.connection_tracker.get_statistics()
         provider_stats = self.connection_tracker.get_provider_statistics()
         country_stats = self.connection_tracker.get_country_statistics()
         stats_formatted = "\n".join([line for line in stats_lines])
@@ -270,6 +271,9 @@ class StatusReporter:
             ]
             message_parts.append(f"\n{_('country-stats-icon')} <b>{_('country-stats-title')}:</b>")
             message_parts.append("\n".join(country_lines))
+
+        total_count = sum(stats_dict.values())
+        message_parts.append(f"\n{_('total-stats-icon')} <b>{_('total-stats-label')}:</b> x{total_count}")
 
         message_parts.append(
             f"\n{_('message-header-time-icon')} <b>{_('message-header-time-label')}:</b> {get_current_timestamp()}"
