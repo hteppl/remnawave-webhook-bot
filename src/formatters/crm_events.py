@@ -25,8 +25,8 @@ class CRMEventFormatter(BaseEventFormatter):
 
     async def _format_billing_event(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
         """Format billing notification events."""
-        event_name = self.get_event_name(event_type)
-        event_message = _(f"event-crm-{event_name}-message")
+        icon = self.get_event_icon(event_type)
+        event_message = self.get_event_message(event_type)
 
         node_label = _("billing-field-node")
         provider_label = _("billing-field-provider")
@@ -42,7 +42,11 @@ class CRMEventFormatter(BaseEventFormatter):
             except (Exception,):
                 formatted_date = billing_date
 
-        msg = f"<b>{event_message}</b>\n\n"
+        if icon:
+            msg = f"{icon} <b>{event_message}</b>\n\n"
+        else:
+            msg = f"<b>{event_message}</b>\n\n"
+
         msg += f"<b>{node_label}:</b> <code>{data.get('nodeName', 'Unknown')}</code>\n"
         msg += f"<b>{provider_label}:</b> {data.get('providerName', 'Unknown')}\n"
         msg += f"<b>{billing_date_label}:</b> {formatted_date}\n"

@@ -1,6 +1,6 @@
 # Заголовок и разделители
 message-header-event = 📋 Событие
-message-header-action = 📌 Действие
+message-header-action = Действие
 message-header-time = 🕐 Время
 message-header-data-label = Данные
 message-separator-field = {"  "}•{" "}
@@ -55,12 +55,24 @@ event-user-enabled-message = Пользователь включен
 event-user-limited-message = Пользователь ограничен
 event-user-expired-message = Срок действия пользователя истек
 event-user-traffic-reset-message = Трафик пользователя сброшен
-event-user-expires-in-72-hours-message = ⏰ Пользователь истекает через 72 часа
-event-user-expires-in-48-hours-message = ⏰ Пользователь истекает через 48 часов
-event-user-expires-in-24-hours-message = ⚠️ Пользователь истекает через 24 часа
-event-user-expired-24-hours-ago-message = ❌ Срок пользователя истек 24 часа назад
-event-user-first-connected-message = ✅ Первое подключение пользователя
-event-user-bandwidth-usage-threshold-reached-message = ⚠️ Достигнут порог использования трафика: { $usage_percentage }%
+
+event-user-expires-in-72-hours-icon = ⏰
+event-user-expires-in-72-hours-message = Пользователь истекает через 72 часа
+
+event-user-expires-in-48-hours-icon = ⏰
+event-user-expires-in-48-hours-message = Пользователь истекает через 48 часов
+
+event-user-expires-in-24-hours-icon = ⚠️
+event-user-expires-in-24-hours-message = Пользователь истекает через 24 часа
+
+event-user-expired-24-hours-ago-icon = ❌
+event-user-expired-24-hours-ago-message = Срок пользователя истек 24 часа назад
+
+event-user-first-connected-icon = ✅
+event-user-first-connected-message = Первое подключение пользователя
+
+event-user-bandwidth-usage-threshold-reached-icon = ⚠️
+event-user-bandwidth-usage-threshold-reached-message = Достигнут порог использования трафика: { $usage_percentage }%
 
 # События узлов
 event-node-header = 🖥 Информация об узле
@@ -69,9 +81,13 @@ event-node-modified-message = Узел изменен
 event-node-disabled-message = Узел отключен
 event-node-enabled-message = Узел включен
 event-node-deleted-message = Узел удален
-event-node-connection-lost-message = ❌ Соединение с узлом потеряно!
-event-node-connection-restored-message = ✅ Соединение с узлом восстановлено
 event-node-traffic-notify-message = Уведомление о трафике узла
+
+event-node-connection-lost-icon = ❌
+event-node-connection-lost-message = Соединение с узлом потеряно!
+
+event-node-connection-restored-icon = ✅
+event-node-connection-restored-message = Соединение с узлом восстановлено
 
 # Статистика потерь соединения
 connection-stats-title = 📊 Потери соединения (за {$hours}ч)
@@ -99,19 +115,38 @@ billing-field-nodes = узлов
 billing-aggregated-title = 💰 Несколько уведомлений о биллинге
 
 # Индивидуальные события биллинга
-event-crm-infra-billing-node-payment-in-7-days-message = 📅 Оплата узла через 7 дней
-event-crm-infra-billing-node-payment-in-48hrs-message = 🔵 Оплата узла через 48 часов
-event-crm-infra-billing-node-payment-in-24hrs-message = 🟡 Оплата узла через 24 часа
-event-crm-infra-billing-node-payment-due-today-message = 🟡 Оплата узла сегодня
-event-crm-infra-billing-node-payment-overdue-24hrs-message = 🟠 Просрочка оплаты узла на 24 часа
-event-crm-infra-billing-node-payment-overdue-48hrs-message = 🔴 Просрочка оплаты узла на 48 часов
-event-crm-infra-billing-node-payment-overdue-7-days-message = 🔴 Просрочка оплаты узла на 7 дней
+event-crm-infra-billing-node-payment-in-7-days-icon = 📅
+event-crm-infra-billing-node-payment-in-7-days-message = Оплата узла через 7 дней
+
+event-crm-infra-billing-node-payment-in-48hrs-icon = 🔵
+event-crm-infra-billing-node-payment-in-48hrs-message = Оплата узла через 48 часов
+
+event-crm-infra-billing-node-payment-in-24hrs-icon = 🟡
+event-crm-infra-billing-node-payment-in-24hrs-message = Оплата узла через 24 часа
+
+event-crm-infra-billing-node-payment-due-today-icon = 🟡
+event-crm-infra-billing-node-payment-due-today-message = Оплата узла сегодня
+
+event-crm-infra-billing-node-payment-overdue-24hrs-icon = 🟠
+event-crm-infra-billing-node-payment-overdue-24hrs-message = Просрочка оплаты узла на 24 часа
+
+event-crm-infra-billing-node-payment-overdue-48hrs-icon = 🔴
+event-crm-infra-billing-node-payment-overdue-48hrs-message = Просрочка оплаты узла на 48 часов
+
+event-crm-infra-billing-node-payment-overdue-7-days-icon = 🔴
+event-crm-infra-billing-node-payment-overdue-7-days-message = Просрочка оплаты узла на 7 дней
 
 # События сервиса
 event-service-header = ⚙️ Событие сервиса
-event-service-panel-started-message = ✅ Панель запущена
-event-service-login-attempt-failed-message = ⚠️ Неудачная попытка входа
-event-service-login-attempt-success-message = ✅ Успешный вход
+
+event-service-panel-started-icon = ✅
+event-service-panel-started-message = Панель запущена
+
+event-service-login-attempt-failed-icon = ⚠️
+event-service-login-attempt-failed-message = Неудачная попытка входа
+
+event-service-login-attempt-success-icon = ✅
+event-service-login-attempt-success-message = Успешный вход
 
 # Сообщения при запуске топиков
 topic-startup-message = ✅ Топик {$topic_name} настроен!

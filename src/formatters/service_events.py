@@ -19,9 +19,13 @@ class ServiceEventFormatter(BaseEventFormatter):
     async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
         """Format service event data."""
         translations = self.get_common_translations()
+        icon = self.get_event_icon(event_type)
         event_message = self.get_event_message(event_type)
 
-        msg = f"<b>{translations['action']}:</b> {event_message}\n\n"
+        if icon:
+            msg = f"{icon} <b>{translations['action']}:</b> {event_message}\n\n"
+        else:
+            msg = f"<b>{translations['action']}:</b> {event_message}\n\n"
 
         show_data = event_type in ["service.login_attempt_failed", "service.login_attempt_success"]
 

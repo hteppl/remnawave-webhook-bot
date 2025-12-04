@@ -89,6 +89,13 @@ class BaseEventFormatter(ABC):
             "field_sep": _("message-separator-field"),
         }
 
+    def get_event_icon(self, event_type: str) -> str:
+        category = self.get_event_category(event_type)
+        event_name = self.get_event_name(event_type)
+        icon_key = f"event-{category}-{event_name}-icon"
+        icon = _(icon_key)
+        return icon if icon != icon_key else ""
+
     def get_event_message(self, event_type: str, **kwargs) -> str:
         category = self.get_event_category(event_type)
         event_name = self.get_event_name(event_type)
@@ -109,9 +116,14 @@ class BaseEventFormatter(ABC):
     ) -> str:
         t = self.get_common_translations()
         header = self.get_category_header(event_type)
+        icon = self.get_event_icon(event_type)
         event_message = self.get_event_message(event_type, **(event_message_kwargs or {}))
 
-        msg = f"<b>{t['action']}:</b> {event_message}\n\n"
+        if icon:
+            msg = f"{icon} <b>{t['action']}:</b> {event_message}\n\n"
+        else:
+            msg = f"<b>{t['action']}:</b> {event_message}\n\n"
+
         msg += f"<b>{header}</b>\n\n"
         msg += fields_content
 
