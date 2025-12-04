@@ -38,9 +38,7 @@ class WebhookHandler:
     async def send_notification(self, message: str, event_type: str):
         try:
             thread_id = config.get_topic_for_event(event_type)
-            await self.bot.send_message(
-                chat_id=config.TELEGRAM_CHAT_ID, text=message, parse_mode="HTML", message_thread_id=thread_id
-            )
+            await self.bot.send_message(chat_id=config.TELEGRAM_CHAT_ID, text=message, message_thread_id=thread_id)
             logger.info(f"Notification sent to topic {thread_id}" if thread_id else "Notification sent")
         except Exception as e:
             logger.error(f"Failed to send notification: {e}")

@@ -282,7 +282,6 @@ class StatusReporter:
             await self.bot.send_message(
                 chat_id=config.TELEGRAM_CHAT_ID,
                 text=message,
-                parse_mode="HTML",
                 message_thread_id=int(config.TOPIC_STATUS),
             )
             logger.info("Status report sent")

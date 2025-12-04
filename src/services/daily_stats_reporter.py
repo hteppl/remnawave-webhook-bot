@@ -113,7 +113,6 @@ class DailyStatsReporter:
             await self.bot.send_message(
                 chat_id=config.TELEGRAM_CHAT_ID,
                 text=message,
-                parse_mode="HTML",
                 message_thread_id=int(config.TOPIC_STATUS),
             )
             logger.info(f"Daily stats report sent (created: {users_created}, first_connected: {users_first_connected})")

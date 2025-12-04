@@ -1,6 +1,7 @@
 import logging
 
 from aiogram import Bot
+from aiogram.client.default import DefaultBotProperties
 from aiohttp import web
 
 from src.config import config
@@ -59,7 +60,7 @@ def main():
     logger.info(f"Language: {config.LANGUAGE}")
 
     config.validate()
-    bot = Bot(token=config.TELEGRAM_BOT_TOKEN)
+    bot = Bot(token=config.TELEGRAM_BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
     webhook_handler = WebhookHandler(bot)
 
     service_manager = ServiceManager()
