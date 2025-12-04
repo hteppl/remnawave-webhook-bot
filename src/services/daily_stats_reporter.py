@@ -14,14 +14,14 @@ logger = logging.getLogger(__name__)
 
 def _parse_report_time() -> tuple[int, int]:
     try:
-        parts = config.DAILY_STATS_TIME.split(":")
+        parts = config.USER_DAILY_STATS_TIME.split(":")
         hour = int(parts[0])
         minute = int(parts[1]) if len(parts) > 1 else 0
         if not (0 <= hour <= 23 and 0 <= minute <= 59):
             raise ValueError("Invalid time range")
         return hour, minute
     except (ValueError, IndexError) as e:
-        logger.warning(f"Invalid DAILY_STATS_TIME '{config.DAILY_STATS_TIME}', using 00:00. Error: {e}")
+        logger.warning(f"Invalid USER_DAILY_STATS_TIME '{config.USER_DAILY_STATS_TIME}', using 00:00. Error: {e}")
         return 0, 0
 
 
@@ -60,11 +60,11 @@ class DailyStatsReporter:
                 logger.debug(f"Recorded user.first_connected event (total: {self.users_first_connected})")
 
     async def start(self):
-        if not config.ENABLE_DAILY_STATS or not config.TOPIC_STATUS:
-            logger.info("Daily stats reports disabled")
+        if not config.ENABLE_USER_DAILY_STATS or not config.TOPIC_STATUS:
+            logger.info("Users daily stats reports disabled")
             return
 
-        logger.info(f"Starting daily stats reporter (report at {config.DAILY_STATS_TIME})")
+        logger.info(f"Starting users daily stats reporter (report at {config.USER_DAILY_STATS_TIME})")
         self.task = asyncio.create_task(self._schedule_report())
 
     async def stop(self):
