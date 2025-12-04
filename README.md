@@ -18,12 +18,12 @@
 
 ### Требования
 
-- Сервер с панелью Remnawave, с установленной подсистемой Docker
+- Сервер с панелью Remnawave, с установленной подсистемой Docker или любой другой удаленный сервер
 
 ### Шаг 1: Загрузка файлов проекта на сервер
 
 **Примечание:** для корректной интеграции с системой бекапов remnawave-backup-restore, рекомендуется загрузить файлы
-проекта по пути `/opt/remnawave/webhook` (не обязательно)
+проекта по пути `/opt/remnawave/webhook` (не обязательно, можно использовать удаленный сервер)
 
 Минимальный набор файлов проекта для начала процесса установки:
 
@@ -44,8 +44,9 @@ sudo cp .env.example .env
 
 - `WEBHOOK_SECRET_HEADER` - переменная из окружения Remnawave: `sudo nano /opt/remnawave/.env`
 
-В нижней части конфига доступна настройка фильтрации обрабатываемых уведомлений, используйте список из туториала, чтобы
-определиться с требуемыми событиями.
+В нижней части конфига доступна настройка фильтрации обрабатываемых уведомлений, используйте
+документацию https://docs.rw/docs/features/webhooks или список из нижней части данного файла,
+чтобы определиться с требуемыми событиями.
 
 ```dotenv
 # Настройки бота Telegram
@@ -88,6 +89,11 @@ ENABLE_CONNECTION_LOSS_STATS=false
 CONNECTION_LOSS_STATS_HOURS=24
 # Интервал отправки отчетов о потерях соединения в часах (по умолчанию: 3)
 CONNECTION_LOSS_REPORT_INTERVAL_HOURS=3
+
+# Сервис ежедневной статистики user.created и user.first_connected пользователей (вывод в топик TOPIC_STATUS)
+ENABLE_USER_DAILY_STATS=false
+# Время отправки отчета в формате HH:MM (по умолчанию: 00:00)
+USER_DAILY_STATS_TIME=00:00
 ```
 
 ## 🚀 Обновление
@@ -136,12 +142,12 @@ sudo docker logs remnawave-webhook-bot
 ```caddyfile
 https://panel.your_address.com {
     handle {
-        reverse_proxy http://remnawave:3000
-    }
-    
+               reverse_proxy http://remnawave:3000
+           }
+
     handle_path /webhook* {
-        reverse_proxy http://remnawave-webhook-bot:8089
-    }
+                              reverse_proxy http://remnawave-webhook-bot:8089
+                          }
 }
 ```
 
