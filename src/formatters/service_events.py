@@ -19,10 +19,9 @@ class ServiceEventFormatter(BaseEventFormatter):
     async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
         """Format service event data."""
         translations = self.get_common_translations()
-        event_icon = self.get_event_icon(event_type)
         event_message = self.get_event_message(event_type)
 
-        msg = f"{event_icon} <b>{translations['action_label']}:</b> {event_message}\n\n"
+        msg = f"<b>{translations['action']}:</b> {event_message}\n\n"
 
         show_data = event_type in ["service.login_attempt_failed", "service.login_attempt_success"]
 
@@ -30,7 +29,7 @@ class ServiceEventFormatter(BaseEventFormatter):
             msg += await self._format_service_fields(data, translations["field_sep"])
             msg += "\n"
 
-        msg += f"{translations['time_icon']} <b>{translations['time_label']}:</b> {format_timestamp(timestamp)}"
+        msg += f"<b>{translations['time']}:</b> {format_timestamp(timestamp)}"
 
         return msg
 
