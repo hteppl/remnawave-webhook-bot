@@ -44,7 +44,7 @@ class BillingAggregator:
         if not events or len(events) <= 1:
             return None
 
-        msg = f"{_('event-crm-header-icon')} <b>{_('billing-aggregated-title')}</b>\n"
+        msg = f"<b>{_('billing-aggregated-title')}</b>\n"
         msg += f"<b>{_('billing-field-total-nodes')}:</b> {len(events)}\n\n"
 
         by_provider = defaultdict(list)
@@ -57,7 +57,6 @@ class BillingAggregator:
             for event in provider_events:
                 node_name = event["data"].get("nodeName", "Unknown")
                 billing_date = event["data"].get("nextBillingAt", "")
-                event_icon = _(f"event-crm-{event['event_type'].replace('.', '-').replace('_', '-')}-icon")
 
                 if billing_date:
                     try:
@@ -68,13 +67,13 @@ class BillingAggregator:
                 else:
                     formatted_date = "N/A"
 
-                msg += f"  {event_icon} <code>{node_name}</code> - {formatted_date}\n"
+                msg += f"  • <code>{node_name}</code> - {formatted_date}\n"
 
             if login_url := provider_events[0]["data"].get("loginUrl"):
                 msg += f'  🔗 <a href="{login_url}">{_("billing-field-login-to-provider", provider=provider)}</a>\n'
             msg += "\n"
 
-        msg += f"{_('message-header-time-icon')} <b>{_('message-header-time-label')}:</b> {format_timestamp(events[0]['timestamp'])}"
+        msg += f"<b>{_('message-header-time')}:</b> {format_timestamp(events[0]['timestamp'])}"
         return msg
 
     async def get_pending_count(self) -> int:

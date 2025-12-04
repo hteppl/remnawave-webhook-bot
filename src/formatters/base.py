@@ -84,19 +84,10 @@ class BaseEventFormatter(ABC):
     @staticmethod
     def get_common_translations() -> Dict[str, str]:
         return {
-            "action_icon": _("message-header-action-icon"),
-            "action_label": _("message-header-action-label"),
-            "time_icon": _("message-header-time-icon"),
-            "time_label": _("message-header-time-label"),
+            "action": _("message-header-action"),
+            "time": _("message-header-time"),
             "field_sep": _("message-separator-field"),
         }
-
-    def get_event_icon(self, event_type: str, fallback_icon: str = None) -> str:
-        category = self.get_event_category(event_type)
-        event_name = self.get_event_name(event_type)
-        icon_key = f"event-{category}-{event_name}-icon"
-        icon = _(icon_key)
-        return icon if icon != icon_key else (fallback_icon or _("message-header-action-icon"))
 
     def get_event_message(self, event_type: str, **kwargs) -> str:
         category = self.get_event_category(event_type)
@@ -104,9 +95,9 @@ class BaseEventFormatter(ABC):
         msg_key = f"event-{category}-{event_name}-message"
         return _(msg_key, **kwargs) if kwargs else _(msg_key)
 
-    def get_category_header(self, event_type: str) -> Dict[str, str]:
+    def get_category_header(self, event_type: str) -> str:
         category = self.get_event_category(event_type)
-        return {"icon": _(f"event-{category}-header-icon"), "title": _(f"event-{category}-header-title")}
+        return _(f"event-{category}-header")
 
     def build_standard_message(
         self,
@@ -118,15 +109,14 @@ class BaseEventFormatter(ABC):
     ) -> str:
         t = self.get_common_translations()
         header = self.get_category_header(event_type)
-        event_icon = self.get_event_icon(event_type)
         event_message = self.get_event_message(event_type, **(event_message_kwargs or {}))
 
-        msg = f"{event_icon} <b>{t['action_label']}:</b> {event_message}\n\n"
-        msg += f"<b>{header['icon']} {header['title']}</b>\n\n"
+        msg = f"<b>{t['action']}:</b> {event_message}\n\n"
+        msg += f"<b>{header}</b>\n\n"
         msg += fields_content
 
         if additional_content:
             msg += f"\n{additional_content}\n"
 
-        msg += f"\n{t['time_icon']} <b>{t['time_label']}:</b> {format_timestamp(timestamp)}"
+        msg += f"\n<b>{t['time']}:</b> {format_timestamp(timestamp)}"
         return msg

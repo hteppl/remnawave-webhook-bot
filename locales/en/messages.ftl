@@ -1,10 +1,7 @@
 # Header and separators
-message-header-event-icon = 📋
-message-header-event-label = Event
-message-header-action-icon = 📌
-message-header-action-label = Action
-message-header-time-icon = 🕐
-message-header-time-label = Time
+message-header-event = 📋 Event
+message-header-action = 📌 Action
+message-header-time = 🕐 Time
 message-header-data-label = Data
 message-separator-field = {"  "}•{" "}
 
@@ -35,10 +32,8 @@ field-geo-isp = ISP
 field-device = Device
 field-user-agent = User Agent
 field-description = Description
-field-last-status-message = Last Status Message
-field-last-status-icon = 📝
-field-downtime = Downtime
-field-downtime-icon = ⏱
+field-last-status-message = 📝 Last Status Message
+field-downtime = ⏱ Downtime
 field-password = Password
 field-squads = Squads
 
@@ -50,8 +45,7 @@ date-today = today
 date-unlimited = Unlimited
 
 # User events
-event-user-header-icon = 👤
-event-user-header-title = User Details
+event-user-header = 👤 User Details
 event-user-created-message = New user created
 event-user-modified-message = User modified
 event-user-deleted-message = User deleted
@@ -61,60 +55,37 @@ event-user-enabled-message = User enabled
 event-user-limited-message = User limited
 event-user-expired-message = User expired
 event-user-traffic-reset-message = User traffic reset
-
-event-user-expires-in-72-hours-icon = ⏰
-event-user-expires-in-72-hours-message = User expires in 72 hours
-
-event-user-expires-in-48-hours-icon = ⏰
-event-user-expires-in-48-hours-message = User expires in 48 hours
-
-event-user-expires-in-24-hours-icon = ⚠️
-event-user-expires-in-24-hours-message = User expires in 24 hours
-
-event-user-expired-24-hours-ago-icon = ❌
-event-user-expired-24-hours-ago-message = User expired 24 hours ago
-
-event-user-first-connected-icon = ✅
-event-user-first-connected-message = User first connected
-
-event-user-bandwidth-usage-threshold-reached-icon = ⚠️
-event-user-bandwidth-usage-threshold-reached-message = Bandwidth usage threshold reached: { $usage_percentage }%
+event-user-expires-in-72-hours-message = ⏰ User expires in 72 hours
+event-user-expires-in-48-hours-message = ⏰ User expires in 48 hours
+event-user-expires-in-24-hours-message = ⚠️ User expires in 24 hours
+event-user-expired-24-hours-ago-message = ❌ User expired 24 hours ago
+event-user-first-connected-message = ✅ User first connected
+event-user-bandwidth-usage-threshold-reached-message = ⚠️ Bandwidth usage threshold reached: { $usage_percentage }%
 
 # Node events
-event-node-header-icon = 🖥
-event-node-header-title = Node Details
+event-node-header = 🖥 Node Details
 event-node-created-message = New node created
 event-node-modified-message = Node modified
 event-node-disabled-message = Node disabled
 event-node-enabled-message = Node enabled
 event-node-deleted-message = Node deleted
-event-node-connection-lost-icon = ❌
-event-node-connection-lost-message = Node connection lost!
-event-node-connection-restored-icon = ✅
-event-node-connection-restored-message = Node connection restored
+event-node-connection-lost-message = ❌ Node connection lost!
+event-node-connection-restored-message = ✅ Node connection restored
 event-node-traffic-notify-message = Node traffic notification
 
 # Connection loss statistics
-connection-stats-icon = 📊
-connection-stats-title = Connection Losses (last {$hours}h)
-provider-stats-icon = 🏢
-provider-stats-title = Connection Losses by Provider
-country-stats-icon = 🌍
-country-stats-title = Connection Losses by Country
-total-stats-icon = 📈
-total-stats-label = Total
+connection-stats-title = 📊 Connection Losses (last {$hours}h)
+provider-stats-title = 🏢 Connection Losses by Provider
+country-stats-title = 🌍 Connection Losses by Country
+total-stats-label = 📈 Total
 
 # Daily user statistics
-daily-stats-icon = 📊
-daily-stats-title = Daily User Statistics
-daily-stats-users-created-icon = 👤
-daily-stats-users-created = Users Created
-daily-stats-users-first-connected-icon = ✅
-daily-stats-users-first-connected = Users First Connected
+daily-stats-title = 📊 Daily User Statistics
+daily-stats-users-created = 👤 Users Created
+daily-stats-users-first-connected = ✅ Users First Connected
 
 # Billing events
-event-crm-header-icon = 💰
-event-crm-header-title = Billing Details
+event-crm-header = 💰 Billing Details
 
 # Billing field labels
 billing-field-node = Node
@@ -125,42 +96,22 @@ billing-field-total-nodes = Total Nodes
 billing-field-nodes = nodes
 
 # Billing aggregation
-billing-aggregated-title = Multiple Billing Notifications
+billing-aggregated-title = 💰 Multiple Billing Notifications
 
 # Individual billing events
-event-crm-infra-billing-node-payment-in-7-days-icon = 📅
-event-crm-infra-billing-node-payment-in-7-days-message = Node payment due in 7 days
-
-event-crm-infra-billing-node-payment-in-48hrs-icon = 🔵
-event-crm-infra-billing-node-payment-in-48hrs-message = Node payment due in 48 hours
-
-event-crm-infra-billing-node-payment-in-24hrs-icon = 🟡
-event-crm-infra-billing-node-payment-in-24hrs-message = Node payment due in 24 hours
-
-event-crm-infra-billing-node-payment-due-today-icon = 🟡
-event-crm-infra-billing-node-payment-due-today-message = Node payment due today
-
-event-crm-infra-billing-node-payment-overdue-24hrs-icon = 🟠
-event-crm-infra-billing-node-payment-overdue-24hrs-message = Node payment overdue by 24 hours
-
-event-crm-infra-billing-node-payment-overdue-48hrs-icon = 🔴
-event-crm-infra-billing-node-payment-overdue-48hrs-message = Node payment overdue by 48 hours
-
-event-crm-infra-billing-node-payment-overdue-7-days-icon = 🔴
-event-crm-infra-billing-node-payment-overdue-7-days-message = Node payment overdue by 7 days
+event-crm-infra-billing-node-payment-in-7-days-message = 📅 Node payment due in 7 days
+event-crm-infra-billing-node-payment-in-48hrs-message = 🔵 Node payment due in 48 hours
+event-crm-infra-billing-node-payment-in-24hrs-message = 🟡 Node payment due in 24 hours
+event-crm-infra-billing-node-payment-due-today-message = 🟡 Node payment due today
+event-crm-infra-billing-node-payment-overdue-24hrs-message = 🟠 Node payment overdue by 24 hours
+event-crm-infra-billing-node-payment-overdue-48hrs-message = 🔴 Node payment overdue by 48 hours
+event-crm-infra-billing-node-payment-overdue-7-days-message = 🔴 Node payment overdue by 7 days
 
 # Service events
-event-service-header-icon = ⚙️
-event-service-header-title = Service Event
-
-event-service-panel-started-icon = ✅
-event-service-panel-started-message = Panel has started
-
-event-service-login-attempt-failed-icon = ⚠️
-event-service-login-attempt-failed-message = Failed login attempt
-
-event-service-login-attempt-success-icon = ✅
-event-service-login-attempt-success-message = Successful login
+event-service-header = ⚙️ Service Event
+event-service-panel-started-message = ✅ Panel has started
+event-service-login-attempt-failed-message = ⚠️ Failed login attempt
+event-service-login-attempt-success-message = ✅ Successful login
 
 # Topic startup messages
 topic-startup-message = ✅ Topic {$topic_name} configured!

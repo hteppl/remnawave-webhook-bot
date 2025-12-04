@@ -19,7 +19,7 @@ class MessageFormatter:
                 return await formatter.format(event_type, data, timestamp, **kwargs)
 
         return (
-            f"{_('message-header-event-icon')} <b>{_('message-header-event-label')}:</b> <code>{event_type}</code>\n"
+            f"<b>{_('message-header-event')}:</b> <code>{event_type}</code>\n"
             f"<b>{_('message-header-data-label')}:</b>\n<pre>{self._format_dict(data)}</pre>"
         )
 

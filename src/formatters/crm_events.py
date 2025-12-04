@@ -26,15 +26,12 @@ class CRMEventFormatter(BaseEventFormatter):
     async def _format_billing_event(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
         """Format billing notification events."""
         event_name = self.get_event_name(event_type)
-
-        event_icon = _(f"event-crm-{event_name}-icon")
         event_message = _(f"event-crm-{event_name}-message")
 
         node_label = _("billing-field-node")
         provider_label = _("billing-field-provider")
         billing_date_label = _("billing-field-billing-date")
-        time_icon = _("message-header-time-icon")
-        time_label = _("message-header-time-label")
+        time_label = _("message-header-time")
 
         billing_date = data.get("nextBillingAt", "")
         formatted_date = ""
@@ -45,7 +42,7 @@ class CRMEventFormatter(BaseEventFormatter):
             except (Exception,):
                 formatted_date = billing_date
 
-        msg = f"{event_icon} <b>{event_message}</b>\n\n"
+        msg = f"<b>{event_message}</b>\n\n"
         msg += f"<b>{node_label}:</b> <code>{data.get('nodeName', 'Unknown')}</code>\n"
         msg += f"<b>{provider_label}:</b> {data.get('providerName', 'Unknown')}\n"
         msg += f"<b>{billing_date_label}:</b> {formatted_date}\n"
@@ -55,7 +52,7 @@ class CRMEventFormatter(BaseEventFormatter):
             login_text = _("billing-field-login-to-provider", provider=provider_name)
             msg += f'\n<a href="{data["loginUrl"]}">{login_text}</a>\n'
 
-        msg += f"\n{time_icon} <b>{time_label}:</b> {format_timestamp(timestamp)}"
+        msg += f"\n<b>{time_label}:</b> {format_timestamp(timestamp)}"
 
         return msg
 

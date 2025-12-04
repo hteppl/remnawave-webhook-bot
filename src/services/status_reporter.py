@@ -252,7 +252,7 @@ class StatusReporter:
         stats_formatted = "\n".join([line for line in stats_lines])
 
         message_parts = [
-            f"{_('connection-stats-icon')} <b>{_('connection-stats-title', hours=config.CONNECTION_LOSS_STATS_HOURS)}</b>",
+            f"<b>{_('connection-stats-title', hours=config.CONNECTION_LOSS_STATS_HOURS)}</b>",
             stats_formatted,
         ]
 
@@ -261,7 +261,7 @@ class StatusReporter:
                 f"<code>{provider}</code> - x{count}"
                 for provider, count in sorted(provider_stats.items(), key=lambda x: (-x[1], x[0]))
             ]
-            message_parts.append(f"\n{_('provider-stats-icon')} <b>{_('provider-stats-title')}:</b>")
+            message_parts.append(f"\n<b>{_('provider-stats-title')}:</b>")
             message_parts.append("\n".join(provider_lines))
 
         if country_stats:
@@ -269,15 +269,13 @@ class StatusReporter:
                 f"<code>{COUNTRIES_DICT.get(country, country)}</code> - x{count}"
                 for country, count in sorted(country_stats.items(), key=lambda x: (-x[1], x[0]))
             ]
-            message_parts.append(f"\n{_('country-stats-icon')} <b>{_('country-stats-title')}:</b>")
+            message_parts.append(f"\n<b>{_('country-stats-title')}:</b>")
             message_parts.append("\n".join(country_lines))
 
         total_count = sum(stats_dict.values())
-        message_parts.append(f"\n{_('total-stats-icon')} <b>{_('total-stats-label')}:</b> x{total_count}")
+        message_parts.append(f"\n<b>{_('total-stats-label')}:</b> x{total_count}")
 
-        message_parts.append(
-            f"\n{_('message-header-time-icon')} <b>{_('message-header-time-label')}:</b> {get_current_timestamp()}"
-        )
+        message_parts.append(f"\n<b>{_('message-header-time')}:</b> {get_current_timestamp()}")
         message = "\n".join(message_parts)
 
         try:

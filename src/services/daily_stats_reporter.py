@@ -100,12 +100,12 @@ class DailyStatsReporter:
             return
 
         message_parts = [
-            f"{_('daily-stats-icon')} <b>{_('daily-stats-title')}</b>",
+            f"<b>{_('daily-stats-title')}</b>",
             "",
-            f"{_('daily-stats-users-created-icon')} <b>{_('daily-stats-users-created')}:</b> {users_created}",
-            f"{_('daily-stats-users-first-connected-icon')} <b>{_('daily-stats-users-first-connected')}:</b> {users_first_connected}",
+            f"<b>{_('daily-stats-users-created')}:</b> {users_created}",
+            f"<b>{_('daily-stats-users-first-connected')}:</b> {users_first_connected}",
             "",
-            f"{_('message-header-time-icon')} <b>{_('message-header-time-label')}:</b> {get_current_timestamp()}",
+            f"<b>{_('message-header-time')}:</b> {get_current_timestamp()}",
         ]
         message = "\n".join(message_parts)
 
