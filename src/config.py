@@ -50,6 +50,14 @@ class Config:
     CONNECTION_LOSS_STATS_HOURS = int(os.getenv("CONNECTION_LOSS_STATS_HOURS", "24"))
     CONNECTION_LOSS_REPORT_INTERVAL_HOURS = int(os.getenv("CONNECTION_LOSS_REPORT_INTERVAL_HOURS", "24"))
 
+    ENABLE_DAILY_STATS = os.getenv("ENABLE_DAILY_STATS", "false").lower() in (
+        "true",
+        "yes",
+        "on",
+        "1",
+    )
+    DAILY_STATS_TIME = os.getenv("DAILY_STATS_TIME", "00:00")
+
     @classmethod
     def validate(cls):
         required = {

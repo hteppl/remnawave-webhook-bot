@@ -104,6 +104,14 @@ country-stats-title = По странам
 total-stats-icon = 📈
 total-stats-label = Всего
 
+# Ежедневная статистика пользователей
+daily-stats-icon = 📊
+daily-stats-title = Статистика за день
+daily-stats-users-created-icon = 👤
+daily-stats-users-created = Создано пользователей
+daily-stats-users-first-connected-icon = ✅
+daily-stats-users-first-connected = Первых подключений
+
 # События биллинга
 event-crm-header-icon = 💰
 event-crm-header-title = Информация о биллинге

@@ -5,6 +5,8 @@ from aiohttp import web
 
 from src.config import config
 from src.i18n import get_translation as _
+from src.services.daily_stats_reporter import DailyStatsReporter
+from src.services.manager import ServiceManager
 from src.services.status_reporter import StatusReporter
 from src.utils.timezone_helper import get_current_timestamp
 from src.version import __version__
@@ -39,15 +41,12 @@ async def on_startup(app):
             except Exception as e:
                 logger.error(f"Failed to send startup message to {topic_name}: {e}")
 
-    if app.get("status_reporter"):
-        await app["status_reporter"].start()
-
+    await app["service_manager"].start_all()
     logger.info("Bot started successfully!")
 
 
 async def on_cleanup(app):
-    if app.get("status_reporter"):
-        await app["status_reporter"].stop()
+    await app["service_manager"].stop_all()
     await app["bot"].session.close()
     logger.info("Bot stopped")
 
@@ -62,11 +61,15 @@ def main():
     config.validate()
     bot = Bot(token=config.TELEGRAM_BOT_TOKEN)
     webhook_handler = WebhookHandler(bot)
-    status_reporter = StatusReporter(bot, webhook_handler.connection_tracker)
+
+    service_manager = ServiceManager()
+    service_manager.register(StatusReporter(bot, webhook_handler.connection_tracker))
+    service_manager.register(DailyStatsReporter(bot))
+    webhook_handler.daily_stats_reporter = service_manager.get(DailyStatsReporter)
 
     app = web.Application()
     app["bot"] = bot
-    app["status_reporter"] = status_reporter
+    app["service_manager"] = service_manager
     app.router.add_post(config.WEBHOOK_PATH, webhook_handler.handle_webhook)
     app.router.add_get("/health", webhook_handler.health_check)
     app.on_startup.append(on_startup)

@@ -14,6 +14,8 @@ from src.utils.connection_tracker import ConnectionLossTracker
 
 logger = logging.getLogger(__name__)
 
+DAILY_STATS_EVENTS = {"user.created", "user.first_connected"}
+
 
 class WebhookHandler:
     def __init__(self, bot: Bot):
@@ -26,6 +28,7 @@ class WebhookHandler:
         self.connection_tracker = ConnectionLossTracker(
             enabled=config.ENABLE_CONNECTION_LOSS_STATS, window_hours=config.CONNECTION_LOSS_STATS_HOURS
         )
+        self.daily_stats_reporter = None
 
     @staticmethod
     def verify_signature(payload: bytes, signature: str, secret: str) -> bool:
@@ -108,6 +111,9 @@ class WebhookHandler:
                     self.connection_tracker.record_connection_loss(
                         node_name, event_timestamp, provider=provider, country_code=country_code
                     )
+
+            if self.daily_stats_reporter and event_type in DAILY_STATS_EVENTS:
+                await self.daily_stats_reporter.record_event(event_type)
 
             if "infra_billing" in event_type:
                 await self.billing_aggregator.add_event(event_type, event_data, event_timestamp)

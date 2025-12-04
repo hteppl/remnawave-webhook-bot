@@ -104,6 +104,14 @@ country-stats-title = Connection Losses by Country
 total-stats-icon = 📈
 total-stats-label = Total
 
+# Daily user statistics
+daily-stats-icon = 📊
+daily-stats-title = Daily User Statistics
+daily-stats-users-created-icon = 👤
+daily-stats-users-created = Users Created
+daily-stats-users-first-connected-icon = ✅
+daily-stats-users-first-connected = Users First Connected
+
 # Billing events
 event-crm-header-icon = 💰
 event-crm-header-title = Billing Details
