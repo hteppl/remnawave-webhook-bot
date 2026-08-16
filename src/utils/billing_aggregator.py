@@ -4,7 +4,7 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
-from src.i18n import get_translation as _
+from src.l10n import get_translation as _
 from src.utils.timezone_helper import format_timestamp
 
 logger = logging.getLogger(__name__)

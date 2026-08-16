@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict, Any
 
 from src.formatters.base import BaseEventFormatter
-from src.i18n import get_translation as _
+from src.l10n import get_translation as _
 from src.utils.timezone_helper import format_timestamp
 
 

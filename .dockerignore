@@ -30,8 +30,12 @@ build/
 
 # Docker
 Dockerfile
-docker-compose.yml
+docker-compose*.yml
 .dockerignore
+
+# Local
+tmp/
+examples/
 
 # Documentation
 README.md

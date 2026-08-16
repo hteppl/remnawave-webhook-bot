@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
 from src.formatters.base import BaseEventFormatter
-from src.i18n import get_translation as _
+from src.l10n import get_translation as _
 from src.utils.user_agent_parser import get_device_info
 
 

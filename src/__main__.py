@@ -5,7 +5,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiohttp import web
 
 from src.config import config
-from src.i18n import get_translation as _
+from src.l10n import get_translation as _
 from src.services.daily_stats_reporter import DailyStatsReporter
 from src.services.manager import ServiceManager
 from src.services.status_reporter import StatusReporter

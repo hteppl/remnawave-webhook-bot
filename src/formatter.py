@@ -9,7 +9,7 @@ from src.formatters import (
     UserEventFormatter,
     UserHwidDevicesEventFormatter,
 )
-from src.i18n import get_translation as _
+from src.l10n import get_translation as _
 
 
 class MessageFormatter:

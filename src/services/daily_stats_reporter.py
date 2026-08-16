@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from aiogram import Bot
 
 from src.config import config
-from src.i18n import get_translation as _
+from src.l10n import get_translation as _
 from src.utils.timezone_helper import get_current_timestamp
 
 logger = logging.getLogger(__name__)
