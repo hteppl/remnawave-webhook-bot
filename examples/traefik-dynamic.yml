@@ -1,0 +1,24 @@
+# Динамическая конфигурация Traefik (file provider) для отдельного сервера
+# (docker-compose.external.yml).
+#
+# При установке рядом с панелью Remnawave реверс прокси не требуется:
+# панель обращается к контейнеру напрямую по адресу http://remnawave-webhook-bot:8089.
+#
+# Порт наружу не публикуется. Traefik должен быть запущен в Docker и подключен
+# к сети remnawave-webhook-bot.
+
+http:
+  routers:
+    webhook-bot:
+      rule: "Host(`webhook.your_address.com`)"
+      entryPoints:
+        - websecure
+      service: webhook-bot
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    webhook-bot:
+      loadBalancer:
+        servers:
+          - url: "http://remnawave-webhook-bot:8089"

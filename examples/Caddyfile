@@ -1,0 +1,10 @@
+# Пример для отдельного сервера (docker-compose.external.yml).
+# При установке рядом с панелью Remnawave реверс прокси не требуется:
+# панель обращается к контейнеру напрямую по адресу http://remnawave-webhook-bot:8089.
+#
+# Порт наружу не публикуется. Caddy должен быть запущен в Docker и подключен
+# к сети remnawave-webhook-bot.
+
+https://webhook.your_address.com {
+    reverse_proxy http://remnawave-webhook-bot:8089
+}

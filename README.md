@@ -1,50 +1,61 @@
 # Remnawave Webhook Bot
 
-✏️ Система уведомлений о состояниях и изменениях данных в панелях Remnawave.
+Система уведомлений о состояниях и изменениях данных в панелях Remnawave.
 
 ## 📋 Возможности
 
-- Легкая установка рядом с панелью Remnawave
-- Поддержка топиков для разделения типов событий
-- Полная кастомизация текстов, форматирования и типов обрабатываемых событий
-- Периодические уведомления о статусе и работе систем
-- Уведомления о входах, а так-же попытках подбора пароля панели
+- Установка как рядом с панелью Remnawave, так и на отдельном сервере
+- Поддержка топиков Telegram для разделения типов событий
+- Настройка текстов, форматирования и перечня обрабатываемых событий
+- Периодические отчеты о состоянии инфраструктуры
+- Уведомления о входах в панель и о неудачных попытках авторизации
 - Дополнительные обработчики данных, включая сбор метрик событий
-- Проверка получаемых данных с помощью заголовков безопасности Remnawave
+- Проверка подлинности входящих запросов по заголовкам безопасности Remnawave
 
 ## 🚀 Установка
 
 ### Требования
 
-- Сервер с панелью Remnawave, с установленной подсистемой Docker или любой другой удаленный сервер
+- Сервер с установленной подсистемой Docker: с панелью Remnawave либо отдельный
 
-### Шаг 1: Загрузка файлов проекта на сервер
+### Шаг 1: Размещение файлов на сервере
 
-**Примечание:** для корректной интеграции с системой бекапов remnawave-backup-restore, рекомендуется загрузить файлы
-проекта по пути `/opt/remnawave/webhook` (не обязательно, можно использовать удаленный сервер)
+На сервере с панелью рекомендуется использовать директорию `/opt/remnawave/webhook`.
 
-Минимальный набор файлов проекта для начала процесса установки:
+В продакшн-сценариях применяется готовый образ, копирование исходного кода на сервер не требуется.
+Достаточно двух файлов: `docker-compose.yml` и `.env`.
 
-```text
-src, locales, docker-compose.yml, Dockerfile, requirements.txt, pyproject.toml, .env.example
+Варианты конфигурации compose:
+
+| Файл в репозитории            | Назначение                            | Особенности                                                      |
+| ----------------------------- | ------------------------------------- | ---------------------------------------------------------------- |
+| `docker-compose.prod.yml`     | Сервер с панелью Remnawave            | Готовый образ, сеть `remnawave-network`, порт не публикуется     |
+| `docker-compose.external.yml` | Отдельный (внешний) сервер без панели | Готовый образ, сеть `remnawave-webhook-bot`, порт не публикуется |
+| `docker-compose.dev.yml`      | Разработка                            | Сборка из исходников, монтирование `./src` и `./locales`         |
+
+Создайте на сервере файл `docker-compose.yml` и перенесите в него содержимое выбранного варианта. Все дальнейшие
+команды выполняются стандартным `docker compose`:
+
+```bash
+cd /opt/remnawave/webhook && sudo nano docker-compose.yml
 ```
 
 ### Шаг 2: Настройка конфигурации
 
-Создайте файл `.env` в корневой директории проекта:
+Создайте файл `.env` рядом с `docker-compose.yml` и перенесите в него содержимое `.env.example`:
 
 ```bash
-sudo cp .env.example .env
+cd /opt/remnawave/webhook && sudo nano .env
 ```
 
-**Примечание:** для корректного отображения айди чата ботом https://t.me/username_to_id_bot, следует превратить чат в
-супергруппу с топиками еще до приглашения бота!
+Обратите внимание:
 
-- `WEBHOOK_SECRET_HEADER` - переменная из окружения Remnawave: `sudo nano /opt/remnawave/.env`
+- Чат следует преобразовать в супергруппу с топиками до добавления бота, иначе сервис
+  https://t.me/username_to_id_bot вернет некорректный идентификатор чата.
+- Значение `WEBHOOK_SECRET_HEADER` берется из окружения Remnawave: `sudo nano /opt/remnawave/.env`.
 
-В нижней части конфига доступна настройка фильтрации обрабатываемых уведомлений, используйте
-документацию https://docs.rw/docs/features/webhooks или список из нижней части данного файла,
-чтобы определиться с требуемыми событиями.
+В нижней части конфигурации размещены параметры фильтрации обрабатываемых событий. Перечень событий приведен
+в разделе «Поддерживаемые события», а также в документации https://docs.rw/docs/features/webhooks.
 
 ```dotenv
 # Настройки бота Telegram
@@ -107,84 +118,169 @@ USER_DAILY_STATS_TIME=00:00
 
 ## 🚀 Обновление
 
-*Команды при установке в директорию `/opt/remnawave/webhook`*
-
-Удалите старые файлы: `cd /opt/remnawave/webhook && sudo rm -R src && sudo rm -R locales && sudo rm Dockerfile`
-
-Переменные окружения можно изменить/добавить в ручном режиме:
-
-- Сравниваем актуальный .env.example
-- Редактируем текущие переменные: `cd /opt/remnawave/webhook && sudo nano .env`
-
-Перейдите к этапу установки, описанному выше.
-
-## ▶️ Сборка и запуск
-
-**Запуск осуществляется через подсистему Docker:**
-
-*Команды при установке в директорию `/opt/remnawave/webhook`*
+Обновление выполняется загрузкой актуального образа:
 
 ```bash
-cd /opt/remnawave/webhook && sudo docker compose up -d --build
+cd /opt/remnawave/webhook && sudo docker compose pull && sudo docker compose up -d
 ```
 
-**Перезапуск:**
+При обновлении рекомендуется сверить `.env` с актуальным `.env.example` и при необходимости
+дополнить конфигурацию новыми переменными: `cd /opt/remnawave/webhook && sudo nano .env`.
+
+## ▶️ Запуск
+
+Все команды приведены для установки в директорию `/opt/remnawave/webhook`.
+
+Запуск:
+
+```bash
+cd /opt/remnawave/webhook && sudo docker compose up -d
+```
+
+Перезапуск:
 
 ```shell
 cd /opt/remnawave/webhook && sudo docker compose down && sudo docker compose up -d
 ```
 
-**Просмотр логов:**
+Просмотр логов:
 
 ```bash
 sudo docker logs remnawave-webhook-bot
 ```
 
-## 🔐 Настройка реверс прокси и Remnawave
-
-Вебхук обязательно должен находиться за реверс прокси, например `nginx`, `caddy` итп.
-
-### Шаг 1: Настройка реверс прокси
-
-Часть настройки конфигурации `сaddy`, работающего в одной подсети с Remnawave:
-
-```caddyfile
-https://panel.your_address.com {
-    handle {
-      reverse_proxy http://remnawave:3000
-    }
-
-    handle_path /webhook* {
-      reverse_proxy http://remnawave-webhook-bot:8089
-    }
-}
-```
-
-После различных манипуляций с caddy или nginx, сервисы требуется перезапустить для применения настроек!
-
-### Шаг 2: Проверка работоспособности:
+Сборка из исходников применяется только при разработке, с конфигурацией `docker-compose.dev.yml`:
 
 ```bash
-curl https://panel.your_address.com/webhook/health
-# Должен вернуть: OK
+sudo docker compose up -d --build
 ```
 
-### Шаг 3: Добавление адреса обработчика в Remnawave:
+## 🔐 Подключение к Remnawave
 
-Настройте переменные окружения Remnawave: `sudo nano /opt/remnawave/.env`
+### Вариант A: обработчик на сервере с панелью
+
+Реверс прокси и TLS не требуются. Панель и обработчик находятся в одной сети Docker
+(`remnawave-network`), поэтому события передаются напрямую по внутреннему адресу, минуя внешнюю сеть.
+
+Укажите переменные окружения панели: `sudo nano /opt/remnawave/.env`
 
 ```dotenv
 ### WEBHOOK ###
 WEBHOOK_ENABLED=true
-WEBHOOK_URL=https://panel.your_address.com/webhook
+WEBHOOK_URL=http://remnawave-webhook-bot:8089/
 WEBHOOK_SECRET_HEADER=a12m7ca8h...
 ```
 
-Перезагрузите Remnawave:
+Перезапустите Remnawave:
 
 ```bash
 cd /opt/remnawave && sudo docker compose down && sudo docker compose up -d
 ```
+
+Проверка работоспособности с сервера с панелью:
+
+```bash
+sudo docker exec remnawave-webhook-bot python -c "import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8089/health').read())"
+```
+
+### Вариант B: обработчик на отдельном сервере
+
+Панель обращается к обработчику через внешнюю сеть, поэтому обязательны публичный домен, TLS
+и реверс прокси. Готовые примеры конфигураций находятся в директории [examples](examples):
+
+| Реверс прокси | Файл примера                                                 |
+| ------------- | ------------------------------------------------------------ |
+| Caddy         | [examples/Caddyfile](examples/Caddyfile)                     |
+| nginx         | [examples/nginx.conf](examples/nginx.conf)                   |
+| Traefik       | [examples/traefik-dynamic.yml](examples/traefik-dynamic.yml) |
+
+Порт наружу не публикуется, поэтому реверс прокси должен быть запущен в Docker и подключен к сети
+`remnawave-webhook-bot`: обращение выполняется по внутреннему адресу `http://remnawave-webhook-bot:8089`.
+После изменения конфигурации реверс прокси соответствующий сервис необходимо перезапустить.
+
+Проверка доступности:
+
+```bash
+curl https://webhook.your_address.com/health   # ожидается ответ OK
+```
+
+Переменные окружения панели:
+
+```dotenv
+### WEBHOOK ###
+WEBHOOK_ENABLED=true
+WEBHOOK_URL=https://webhook.your_address.com/
+WEBHOOK_SECRET_HEADER=a12m7ca8h...
+```
+
+Значение `WEBHOOK_SECRET_HEADER` должно совпадать в конфигурациях панели и обработчика: этим ключом
+подписываются и проверяются входящие запросы.
+
+## 🌐 Установка на внешний сервер
+
+Сценарий: панель Remnawave размещена на одном сервере, обработчик вебхуков - на другом. Панель отправляет
+события на публичный HTTPS-адрес обработчика.
+
+**Требуется:** сервер с Docker, домен (например `webhook.your_address.com`) с A-записью на этот сервер
+и реверс прокси с TLS.
+
+1. Создайте рабочую директорию, например `/opt/webhook`, и разместите в ней `docker-compose.yml`
+   с содержимым `docker-compose.external.yml` из репозитория:
+
+   ```bash
+   sudo mkdir -p /opt/webhook && cd /opt/webhook && sudo nano docker-compose.yml
+   ```
+
+2. Создайте `.env` с содержимым `.env.example` и заполните его:
+
+   ```bash
+   cd /opt/webhook && sudo nano .env
+   ```
+
+   Обязательные параметры: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` и `WEBHOOK_SECRET_HEADER`, совпадающий
+   со значением в конфигурации панели. Параметры `WEBHOOK_HOST=0.0.0.0` и `WEBHOOK_PORT=8089` изменению
+   не подлежат: они определяют адрес внутри контейнера.
+
+3. Запустите сервис:
+
+   ```bash
+   cd /opt/webhook && sudo docker compose up -d
+   ```
+
+   Порт наружу не публикуется: контейнер доступен только внутри сети `remnawave-webhook-bot`.
+
+4. Настройте реверс прокси по примерам из директории [examples](examples) и проверьте доступность:
+
+   ```bash
+   curl https://webhook.your_address.com/health   # ожидается ответ OK
+   ```
+
+5. На сервере с панелью укажите адрес обработчика и перезапустите Remnawave:
+
+   ```dotenv
+   ### WEBHOOK ###
+   WEBHOOK_ENABLED=true
+   WEBHOOK_URL=https://webhook.your_address.com/
+   WEBHOOK_SECRET_HEADER=a12m7ca8h...
+   ```
+
+   ```bash
+   cd /opt/remnawave && sudo docker compose down && sudo docker compose up -d
+   ```
+
+6. Проверьте логи: после перезапуска панели поступает событие `service.panel_started`.
+
+   ```bash
+   sudo docker logs -f remnawave-webhook-bot
+   ```
+
+### Диагностика
+
+| Симптом                   | Причина и решение                                                                                                                                                                                     |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `403` в логах обработчика | Значение `WEBHOOK_SECRET_HEADER` не совпадает со значением в конфигурации панели                                                                                                                      |
+| `404` в логах обработчика | Путь в `WEBHOOK_URL` не соответствует `WEBHOOK_PATH` (по умолчанию `/`)                                                                                                                               |
+| События не поступают      | При установке рядом с панелью - контейнеры в разных сетях Docker; при установке на отдельном сервере - панель не получает доступ к домену: проверьте DNS, TLS-сертификат и правила межсетевого экрана |
 
 ## 📊 Поддерживаемые события
 
@@ -205,8 +301,8 @@ cd /opt/remnawave && sudo docker compose down && sudo docker compose up -d
   панели)
 - `user.expiration` - Уведомления об истечении срока (требует `EXPIRATION_NOTIFICATIONS_ENABLED=true` в панели)
 
-Устаревшие события (удалены в панели v2.8.0, заменены на `user.expiration`), обрабатываются для совместимости со
-старыми версиями панели:
+Устаревшие события, удаленные в панели v2.8.0 и замененные на `user.expiration`. Обрабатываются для совместимости
+с предыдущими версиями панели:
 
 - `user.expires_in_72_hours`, `user.expires_in_48_hours`, `user.expires_in_24_hours`, `user.expired_24_hours_ago`
 
@@ -236,8 +332,8 @@ cd /opt/remnawave && sudo docker compose down && sudo docker compose up -d
 - `crm.infra_billing_node_payment_overdue_48hrs` - Просрочка 48 часов
 - `crm.infra_billing_node_payment_overdue_7_days` - Просрочка 7 дней
 
-**Особенность**: Биллинг-события автоматически агрегируются при получении нескольких уведомлений в течение 3 секунд,
-отправляя одно сводное сообщение вместо множества отдельных.
+Биллинг-события агрегируются: при поступлении нескольких уведомлений в течение 3 секунд отправляется одно
+сводное сообщение.
 
 ### Сервисные события (`service.*`)
 
@@ -250,7 +346,7 @@ cd /opt/remnawave && sudo docker compose down && sudo docker compose up -d
 
 ### События торрент-блокировщика (`torrent_blocker.*`)
 
-*Требуется панель Remnawave v2.7.0 и выше.*
+Требуется панель Remnawave версии 2.7.0 и выше.
 
 - `torrent_blocker.report` - Отчет о торрент-активности (узел, пользователь, статус блокировки, IP, протокол/сеть,
   источник и назначение)

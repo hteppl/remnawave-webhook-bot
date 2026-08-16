@@ -8,6 +8,8 @@ services:
     volumes:
       - ./src:/app/src
       - ./locales:/app/locales
+    ports:
+      - "127.0.0.1:8089:8089"
     networks:
       - remnawave-network
     logging:
