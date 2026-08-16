@@ -10,18 +10,24 @@ class Config:
     TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
     TOPIC_USER = os.getenv("TOPIC_USER") or None
+    TOPIC_USER_HWID_DEVICES = os.getenv("TOPIC_USER_HWID_DEVICES") or None
     TOPIC_NODE = os.getenv("TOPIC_NODE") or None
     TOPIC_CRM = os.getenv("TOPIC_CRM") or None
     TOPIC_SERVICE = os.getenv("TOPIC_SERVICE") or None
+    TOPIC_TORRENT_BLOCKER = os.getenv("TOPIC_TORRENT_BLOCKER") or None
+    TOPIC_ERRORS = os.getenv("TOPIC_ERRORS") or None
     TOPIC_STATUS = os.getenv("TOPIC_STATUS") or None
 
     @classmethod
     def get_topic_for_event(cls, event_type: str) -> int | None:
         prefix_map = {
+            "user_hwid_devices.": cls.TOPIC_USER_HWID_DEVICES or cls.TOPIC_USER,
             "user.": cls.TOPIC_USER,
             "node.": cls.TOPIC_NODE,
             "crm.": cls.TOPIC_CRM,
             "service.": cls.TOPIC_SERVICE,
+            "torrent_blocker.": cls.TOPIC_TORRENT_BLOCKER or cls.TOPIC_NODE,
+            "errors.": cls.TOPIC_ERRORS or cls.TOPIC_SERVICE,
         }
         for prefix, topic in prefix_map.items():
             if event_type.startswith(prefix):

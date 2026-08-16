@@ -1,6 +1,6 @@
 # Remnawave Webhook Bot
 
-✏️ Телеграм бот для уведомлений о состояниях и изменениях данных в панелях Remnawave.
+✏️ Система уведомлений о состояниях и изменениях данных в панелях Remnawave.
 
 ## 📋 Возможности
 
@@ -11,8 +11,6 @@
 - Уведомления о входах, а так-же попытках подбора пароля панели
 - Дополнительные обработчики данных, включая сбор метрик событий
 - Проверка получаемых данных с помощью заголовков безопасности Remnawave
-- Интеграция с системой бекапов <a href="https://github.com/distillium/remnawave-backup-restore">
-  remnawave-backup-restore</a>
 
 ## 🚀 Установка
 
@@ -57,12 +55,23 @@ TELEGRAM_CHAT_ID=your_chat_id_here
 # Настройка топиков Telegram для посылки уведомлений
 # Чтобы получить айди топика - скопируйте ссылку на сообщение.
 # Пример: https://t.me/c/123123123/[2]/21 - 2 это и есть айди топика.
+
+# Пользователи: создан, изменен, продлен, истек, лимит трафика
 TOPIC_USER=
+# Ноды: создана, включена/выключена, потеря/восстановление связи, трафик
 TOPIC_NODE=
-TOPIC_CRM=
+# Сервис: запуск панели, входы в панель, API-токены
 TOPIC_SERVICE=
-# Топик для получения системных статусов, например CONNECTION_LOSS_STATS
+# Ошибки: превышен лимит уведомлений и прочие сбои (если пусто - используется TOPIC_SERVICE)
+TOPIC_ERRORS=
+# Системные статусы бота: сводки падений нод, ежедневная статистика пользователей
 TOPIC_STATUS=
+# Отчеты торрент-блокировщика: обнаружен торрент-трафик (если пусто - используется TOPIC_NODE)
+TOPIC_TORRENT_BLOCKER=
+# Устройства HWID: добавлено/удалено устройство (если пусто - используется TOPIC_USER)
+TOPIC_USER_HWID_DEVICES=
+# Биллинг нод: напоминания об оплате и просрочке
+TOPIC_CRM=
 
 # Настройки вебхука
 WEBHOOK_SECRET_HEADER=your_webhook_secret_here
@@ -142,12 +151,12 @@ sudo docker logs remnawave-webhook-bot
 ```caddyfile
 https://panel.your_address.com {
     handle {
-               reverse_proxy http://remnawave:3000
-           }
+      reverse_proxy http://remnawave:3000
+    }
 
     handle_path /webhook* {
-                              reverse_proxy http://remnawave-webhook-bot:8089
-                          }
+      reverse_proxy http://remnawave-webhook-bot:8089
+    }
 }
 ```
 
@@ -188,10 +197,23 @@ cd /opt/remnawave && sudo docker compose down && sudo docker compose up -d
 - `user.enabled` - Включение пользователя
 - `user.limited` - Ограничение пользователя
 - `user.expired` - Истечение срока пользователя
+- `user.revoked` - Отзыв доступа пользователя
 - `user.traffic_reset` - Сброс трафика
-- `user.expires_in_*` - Уведомления об истечении срока
 - `user.first_connected` - Первое подключение
 - `user.bandwidth_usage_threshold_reached` - Достижение лимита трафика
+- `user.not_connected` - Пользователь давно не подключался (требует `NOT_CONNECTED_USERS_NOTIFICATIONS_ENABLED=true` в
+  панели)
+- `user.expiration` - Уведомления об истечении срока (требует `EXPIRATION_NOTIFICATIONS_ENABLED=true` в панели)
+
+Устаревшие события (удалены в панели v2.8.0, заменены на `user.expiration`), обрабатываются для совместимости со
+старыми версиями панели:
+
+- `user.expires_in_72_hours`, `user.expires_in_48_hours`, `user.expires_in_24_hours`, `user.expired_24_hours_ago`
+
+### События устройств HWID (`user_hwid_devices.*`)
+
+- `user_hwid_devices.added` - Добавлено устройство
+- `user_hwid_devices.deleted` - Удалено устройство
 
 ### События узлов (`node.*`)
 
@@ -206,11 +228,13 @@ cd /opt/remnawave && sudo docker compose down && sudo docker compose up -d
 
 ### Биллинг-события (`crm.infra_billing_*`)
 
+- `crm.infra_billing_node_payment_in_7_days` - Оплата через 7 дней
 - `crm.infra_billing_node_payment_in_48hrs` - Оплата через 48 часов
 - `crm.infra_billing_node_payment_in_24hrs` - Оплата через 24 часа
 - `crm.infra_billing_node_payment_due_today` - Оплата сегодня
 - `crm.infra_billing_node_payment_overdue_24hrs` - Просрочка 24 часа
 - `crm.infra_billing_node_payment_overdue_48hrs` - Просрочка 48 часов
+- `crm.infra_billing_node_payment_overdue_7_days` - Просрочка 7 дней
 
 **Особенность**: Биллинг-события автоматически агрегируются при получении нескольких уведомлений в течение 3 секунд,
 отправляя одно сводное сообщение вместо множества отдельных.
@@ -220,6 +244,20 @@ cd /opt/remnawave && sudo docker compose down && sudo docker compose up -d
 - `service.panel_started` - Запуск панели
 - `service.login_attempt_success` - Успешный вход
 - `service.login_attempt_failed` - Неудачная попытка входа
+- `service.subpage_config_changed` - Изменена конфигурация подписочной страницы
+- `service.api_token_created` - Создан API токен
+- `service.api_token_deleted` - Удален API токен
+
+### События торрент-блокировщика (`torrent_blocker.*`)
+
+*Требуется панель Remnawave v2.7.0 и выше.*
+
+- `torrent_blocker.report` - Отчет о торрент-активности (узел, пользователь, статус блокировки, IP, протокол/сеть,
+  источник и назначение)
+
+### События ошибок (`errors.*`)
+
+- `errors.bandwidth_usage_threshold_reached_max_notifications` - Достигнут лимит уведомлений о пороге трафика
 
 ## 📄 Лицензия
 

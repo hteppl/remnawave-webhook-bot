@@ -36,6 +36,33 @@ field-last-status-message = 📝 Last Status Message
 field-downtime = ⏱ Downtime
 field-password = Password
 field-squads = Squads
+field-hwid = HWID
+field-hwid-limit = Device Limit
+field-platform = Platform
+field-os-version = OS Version
+field-device-model = Device Model
+field-blocked = Blocked
+field-block-duration = Block Duration
+field-unblock-at = Unblocks
+field-protocol = Protocol
+field-network = Network
+field-source = Source
+field-destination = Destination
+field-inbound-tag = Inbound
+field-outbound-tag = Outbound
+field-action = Action
+field-uuid = UUID
+field-scopes = Scopes
+
+# Generic values
+value-yes = Yes
+value-no = No
+
+# Duration formatting
+duration-seconds = {$seconds} sec.
+duration-minutes = {$minutes} min.
+duration-hours = {$hours} h.
+duration-days = {$days} d.
 
 # Date formatting
 date-in-days = in {$days} d.
@@ -56,23 +83,29 @@ event-user-limited-message = User limited
 event-user-expired-message = User expired
 event-user-traffic-reset-message = User traffic reset
 
-event-user-expires-in-72-hours-icon = ⏰
-event-user-expires-in-72-hours-message = User expires in 72 hours
+event-user-expiration-icon = ⏰
+event-user-expiration-message = User expiration notification
+event-user-expiration-in-message = User expires in { $hours } h.
+event-user-expiration-ago-message = User expired { $hours } h. ago
 
-event-user-expires-in-48-hours-icon = ⏰
-event-user-expires-in-48-hours-message = User expires in 48 hours
-
-event-user-expires-in-24-hours-icon = ⚠️
-event-user-expires-in-24-hours-message = User expires in 24 hours
-
-event-user-expired-24-hours-ago-icon = ❌
-event-user-expired-24-hours-ago-message = User expired 24 hours ago
+event-user-not-connected-icon = 💤
+event-user-not-connected-message = User is not connected
+event-user-not-connected-hours-message = User has not connected for { $hours } h.
 
 event-user-first-connected-icon = ✅
 event-user-first-connected-message = User first connected
 
 event-user-bandwidth-usage-threshold-reached-icon = ⚠️
 event-user-bandwidth-usage-threshold-reached-message = Bandwidth usage threshold reached: { $usage_percentage }%
+
+# User HWID devices events
+event-user-hwid-devices-header = 📱 Device Details
+
+event-user-hwid-devices-added-icon = ➕
+event-user-hwid-devices-added-message = HWID device added
+
+event-user-hwid-devices-deleted-icon = ➖
+event-user-hwid-devices-deleted-message = HWID device deleted
 
 # Node events
 event-node-header = 🖥 Node Details
@@ -148,5 +181,39 @@ event-service-login-attempt-failed-message = Failed login attempt
 event-service-login-attempt-success-icon = ✅
 event-service-login-attempt-success-message = Successful login
 
+event-service-subpage-config-changed-icon = 📝
+event-service-subpage-config-changed-message = Subpage config changed
+
+event-service-api-token-created-icon = 🔑
+event-service-api-token-created-message = API token created
+
+event-service-api-token-deleted-icon = 🔑
+event-service-api-token-deleted-message = API token deleted
+
+# Torrent blocker events
+event-torrent-blocker-header = 🚫 Torrent Blocker Report
+
+event-torrent-blocker-report-icon = 🚫
+event-torrent-blocker-report-message = Torrent activity detected
+
+# Errors events
+event-errors-header = ‼️ Error Details
+
+event-errors-bandwidth-usage-threshold-reached-max-notifications-icon = ‼️
+event-errors-bandwidth-usage-threshold-reached-max-notifications-message = Bandwidth threshold notifications limit reached
+
 # Topic startup messages
 topic-startup-message = ✅ Topic {$topic_name} configured!
+
+# DEPRECATED
+event-user-expires-in-72-hours-icon = ⏰
+event-user-expires-in-72-hours-message = User expires in 72 hours
+
+event-user-expires-in-48-hours-icon = ⏰
+event-user-expires-in-48-hours-message = User expires in 48 hours
+
+event-user-expires-in-24-hours-icon = ⚠️
+event-user-expires-in-24-hours-message = User expires in 24 hours
+
+event-user-expired-24-hours-ago-icon = ❌
+event-user-expired-24-hours-ago-message = User expired 24 hours ago

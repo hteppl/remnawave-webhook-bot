@@ -7,6 +7,7 @@ from src.i18n import get_translation as _
 class NodeEventFormatter(BaseEventFormatter):
     async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
         t = self.get_common_translations()
+        data = self._normalize(data)
         fields_content = (
             self._format_node_created_fields(data, t["field_sep"])
             if event_type == "node.created"
@@ -33,6 +34,21 @@ class NodeEventFormatter(BaseEventFormatter):
             fields_content=fields_content,
             additional_content=additional_content if additional_content else None,
         )
+
+    @staticmethod
+    def _normalize(data: Dict[str, Any]) -> Dict[str, Any]:
+        data = dict(data)
+
+        versions = data.get("versions")
+        if isinstance(versions, dict):
+            data.setdefault("xrayVersion", versions.get("xray"))
+            data.setdefault("nodeVersion", versions.get("node"))
+
+        config_profile = data.get("configProfile")
+        if isinstance(config_profile, dict) and config_profile.get("activeInbounds"):
+            data.setdefault("activeInbounds", config_profile["activeInbounds"])
+
+        return {k: v for k, v in data.items() if v is not None}
 
     def _format_node_created_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         def format_address_with_port(value, data):

@@ -36,6 +36,33 @@ field-last-status-message = 📝 Последний статус
 field-downtime = ⏱ Время простоя
 field-password = Пароль
 field-squads = Сквады
+field-hwid = HWID
+field-hwid-limit = Лимит устройств
+field-platform = Платформа
+field-os-version = Версия ОС
+field-device-model = Модель устройства
+field-blocked = Заблокировано
+field-block-duration = Длительность блокировки
+field-unblock-at = Разблокировка
+field-protocol = Протокол
+field-network = Сеть
+field-source = Источник
+field-destination = Назначение
+field-inbound-tag = Инбаунд
+field-outbound-tag = Аутбаунд
+field-action = Действие
+field-uuid = UUID
+field-scopes = Права
+
+# Общие значения
+value-yes = Да
+value-no = Нет
+
+# Форматирование длительности
+duration-seconds = {$seconds} сек.
+duration-minutes = {$minutes} мин.
+duration-hours = {$hours} ч.
+duration-days = {$days} дн.
 
 # Форматирование дат
 date-in-days = через {$days} дн.
@@ -56,23 +83,29 @@ event-user-limited-message = Пользователь ограничен
 event-user-expired-message = Срок действия пользователя истек
 event-user-traffic-reset-message = Трафик пользователя сброшен
 
-event-user-expires-in-72-hours-icon = ⏰
-event-user-expires-in-72-hours-message = Пользователь истекает через 72 часа
+event-user-expiration-icon = ⏰
+event-user-expiration-message = Уведомление об истечении срока
+event-user-expiration-in-message = Пользователь истекает через { $hours } ч.
+event-user-expiration-ago-message = Срок пользователя истек { $hours } ч. назад
 
-event-user-expires-in-48-hours-icon = ⏰
-event-user-expires-in-48-hours-message = Пользователь истекает через 48 часов
-
-event-user-expires-in-24-hours-icon = ⚠️
-event-user-expires-in-24-hours-message = Пользователь истекает через 24 часа
-
-event-user-expired-24-hours-ago-icon = ❌
-event-user-expired-24-hours-ago-message = Срок пользователя истек 24 часа назад
+event-user-not-connected-icon = 💤
+event-user-not-connected-message = Пользователь не подключается
+event-user-not-connected-hours-message = Пользователь не подключается уже { $hours } ч.
 
 event-user-first-connected-icon = ✅
 event-user-first-connected-message = Первое подключение пользователя
 
 event-user-bandwidth-usage-threshold-reached-icon = ⚠️
 event-user-bandwidth-usage-threshold-reached-message = Достигнут порог использования трафика: { $usage_percentage }%
+
+# События устройств пользователей (HWID)
+event-user-hwid-devices-header = 📱 Информация об устройстве
+
+event-user-hwid-devices-added-icon = ➕
+event-user-hwid-devices-added-message = Добавлено устройство HWID
+
+event-user-hwid-devices-deleted-icon = ➖
+event-user-hwid-devices-deleted-message = Удалено устройство HWID
 
 # События узлов
 event-node-header = 🖥 Информация об узле
@@ -148,5 +181,39 @@ event-service-login-attempt-failed-message = Неудачная попытка �
 event-service-login-attempt-success-icon = ✅
 event-service-login-attempt-success-message = Успешный вход
 
+event-service-subpage-config-changed-icon = 📝
+event-service-subpage-config-changed-message = Изменена конфигурация страницы подписок
+
+event-service-api-token-created-icon = 🔑
+event-service-api-token-created-message = Создан API токен
+
+event-service-api-token-deleted-icon = 🔑
+event-service-api-token-deleted-message = Удален API токен
+
+# События торрент-блокировщика
+event-torrent-blocker-header = 🚫 Отчет торрент-блокировщика
+
+event-torrent-blocker-report-icon = 🚫
+event-torrent-blocker-report-message = Обнаружена торрент-активность
+
+# События ошибок
+event-errors-header = ‼️ Информация об ошибке
+
+event-errors-bandwidth-usage-threshold-reached-max-notifications-icon = ‼️
+event-errors-bandwidth-usage-threshold-reached-max-notifications-message = Достигнут лимит уведомлений о пороге трафика
+
 # Сообщения при запуске топиков
 topic-startup-message = ✅ Топик {$topic_name} настроен!
+
+# УСТАРЕВШИЕ (DEPRECATED)
+event-user-expires-in-72-hours-icon = ⏰
+event-user-expires-in-72-hours-message = Пользователь истекает через 72 часа
+
+event-user-expires-in-48-hours-icon = ⏰
+event-user-expires-in-48-hours-message = Пользователь истекает через 48 часов
+
+event-user-expires-in-24-hours-icon = ⚠️
+event-user-expires-in-24-hours-message = Пользователь истекает через 24 часа
+
+event-user-expired-24-hours-ago-icon = ❌
+event-user-expired-24-hours-ago-message = Срок пользователя истек 24 часа назад

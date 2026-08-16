@@ -11,17 +11,82 @@ class UserEventFormatter(BaseEventFormatter):
     async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
         """Format user event data."""
         translations = self.get_common_translations()
+        data = self.flatten(data, "userTraffic")
         fields_content = self._format_user_fields(data, translations["field_sep"])
 
         # Pass usage_percentage for bandwidth events
-        event_message_kwargs = {"usage_percentage": data.get("usage_percentage", 0)}
+        event_message_kwargs = {"usage_percentage": self._usage_percentage(data)}
+
+        # `meta` arrives as a top-level sibling of `data`; older payloads may nest it.
+        meta = kwargs.get("meta") or data.get("meta")
+        message_override, icon_override = self._resolve_meta_message(event_type, meta)
 
         return self.build_standard_message(
             event_type=event_type,
             timestamp=timestamp,
             fields_content=fields_content,
             event_message_kwargs=event_message_kwargs,
+            event_message_override=message_override,
+            icon_override=icon_override,
         )
+
+    @staticmethod
+    def _usage_percentage(data: Dict[str, Any]) -> int:
+        """Threshold percentage for `user.bandwidth_usage_threshold_reached`.
+
+        The panel reports it as `lastTriggeredThreshold`; fall back to computing it from
+        traffic counters when that field is absent.
+        """
+        threshold = data.get("lastTriggeredThreshold", data.get("usage_percentage"))
+        if threshold is not None:
+            try:
+                return int(threshold)
+            except (TypeError, ValueError):
+                pass
+
+        try:
+            limit = int(data.get("trafficLimitBytes") or 0)
+            used = int(data.get("usedTrafficBytes") or 0)
+        except (TypeError, ValueError):
+            return 0
+        return int(used / limit * 100) if limit > 0 else 0
+
+    @staticmethod
+    def _resolve_meta_message(event_type: str, meta: Any) -> tuple[str | None, str | None]:
+        """Build message/icon for notification-style events carrying a `meta` object.
+
+        `user.expiration` replaces the removed `user.expires_in_*` / `user.expired_24_hours_ago`
+        events: `meta.expiration` is a signed hour offset — negative means "expires in N hours",
+        positive means "expired N hours ago".
+        """
+        if not isinstance(meta, dict):
+            return None, None
+
+        if event_type == "user.expiration":
+            expiration = meta.get("expiration")
+            if expiration is None:
+                return None, None
+            try:
+                offset = int(expiration)
+            except (TypeError, ValueError):
+                return None, None
+            hours = abs(offset)
+            if offset < 0:
+                icon = "⏰" if hours > 24 else "⚠️"
+                return _("event-user-expiration-in-message", hours=hours), icon
+            return _("event-user-expiration-ago-message", hours=hours), "❌"
+
+        if event_type == "user.not_connected":
+            hours = meta.get("notConnectedAfterHours")
+            if hours is None:
+                return None, None
+            try:
+                hours = int(hours)
+            except (TypeError, ValueError):
+                return None, None
+            return _("event-user-not-connected-hours-message", hours=hours), None
+
+        return None, None
 
     def _format_user_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format user-specific fields."""

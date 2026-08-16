@@ -24,9 +24,12 @@ async def on_startup(app):
     bot = app["bot"]
     topics = {
         "TOPIC_USER": config.TOPIC_USER,
+        "TOPIC_USER_HWID_DEVICES": config.TOPIC_USER_HWID_DEVICES,
         "TOPIC_NODE": config.TOPIC_NODE,
         "TOPIC_CRM": config.TOPIC_CRM,
         "TOPIC_SERVICE": config.TOPIC_SERVICE,
+        "TOPIC_TORRENT_BLOCKER": config.TOPIC_TORRENT_BLOCKER,
+        "TOPIC_ERRORS": config.TOPIC_ERRORS,
         "TOPIC_STATUS": config.TOPIC_STATUS,
     }
 
@@ -54,7 +57,6 @@ async def on_cleanup(app):
 
 def main():
     logger.info(f"Remnawave Webhook Bot v{__version__}")
-    logger.info("Project sources: https://t.me/morkowniy_bot")
     logger.info(f"Listening on {config.WEBHOOK_HOST}:{config.WEBHOOK_PORT}{config.WEBHOOK_PATH}")
     logger.info(f"Timezone: {config.TIMEZONE} ({get_current_timestamp()})")
     logger.info(f"Language: {config.LANGUAGE}")

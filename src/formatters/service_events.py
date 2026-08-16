@@ -27,15 +27,50 @@ class ServiceEventFormatter(BaseEventFormatter):
         else:
             msg = f"<b>{translations['action']}:</b> {event_message}\n\n"
 
-        show_data = event_type in ["service.login_attempt_failed", "service.login_attempt_success"]
-
-        if show_data:
+        if event_type in ("service.login_attempt_failed", "service.login_attempt_success"):
             msg += await self._format_service_fields(data, translations["field_sep"])
             msg += "\n"
+        elif fields := self._format_simple_fields(event_type, data, translations["field_sep"]):
+            msg += fields + "\n"
 
         msg += f"<b>{translations['time']}:</b> {format_timestamp(timestamp)}"
 
         return msg
+
+    def _format_simple_fields(self, event_type: str, data: Dict[str, Any], field_sep: str) -> str:
+        """Fields for non-login service events (subpage config, API tokens)."""
+        if event_type == "service.subpage_config_changed":
+            subpage = data.get("subpageConfig")
+            if not isinstance(subpage, dict):
+                return ""
+            return self._format_fields(
+                subpage,
+                field_sep,
+                [
+                    ("action", "field-action", False),
+                    ("uuid", "field-uuid", True),
+                ],
+            )
+
+        if event_type.startswith("service.api_token_"):
+            token = data.get("apiToken")
+            if not isinstance(token, dict):
+                return ""
+            msg = self._format_fields(
+                token,
+                field_sep,
+                [
+                    ("name", "field-name", True),
+                    ("uuid", "field-uuid", True),
+                ],
+            )
+            if scopes := token.get("scopes"):
+                msg += self.format_field(field_sep, _("field-scopes"), ", ".join(scopes), use_code=True)
+            if expire_at := token.get("expireAt"):
+                msg += self.format_field(field_sep, _("field-expire"), format_timestamp(expire_at))
+            return msg
+
+        return ""
 
     async def _format_service_fields(self, data: Dict[str, Any], field_sep: str) -> str:
         """Format service-specific fields with geolocation."""

@@ -1,16 +1,28 @@
 from typing import Dict, Any
 
-from src.formatters import UserEventFormatter, NodeEventFormatter, CRMEventFormatter, ServiceEventFormatter
+from src.formatters import (
+    CRMEventFormatter,
+    ErrorsEventFormatter,
+    NodeEventFormatter,
+    ServiceEventFormatter,
+    TorrentBlockerEventFormatter,
+    UserEventFormatter,
+    UserHwidDevicesEventFormatter,
+)
 from src.i18n import get_translation as _
 
 
 class MessageFormatter:
     def __init__(self):
+        # `user_hwid_devices.` must be matched before `user.`
         self.formatters = {
+            "user_hwid_devices.": UserHwidDevicesEventFormatter(),
             "user.": UserEventFormatter(),
             "node.": NodeEventFormatter(),
             "crm.": CRMEventFormatter(),
             "service.": ServiceEventFormatter(),
+            "torrent_blocker.": TorrentBlockerEventFormatter(),
+            "errors.": ErrorsEventFormatter(),
         }
 
     async def format_webhook_message(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:

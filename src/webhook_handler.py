@@ -86,6 +86,7 @@ class WebhookHandler:
             data = await request.json()
             event_type = data.get("event")
             event_data = data.get("data", {})
+            event_meta = data.get("meta")
             event_timestamp = data.get("timestamp", request.headers.get("X-Remnawave-Timestamp"))
 
             if not self.event_filter.is_enabled(event_type):
@@ -118,7 +119,11 @@ class WebhookHandler:
                 logger.info("Added billing event to aggregator")
             else:
                 message = await self.formatter.format_webhook_message(
-                    event_type, event_data, event_timestamp, connection_tracker=self.connection_tracker
+                    event_type,
+                    event_data,
+                    event_timestamp,
+                    connection_tracker=self.connection_tracker,
+                    meta=event_meta,
                 )
                 await self.send_notification(message, event_type)
 

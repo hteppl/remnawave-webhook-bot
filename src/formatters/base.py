@@ -18,7 +18,7 @@ class BaseEventFormatter(ABC):
 
     @staticmethod
     def get_event_category(event_type: str) -> str:
-        return event_type.split(".")[0]
+        return event_type.split(".")[0].replace("_", "-")
 
     @staticmethod
     def escape_value(value: Any) -> str:
@@ -81,6 +81,26 @@ class BaseEventFormatter(ABC):
 
         return msg
 
+    def format_generic_fields(self, data: Dict[str, Any], field_sep: str, skip_keys: set = None) -> str:
+        skip_keys = skip_keys or set()
+        msg = ""
+        for key, value in data.items():
+            if key in skip_keys or isinstance(value, (dict, list)) or value is None:
+                continue
+            label = key[0].upper() + key[1:]
+            label = "".join(f" {c}" if c.isupper() and i else c for i, c in enumerate(label)).strip()
+            msg += self.format_field(field_sep, label, value)
+        return msg
+
+    @staticmethod
+    def flatten(data: Dict[str, Any], *keys: str) -> Dict[str, Any]:
+        flat = {k: v for k, v in data.items() if k not in keys}
+        for key in keys:
+            nested = data.get(key)
+            if isinstance(nested, dict):
+                flat.update(nested)
+        return flat
+
     @staticmethod
     def get_common_translations() -> Dict[str, str]:
         return {
@@ -113,11 +133,13 @@ class BaseEventFormatter(ABC):
         fields_content: str,
         additional_content: str = None,
         event_message_kwargs: Dict[str, Any] = None,
+        event_message_override: str = None,
+        icon_override: str = None,
     ) -> str:
         t = self.get_common_translations()
         header = self.get_category_header(event_type)
-        icon = self.get_event_icon(event_type)
-        event_message = self.get_event_message(event_type, **(event_message_kwargs or {}))
+        icon = icon_override if icon_override is not None else self.get_event_icon(event_type)
+        event_message = event_message_override or self.get_event_message(event_type, **(event_message_kwargs or {}))
 
         if icon:
             msg = f"{icon} <b>{t['action']}:</b> {event_message}\n\n"
