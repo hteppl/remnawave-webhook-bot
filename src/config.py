@@ -39,7 +39,7 @@ class Config:
     WEBHOOK_PORT = int(os.getenv("WEBHOOK_PORT", 8089))
     WEBHOOK_PATH = os.getenv("WEBHOOK_PATH", "/webhook")
 
-    LANGUAGE = os.getenv("LANGUAGE", "en")
+    LANGUAGE = (os.getenv("LANGUAGE") or "en").strip().lower()
     LOCALES_DIR = os.getenv("LOCALES_DIR", "locales")
     TIMEZONE = os.getenv("TIMEZONE", "UTC")
     TIME_FORMAT = os.getenv("TIME_FORMAT", "%d.%m.%Y %H:%M:%S").strip("\"'")

@@ -6,6 +6,7 @@ from aiohttp import web
 
 from src.config import config
 from src.l10n import get_translation as _
+from src.l10n import setup_l10n
 from src.services.daily_stats_reporter import DailyStatsReporter
 from src.services.manager import ServiceManager
 from src.services.status_reporter import StatusReporter
@@ -60,6 +61,8 @@ def main():
     logger.info(f"Listening on {config.WEBHOOK_HOST}:{config.WEBHOOK_PORT}{config.WEBHOOK_PATH}")
     logger.info(f"Timezone: {config.TIMEZONE} ({get_current_timestamp()})")
     logger.info(f"Language: {config.LANGUAGE}")
+
+    setup_l10n()
 
     config.validate()
     bot = Bot(token=config.TELEGRAM_BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))

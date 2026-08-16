@@ -4,6 +4,7 @@ from html import escape
 from typing import Dict, Any
 
 from src.l10n import get_translation as _
+from src.l10n import has_translation
 from src.utils.timezone_helper import format_timestamp
 
 
@@ -89,7 +90,7 @@ class BaseEventFormatter(ABC):
                 continue
             label = key[0].upper() + key[1:]
             label = "".join(f" {c}" if c.isupper() and i else c for i, c in enumerate(label)).strip()
-            msg += self.format_field(field_sep, label, value)
+            msg += self.format_field(field_sep, escape(label), value)
         return msg
 
     @staticmethod
@@ -113,14 +114,14 @@ class BaseEventFormatter(ABC):
         category = self.get_event_category(event_type)
         event_name = self.get_event_name(event_type)
         icon_key = f"event-{category}-{event_name}-icon"
-        icon = _(icon_key)
-        return icon if icon != icon_key else ""
+        # The icon is optional, so probe rather than let a lookup warn.
+        return _(icon_key) if has_translation(icon_key) else ""
 
     def get_event_message(self, event_type: str, **kwargs) -> str:
         category = self.get_event_category(event_type)
         event_name = self.get_event_name(event_type)
         msg_key = f"event-{category}-{event_name}-message"
-        return _(msg_key, **kwargs) if kwargs else _(msg_key)
+        return _(msg_key, **kwargs)
 
     def get_category_header(self, event_type: str) -> str:
         category = self.get_event_category(event_type)

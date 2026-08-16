@@ -6,12 +6,14 @@ WORKDIR /app
 
 RUN apk add --no-cache tzdata
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-COPY pyproject.toml .
-
+COPY pyproject.toml ./
 COPY src/ ./src/
 COPY locales/ ./locales/
+
+RUN pip install --no-cache-dir .
+
+RUN adduser -D -H -u 10001 app && chown -R app:app /app
+USER app
 
 CMD ["python", "-m", "src"]
