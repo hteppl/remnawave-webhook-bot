@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any
 
 from src.formatters.base import BaseEventFormatter
 from src.l10n import get_translation as _
@@ -9,7 +9,7 @@ from src.utils.timezone_helper import format_timestamp
 class CRMEventFormatter(BaseEventFormatter):
     """Formatter for CRM-related events."""
 
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
+    async def format(self, event_type: str, data: dict[str, Any], timestamp: str, **kwargs) -> str:
         """Format CRM event data."""
         if "infra_billing" in event_type:
             return await self._format_billing_event(event_type, data, timestamp)
@@ -23,7 +23,7 @@ class CRMEventFormatter(BaseEventFormatter):
             fields_content=fields_content,
         )
 
-    async def _format_billing_event(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
+    async def _format_billing_event(self, event_type: str, data: dict[str, Any], timestamp: str) -> str:
         """Format billing notification events."""
         icon = self.get_event_icon(event_type)
         event_message = self.get_event_message(event_type)
@@ -37,15 +37,12 @@ class CRMEventFormatter(BaseEventFormatter):
         formatted_date = ""
         if billing_date:
             try:
-                dt = datetime.fromisoformat(billing_date.replace("Z", "+00:00"))
+                dt = datetime.fromisoformat(billing_date)
                 formatted_date = dt.strftime("%B %d, %Y at %H:%M UTC")
-            except (Exception,):
+            except Exception:
                 formatted_date = billing_date
 
-        if icon:
-            msg = f"{icon} <b>{event_message}</b>\n\n"
-        else:
-            msg = f"<b>{event_message}</b>\n\n"
+        msg = f"{icon} <b>{event_message}</b>\n\n" if icon else f"<b>{event_message}</b>\n\n"
 
         msg += f"<b>{node_label}:</b> <code>{data.get('nodeName', 'Unknown')}</code>\n"
         msg += f"<b>{provider_label}:</b> {data.get('providerName', 'Unknown')}\n"
@@ -60,7 +57,7 @@ class CRMEventFormatter(BaseEventFormatter):
 
         return msg
 
-    def _format_crm_fields(self, data: Dict[str, Any], field_sep: str) -> str:
+    def _format_crm_fields(self, data: dict[str, Any], field_sep: str) -> str:
         """Format CRM-specific fields."""
         field_configs = [
             ("username", "field-username", True),

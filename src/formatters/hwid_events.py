@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 from src.formatters.base import BaseEventFormatter
 from src.l10n import get_translation as _
@@ -11,7 +11,7 @@ class UserHwidDevicesEventFormatter(BaseEventFormatter):
     Payload: `{"user": {...}, "hwidUserDevice": {...}}`.
     """
 
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
+    async def format(self, event_type: str, data: dict[str, Any], timestamp: str, **kwargs) -> str:
         t = self.get_common_translations()
         field_sep = t["field_sep"]
         flat = self.flatten(data, "user", "hwidUserDevice")

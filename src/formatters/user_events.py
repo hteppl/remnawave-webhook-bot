@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 from src.formatters.base import BaseEventFormatter
 from src.l10n import get_translation as _
@@ -8,7 +8,7 @@ from src.utils import format_date_with_days
 class UserEventFormatter(BaseEventFormatter):
     """Formatter for user-related events."""
 
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
+    async def format(self, event_type: str, data: dict[str, Any], timestamp: str, **kwargs) -> str:
         """Format user event data."""
         translations = self.get_common_translations()
         data = self.flatten(data, "userTraffic")
@@ -31,7 +31,7 @@ class UserEventFormatter(BaseEventFormatter):
         )
 
     @staticmethod
-    def _usage_percentage(data: Dict[str, Any]) -> int:
+    def _usage_percentage(data: dict[str, Any]) -> int:
         """Threshold percentage for `user.bandwidth_usage_threshold_reached`.
 
         The panel reports it as `lastTriggeredThreshold`; fall back to computing it from
@@ -88,7 +88,7 @@ class UserEventFormatter(BaseEventFormatter):
 
         return None, None
 
-    def _format_user_fields(self, data: Dict[str, Any], field_sep: str) -> str:
+    def _format_user_fields(self, data: dict[str, Any], field_sep: str) -> str:
         """Format user-specific fields."""
 
         def format_used_traffic(value):

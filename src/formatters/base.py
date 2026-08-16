@@ -1,7 +1,7 @@
 import inspect
 from abc import ABC, abstractmethod
 from html import escape
-from typing import Dict, Any
+from typing import Any
 
 from src.l10n import get_translation as _
 from src.l10n import has_translation
@@ -10,7 +10,7 @@ from src.utils.timezone_helper import format_timestamp
 
 class BaseEventFormatter(ABC):
     @abstractmethod
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
+    async def format(self, event_type: str, data: dict[str, Any], timestamp: str, **kwargs) -> str:
         pass
 
     @staticmethod
@@ -19,7 +19,7 @@ class BaseEventFormatter(ABC):
 
     @staticmethod
     def get_event_category(event_type: str) -> str:
-        return event_type.split(".")[0].replace("_", "-")
+        return event_type.split(".", maxsplit=1)[0].replace("_", "-")
 
     @staticmethod
     def escape_value(value: Any) -> str:
@@ -35,7 +35,7 @@ class BaseEventFormatter(ABC):
             else f"{field_sep}{field_label}: {escaped}\n"
         )
 
-    def _format_fields(self, data: Dict[str, Any], field_sep: str, field_configs: list) -> str:
+    def _format_fields(self, data: dict[str, Any], field_sep: str, field_configs: list) -> str:
         msg = ""
         for config in field_configs:
             if isinstance(config, tuple):
@@ -82,7 +82,7 @@ class BaseEventFormatter(ABC):
 
         return msg
 
-    def format_generic_fields(self, data: Dict[str, Any], field_sep: str, skip_keys: set = None) -> str:
+    def format_generic_fields(self, data: dict[str, Any], field_sep: str, skip_keys: set | None = None) -> str:
         skip_keys = skip_keys or set()
         msg = ""
         for key, value in data.items():
@@ -94,7 +94,7 @@ class BaseEventFormatter(ABC):
         return msg
 
     @staticmethod
-    def flatten(data: Dict[str, Any], *keys: str) -> Dict[str, Any]:
+    def flatten(data: dict[str, Any], *keys: str) -> dict[str, Any]:
         flat = {k: v for k, v in data.items() if k not in keys}
         for key in keys:
             nested = data.get(key)
@@ -103,7 +103,7 @@ class BaseEventFormatter(ABC):
         return flat
 
     @staticmethod
-    def get_common_translations() -> Dict[str, str]:
+    def get_common_translations() -> dict[str, str]:
         return {
             "action": _("message-header-action"),
             "time": _("message-header-time"),
@@ -132,10 +132,10 @@ class BaseEventFormatter(ABC):
         event_type: str,
         timestamp: str,
         fields_content: str,
-        additional_content: str = None,
-        event_message_kwargs: Dict[str, Any] = None,
-        event_message_override: str = None,
-        icon_override: str = None,
+        additional_content: str | None = None,
+        event_message_kwargs: dict[str, Any] | None = None,
+        event_message_override: str | None = None,
+        icon_override: str | None = None,
     ) -> str:
         t = self.get_common_translations()
         header = self.get_category_header(event_type)

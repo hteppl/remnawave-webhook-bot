@@ -1,11 +1,12 @@
 import logging
 import os
+from typing import ClassVar
 
 logger = logging.getLogger(__name__)
 
 
 class EventFilter:
-    USER_EVENTS = [
+    USER_EVENTS: ClassVar[list[str]] = [
         "user.created",
         "user.modified",
         "user.deleted",
@@ -22,19 +23,19 @@ class EventFilter:
     ]
 
     # Kept enabled for compatibility with older panel versions.
-    LEGACY_USER_EVENTS = [
+    LEGACY_USER_EVENTS: ClassVar[list[str]] = [
         "user.expires_in_72_hours",
         "user.expires_in_48_hours",
         "user.expires_in_24_hours",
         "user.expired_24_hours_ago",
     ]
 
-    USER_HWID_DEVICES_EVENTS = [
+    USER_HWID_DEVICES_EVENTS: ClassVar[list[str]] = [
         "user_hwid_devices.added",
         "user_hwid_devices.deleted",
     ]
 
-    NODE_EVENTS = [
+    NODE_EVENTS: ClassVar[list[str]] = [
         "node.created",
         "node.modified",
         "node.disabled",
@@ -45,7 +46,7 @@ class EventFilter:
         "node.traffic_notify",
     ]
 
-    BILLING_EVENTS = [
+    BILLING_EVENTS: ClassVar[list[str]] = [
         "crm.infra_billing_node_payment_in_7_days",
         "crm.infra_billing_node_payment_in_48hrs",
         "crm.infra_billing_node_payment_in_24hrs",
@@ -55,7 +56,7 @@ class EventFilter:
         "crm.infra_billing_node_payment_overdue_7_days",
     ]
 
-    SERVICE_EVENTS = [
+    SERVICE_EVENTS: ClassVar[list[str]] = [
         "service.panel_started",
         "service.login_attempt_failed",
         "service.login_attempt_success",
@@ -64,11 +65,11 @@ class EventFilter:
         "service.api_token_deleted",
     ]
 
-    TORRENT_BLOCKER_EVENTS = [
+    TORRENT_BLOCKER_EVENTS: ClassVar[list[str]] = [
         "torrent_blocker.report",
     ]
 
-    ERRORS_EVENTS = [
+    ERRORS_EVENTS: ClassVar[list[str]] = [
         "errors.bandwidth_usage_threshold_reached_max_notifications",
     ]
 

@@ -7,11 +7,11 @@ from src.formatters.torrent_blocker_events import TorrentBlockerEventFormatter
 from src.formatters.user_events import UserEventFormatter
 
 __all__ = [
-    "UserEventFormatter",
-    "UserHwidDevicesEventFormatter",
-    "NodeEventFormatter",
     "CRMEventFormatter",
+    "ErrorsEventFormatter",
+    "NodeEventFormatter",
     "ServiceEventFormatter",
     "TorrentBlockerEventFormatter",
-    "ErrorsEventFormatter",
+    "UserEventFormatter",
+    "UserHwidDevicesEventFormatter",
 ]

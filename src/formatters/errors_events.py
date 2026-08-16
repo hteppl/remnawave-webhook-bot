@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 from src.formatters.base import BaseEventFormatter
 
@@ -10,7 +10,7 @@ class ErrorsEventFormatter(BaseEventFormatter):
     appended generically.
     """
 
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
+    async def format(self, event_type: str, data: dict[str, Any], timestamp: str, **kwargs) -> str:
         t = self.get_common_translations()
         field_sep = t["field_sep"]
 

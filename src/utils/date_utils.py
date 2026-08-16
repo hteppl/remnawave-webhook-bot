@@ -1,16 +1,16 @@
+from collections.abc import Callable
 from datetime import datetime
-from typing import Callable, Optional
 
 
-def parse_iso_date(date_string: str) -> Optional[datetime]:
+def parse_iso_date(date_string: str) -> datetime | None:
     """Parse ISO 8601 date string to datetime object."""
     try:
-        return datetime.fromisoformat(date_string.replace("Z", "+00:00"))
+        return datetime.fromisoformat(date_string)
     except (ValueError, AttributeError):
         return None
 
 
-def calculate_days_difference(date_string: str, from_now: bool = True) -> Optional[int]:
+def calculate_days_difference(date_string: str, from_now: bool = True) -> int | None:
     """
     Calculate days difference between a date and now.
 
@@ -27,10 +27,7 @@ def calculate_days_difference(date_string: str, from_now: bool = True) -> Option
 
     now = datetime.now(date.tzinfo)
 
-    if from_now:
-        delta = date - now
-    else:
-        delta = now - date
+    delta = date - now if from_now else now - date
 
     return delta.days
 

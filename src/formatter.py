@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 from src.formatters import (
     CRMEventFormatter,
@@ -25,7 +25,7 @@ class MessageFormatter:
             "errors.": ErrorsEventFormatter(),
         }
 
-    async def format_webhook_message(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
+    async def format_webhook_message(self, event_type: str, data: dict[str, Any], timestamp: str, **kwargs) -> str:
         for prefix, formatter in self.formatters.items():
             if event_type.startswith(prefix):
                 return await formatter.format(event_type, data, timestamp, **kwargs)
@@ -36,7 +36,7 @@ class MessageFormatter:
         )
 
     @staticmethod
-    def _format_dict(d: Dict[str, Any], indent: int = 0) -> str:
+    def _format_dict(d: dict[str, Any], indent: int = 0) -> str:
         lines = []
         indent_str = "  " * indent
         for key, value in d.items():

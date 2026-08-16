@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any
+from typing import Any
 
 from src.formatters.base import BaseEventFormatter
 from src.l10n import get_translation as _
@@ -16,7 +16,7 @@ class ServiceEventFormatter(BaseEventFormatter):
     def __init__(self):
         self.geo_service = IPGeolocationService()
 
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
+    async def format(self, event_type: str, data: dict[str, Any], timestamp: str, **kwargs) -> str:
         """Format service event data."""
         translations = self.get_common_translations()
         icon = self.get_event_icon(event_type)
@@ -37,7 +37,7 @@ class ServiceEventFormatter(BaseEventFormatter):
 
         return msg
 
-    def _format_simple_fields(self, event_type: str, data: Dict[str, Any], field_sep: str) -> str:
+    def _format_simple_fields(self, event_type: str, data: dict[str, Any], field_sep: str) -> str:
         """Fields for non-login service events (subpage config, API tokens)."""
         if event_type == "service.subpage_config_changed":
             subpage = data.get("subpageConfig")
@@ -72,7 +72,7 @@ class ServiceEventFormatter(BaseEventFormatter):
 
         return ""
 
-    async def _format_service_fields(self, data: Dict[str, Any], field_sep: str) -> str:
+    async def _format_service_fields(self, data: dict[str, Any], field_sep: str) -> str:
         """Format service-specific fields with geolocation."""
         flattened_data = {}
         for key, value in data.items():

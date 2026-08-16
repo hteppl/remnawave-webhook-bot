@@ -1,8 +1,7 @@
 import logging
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from datetime import UTC, datetime
 
 from src.utils.timestamped_storage import TimestampedStorage
 
@@ -21,14 +20,14 @@ class ConnectionLossTracker:
         self.enabled = enabled
         self.window_hours = window_hours
         self.storage = TimestampedStorage()
-        self.down_times: Dict[str, datetime] = {}
+        self.down_times: dict[str, datetime] = {}
         logger.info(
             f"Connection loss tracker: {'enabled' if enabled else 'disabled'}"
             + (f" (window={window_hours}h)" if enabled else "")
         )
 
     def record_connection_loss(
-        self, node_name: str, timestamp: str = None, provider: str = None, country_code: str = None
+        self, node_name: str, timestamp: str | None = None, provider: str | None = None, country_code: str | None = None
     ) -> None:
         if not self.enabled:
             return
@@ -36,12 +35,12 @@ class ConnectionLossTracker:
         dt = None
         if timestamp:
             try:
-                dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+                dt = datetime.fromisoformat(timestamp)
             except Exception as e:
                 logger.warning(f"Failed to parse timestamp '{timestamp}': {e}")
 
         if dt is None:
-            dt = datetime.now(timezone.utc)
+            dt = datetime.now(UTC)
 
         node_downtime = NodeDowntime(
             timestamp=dt,
@@ -53,7 +52,7 @@ class ConnectionLossTracker:
 
         logger.info(f"Recorded connection loss for node: {node_name}")
 
-    def get_statistics(self) -> Dict[str, int]:
+    def get_statistics(self) -> dict[str, int]:
         if not self.enabled:
             return {}
 
@@ -68,7 +67,7 @@ class ConnectionLossTracker:
     def get_node_loss_count(self, node_name: str) -> int:
         return self.storage.count_recent(node_name, self.window_hours) if self.enabled else 0
 
-    def get_statistics_lines(self) -> List[str]:
+    def get_statistics_lines(self) -> list[str]:
         if not self.enabled:
             return []
 
@@ -79,36 +78,36 @@ class ConnectionLossTracker:
         sorted_stats = sorted(stats.items(), key=lambda x: (-x[1], x[0]))
         return [f"<code>{name}</code> - x{count}" for name, count in sorted_stats]
 
-    def get_storage_stats(self) -> Dict[str, int]:
+    def get_storage_stats(self) -> dict[str, int]:
         return self.storage.get_stats()
 
-    def get_provider_statistics(self) -> Dict[str, int]:
+    def get_provider_statistics(self) -> dict[str, int]:
         if not self.enabled:
             return {}
 
         provider_counts = defaultdict(int)
         for node_name in self.storage.get_all_keys():
             recent_entries = self.storage.get_recent(node_name, self.window_hours)
-            for timestamp, node_downtime in recent_entries:
+            for _timestamp, node_downtime in recent_entries:
                 if isinstance(node_downtime, NodeDowntime):
                     provider_counts[node_downtime.provider] += 1
 
         return dict(provider_counts)
 
-    def get_country_statistics(self) -> Dict[str, int]:
+    def get_country_statistics(self) -> dict[str, int]:
         if not self.enabled:
             return {}
 
         country_counts = defaultdict(int)
         for node_name in self.storage.get_all_keys():
             recent_entries = self.storage.get_recent(node_name, self.window_hours)
-            for timestamp, node_downtime in recent_entries:
+            for _timestamp, node_downtime in recent_entries:
                 if isinstance(node_downtime, NodeDowntime):
                     country_counts[node_downtime.country] += 1
 
         return dict(country_counts)
 
-    def get_downtime(self, node_name: str, restore_timestamp: str = None) -> Optional[str]:
+    def get_downtime(self, node_name: str, restore_timestamp: str | None = None) -> str | None:
         if not self.enabled or node_name not in self.down_times:
             return None
 
@@ -117,12 +116,12 @@ class ConnectionLossTracker:
         restore_time = None
         if restore_timestamp:
             try:
-                restore_time = datetime.fromisoformat(restore_timestamp.replace("Z", "+00:00"))
+                restore_time = datetime.fromisoformat(restore_timestamp)
             except Exception as e:
                 logger.warning(f"Failed to parse restore timestamp '{restore_timestamp}': {e}")
 
         if restore_time is None:
-            restore_time = datetime.now(timezone.utc)
+            restore_time = datetime.now(UTC)
 
         duration = restore_time - down_time
         total_seconds = int(duration.total_seconds())

@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Tuple
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -11,9 +11,9 @@ class TimestampedStorage:
 
     def __init__(self):
         """Initialize the storage."""
-        self._storage: Dict[str, List[Tuple[datetime, Any]]] = defaultdict(list)
+        self._storage: dict[str, list[tuple[datetime, Any]]] = defaultdict(list)
 
-    def add(self, key: str, value: Any, timestamp: datetime = None) -> None:
+    def add(self, key: str, value: Any, timestamp: datetime | None = None) -> None:
         """
         Add a value to the storage with a timestamp.
 
@@ -23,12 +23,12 @@ class TimestampedStorage:
             timestamp: Optional timestamp (defaults to now)
         """
         if timestamp is None:
-            timestamp = datetime.now(timezone.utc)
+            timestamp = datetime.now(UTC)
 
         self._storage[key].append((timestamp, value))
         logger.debug(f"Added to storage: key={key}, value={value}, timestamp={timestamp}")
 
-    def get_all(self, key: str) -> List[Tuple[datetime, Any]]:
+    def get_all(self, key: str) -> list[tuple[datetime, Any]]:
         """
         Get all values for a key.
 
@@ -40,7 +40,7 @@ class TimestampedStorage:
         """
         return self._storage.get(key, [])
 
-    def get_recent(self, key: str, hours: int) -> List[Tuple[datetime, Any]]:
+    def get_recent(self, key: str, hours: int) -> list[tuple[datetime, Any]]:
         """
         Get values for a key within the last N hours.
         Automatically cleans up old data for this key.
@@ -52,7 +52,7 @@ class TimestampedStorage:
         Returns:
             List of (timestamp, value) tuples within the time window
         """
-        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+        cutoff_time = datetime.now(UTC) - timedelta(hours=hours)
 
         if key not in self._storage:
             return []
@@ -84,7 +84,7 @@ class TimestampedStorage:
         """
         return len(self.get_recent(key, hours))
 
-    def get_all_keys(self) -> List[str]:
+    def get_all_keys(self) -> list[str]:
         """
         Get all keys in storage.
 
@@ -93,7 +93,7 @@ class TimestampedStorage:
         """
         return list(self._storage.keys())
 
-    def clear(self, key: str = None) -> None:
+    def clear(self, key: str | None = None) -> None:
         """
         Clear storage for a specific key or all keys.
 
@@ -103,12 +103,11 @@ class TimestampedStorage:
         if key is None:
             self._storage.clear()
             logger.debug("Cleared all storage")
-        else:
-            if key in self._storage:
-                del self._storage[key]
-                logger.debug(f"Cleared storage for key={key}")
+        elif key in self._storage:
+            del self._storage[key]
+            logger.debug(f"Cleared storage for key={key}")
 
-    def get_stats(self) -> Dict[str, int]:
+    def get_stats(self) -> dict[str, int]:
         """
         Get storage statistics.
 

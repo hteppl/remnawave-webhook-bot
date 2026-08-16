@@ -1,11 +1,11 @@
-from typing import Dict, Any
+from typing import Any
 
 from src.formatters.base import BaseEventFormatter
 from src.l10n import get_translation as _
 
 
 class NodeEventFormatter(BaseEventFormatter):
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
+    async def format(self, event_type: str, data: dict[str, Any], timestamp: str, **kwargs) -> str:
         t = self.get_common_translations()
         data = self._normalize(data)
         fields_content = (
@@ -21,7 +21,7 @@ class NodeEventFormatter(BaseEventFormatter):
             if downtime := tracker.get_downtime(node_name, timestamp):
                 additional_content = f"<b>{_('field-downtime')}:</b> {downtime}"
 
-        if "lastStatusMessage" in data and data["lastStatusMessage"]:
+        if data.get("lastStatusMessage"):
             status_msg = data["lastStatusMessage"]
             if status_msg and str(status_msg).strip().lower() not in ["none", ""]:
                 if additional_content:
@@ -32,11 +32,11 @@ class NodeEventFormatter(BaseEventFormatter):
             event_type=event_type,
             timestamp=timestamp,
             fields_content=fields_content,
-            additional_content=additional_content if additional_content else None,
+            additional_content=additional_content or None,
         )
 
     @staticmethod
-    def _normalize(data: Dict[str, Any]) -> Dict[str, Any]:
+    def _normalize(data: dict[str, Any]) -> dict[str, Any]:
         data = dict(data)
 
         versions = data.get("versions")
@@ -50,7 +50,7 @@ class NodeEventFormatter(BaseEventFormatter):
 
         return {k: v for k, v in data.items() if v is not None}
 
-    def _format_node_created_fields(self, data: Dict[str, Any], field_sep: str) -> str:
+    def _format_node_created_fields(self, data: dict[str, Any], field_sep: str) -> str:
         def format_address_with_port(value, data):
             return f"{value}:{data['port']}" if "port" in data else value
 
@@ -93,7 +93,7 @@ class NodeEventFormatter(BaseEventFormatter):
 
         return msg
 
-    def _format_node_fields(self, data: Dict[str, Any], field_sep: str) -> str:
+    def _format_node_fields(self, data: dict[str, Any], field_sep: str) -> str:
         def format_traffic(value):
             try:
                 return f"{int(value) / (1024**4):.2f} TB"
@@ -126,8 +126,8 @@ class NodeEventFormatter(BaseEventFormatter):
 
         return msg
 
-    def _format_inbound_tags(self, data: Dict[str, Any], field_sep: str) -> str:
-        if "activeInbounds" in data and data["activeInbounds"]:
+    def _format_inbound_tags(self, data: dict[str, Any], field_sep: str) -> str:
+        if data.get("activeInbounds"):
             tags = [inbound["tag"] for inbound in data["activeInbounds"] if "tag" in inbound]
             if tags:
                 return self.format_field(field_sep, _("field-inbound-tags"), ", ".join(tags), use_code=True)

@@ -1,9 +1,7 @@
-from typing import Optional
-
 from user_agents import parse
 
 
-def get_device_info(user_agent_string: str) -> Optional[str]:
+def get_device_info(user_agent_string: str) -> str | None:
     """
     Parse user-agent string and return formatted device information.
 

@@ -1,7 +1,7 @@
 import hashlib
 import hmac
 import logging
-from typing import Dict, Any, List
+from typing import Any
 
 from aiogram import Bot
 from aiohttp import web
@@ -43,7 +43,7 @@ class WebhookHandler:
         except Exception as e:
             logger.error(f"Failed to send notification: {e}")
 
-    async def _send_aggregated_billing_notification(self, events: List[Dict[str, Any]]):
+    async def _send_aggregated_billing_notification(self, events: list[dict[str, Any]]):
         if not events:
             return
 
@@ -98,18 +98,15 @@ class WebhookHandler:
             logger.info(f"Received webhook: {event_type}")
             logger.debug(f"Event data: {event_data}")
 
-            if config.ENABLE_CONNECTION_LOSS_STATS:
-                if event_type == "node.connection_lost":
-                    node_name = event_data.get("name", "Unknown")
-                    provider = (
-                        event_data.get("provider", {}).get("name")
-                        if isinstance(event_data.get("provider"), dict)
-                        else None
-                    )
-                    country_code = event_data.get("countryCode")
-                    self.connection_tracker.record_connection_loss(
-                        node_name, event_timestamp, provider=provider, country_code=country_code
-                    )
+            if config.ENABLE_CONNECTION_LOSS_STATS and event_type == "node.connection_lost":
+                node_name = event_data.get("name", "Unknown")
+                provider = (
+                    event_data.get("provider", {}).get("name") if isinstance(event_data.get("provider"), dict) else None
+                )
+                country_code = event_data.get("countryCode")
+                self.connection_tracker.record_connection_loss(
+                    node_name, event_timestamp, provider=provider, country_code=country_code
+                )
 
             if self.daily_stats_reporter and event_type in DAILY_STATS_EVENTS:
                 await self.daily_stats_reporter.record_event(event_type)

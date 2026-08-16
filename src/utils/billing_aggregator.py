@@ -2,7 +2,7 @@ import asyncio
 import logging
 from collections import defaultdict
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Any
 
 from src.l10n import get_translation as _
 from src.utils.timezone_helper import format_timestamp
@@ -17,7 +17,7 @@ class BillingAggregator:
         self.processing_task = None
         self.send_callback = send_callback
 
-    async def add_event(self, event_type: str, data: Dict[str, Any], timestamp: str) -> str:
+    async def add_event(self, event_type: str, data: dict[str, Any], timestamp: str) -> str:
         event_id = f"billing_{timestamp}_{data.get('nodeName', 'unknown')}"
         self.pending_events.append({"event_type": event_type, "data": data, "timestamp": timestamp})
 
@@ -40,7 +40,7 @@ class BillingAggregator:
 
         return events
 
-    def format_aggregated_message(self, events: List[Dict[str, Any]]) -> Optional[str]:
+    def format_aggregated_message(self, events: list[dict[str, Any]]) -> str | None:
         if not events or len(events) <= 1:
             return None
 
@@ -60,7 +60,7 @@ class BillingAggregator:
 
                 if billing_date:
                     try:
-                        dt = datetime.fromisoformat(billing_date.replace("Z", "+00:00"))
+                        dt = datetime.fromisoformat(billing_date)
                         formatted_date = dt.strftime("%b %d, %H:%M UTC")
                     except Exception:
                         formatted_date = billing_date[:10] if len(billing_date) > 10 else billing_date

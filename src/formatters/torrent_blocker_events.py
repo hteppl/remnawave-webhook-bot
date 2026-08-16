@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 from src.formatters.base import BaseEventFormatter
 from src.l10n import get_translation as _
@@ -11,7 +11,7 @@ class TorrentBlockerEventFormatter(BaseEventFormatter):
     Payload: `{"node": {...}, "user": {...}, "report": {"actionReport": {...}, "xrayReport": {...}}}`.
     """
 
-    async def format(self, event_type: str, data: Dict[str, Any], timestamp: str, **kwargs) -> str:
+    async def format(self, event_type: str, data: dict[str, Any], timestamp: str, **kwargs) -> str:
         t = self.get_common_translations()
         field_sep = t["field_sep"]
 
@@ -75,6 +75,6 @@ class TorrentBlockerEventFormatter(BaseEventFormatter):
         return _("duration-days", days=total // 86400)
 
     @staticmethod
-    def _section(data: Dict[str, Any], key: str) -> Dict[str, Any]:
+    def _section(data: dict[str, Any], key: str) -> dict[str, Any]:
         value = data.get(key)
         return value if isinstance(value, dict) else {}
