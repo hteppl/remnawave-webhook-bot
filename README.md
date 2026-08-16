@@ -1,5 +1,9 @@
 # Remnawave Webhook Bot
 
+[![License: GPL v3](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg?logo=python&logoColor=white)](pyproject.toml)
+[![Docker Image](https://img.shields.io/docker/v/hteppl/remnawave-webhook-bot?logo=docker&logoColor=white&label=docker)](https://hub.docker.com/r/hteppl/remnawave-webhook-bot)
+
 Система уведомлений о состояниях и изменениях данных в панелях Remnawave.
 
 ## 📋 Возможности
