@@ -1,6 +1,4 @@
-# Динамическая конфигурация Traefik (file provider) для отдельного сервера
-# (docker-compose.external.yml).
-#
+# Пример для отдельного сервера (docker-compose.external.yml).
 # При установке рядом с панелью Remnawave реверс прокси не требуется:
 # панель обращается к контейнеру напрямую по адресу http://remnawave-webhook-bot:8089.
 #
