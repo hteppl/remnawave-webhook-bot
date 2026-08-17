@@ -1,0 +1,30 @@
+name: DockerHub README
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - README.md
+      - .github/workflows/dockerhub-readme.yml
+
+permissions:
+  contents: read
+
+jobs:
+  push-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Push README to DockerHub
+        uses: christian-korneck/update-container-description-action@v1
+        env:
+          DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASS: ${{ secrets.DOCKERHUB_TOKEN }}
+        with:
+          destination_container_repo: hteppl/remnawave-webhook-bot
+          provider: dockerhub
+          short_description: "Notification system for state changes and data updates in Remnawave (https://docs.rw) panels."
+          readme_file: "README.md"
