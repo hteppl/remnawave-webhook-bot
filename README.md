@@ -1,172 +1,178 @@
+<img src="https://raw.githubusercontent.com/hteppl/remnawave-webhook-bot/master/.github/images/logo.webp" alt="Remnawave Webhook Bot" width="800px">
+
 # Remnawave Webhook Bot
 
-[![License: GPL v3](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg?logo=python&logoColor=white)](pyproject.toml)
+**English** | [Русский](https://github.com/hteppl/remnawave-webhook-bot/blob/master/README_ru.md)
+
+[![Release](https://img.shields.io/github/v/release/hteppl/remnawave-webhook-bot?logo=github&logoColor=white&label=release)](https://github.com/hteppl/remnawave-webhook-bot/releases/latest)
 [![Docker Image](https://img.shields.io/docker/v/hteppl/remnawave-webhook-bot?logo=docker&logoColor=white&label=docker)](https://hub.docker.com/r/hteppl/remnawave-webhook-bot)
+[![CI](https://github.com/hteppl/remnawave-webhook-bot/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/hteppl/remnawave-webhook-bot/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg?logo=python&logoColor=white)](https://github.com/hteppl/remnawave-webhook-bot/blob/master/pyproject.toml)
+[![License: GPL v3](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](https://github.com/hteppl/remnawave-webhook-bot/blob/master/LICENSE)
 
-Система уведомлений о состояниях и изменениях данных в панелях Remnawave.
+A notification system for state changes and data updates in Remnawave panels.
 
-## 📋 Возможности
+## 📋 Features
 
-- Установка как рядом с панелью Remnawave, так и на отдельном сервере
-- Поддержка топиков Telegram для разделения типов событий
-- Настройка текстов, форматирования и перечня обрабатываемых событий
-- Периодические отчеты о состоянии инфраструктуры
-- Уведомления о входах в панель и о неудачных попытках авторизации
-- Дополнительные обработчики данных, включая сбор метрик событий
-- Проверка подлинности входящих запросов по заголовкам безопасности Remnawave
+- Can be installed next to the Remnawave panel or on a separate server
+- Telegram topics support for separating event types
+- Configurable texts, formatting and the list of handled events
+- Periodic infrastructure status reports
+- Notifications about panel logins and failed authorization attempts
+- Additional data handlers, including event metrics collection
+- Verification of incoming requests via Remnawave security headers
 
-## 🚀 Установка
+## 🚀 Installation
 
-### Требования
+### Requirements
 
-- Сервер с установленной подсистемой Docker: с панелью Remnawave либо отдельный
+- A server with Docker installed: either the one running the Remnawave panel or a standalone one
 
-### Шаг 1: Размещение файлов на сервере
+### Step 1: Place the files on the server
 
-На сервере с панелью рекомендуется использовать директорию `/opt/remnawave/webhook`.
+On a server with the panel, the recommended directory is `/opt/remnawave/webhook`.
 
-В продакшн-сценариях применяется готовый образ, копирование исходного кода на сервер не требуется.
-Достаточно двух файлов: `docker-compose.yml` и `.env`.
+Production scenarios use a prebuilt image, so copying the source code to the server is not required.
+Two files are enough: `docker-compose.yml` and `.env`.
 
-Варианты конфигурации compose:
+Available compose configurations:
 
-| Файл в репозитории            | Назначение                            | Особенности                                                      |
-| ----------------------------- | ------------------------------------- | ---------------------------------------------------------------- |
-| `docker-compose.prod.yml`     | Сервер с панелью Remnawave            | Готовый образ, сеть `remnawave-network`, порт не публикуется     |
-| `docker-compose.external.yml` | Отдельный (внешний) сервер без панели | Готовый образ, сеть `remnawave-webhook-bot`, порт не публикуется |
-| `docker-compose.dev.yml`      | Разработка                            | Сборка из исходников, монтирование `./src` и `./locales`         |
+| File in the repository        | Purpose                                | Details                                                             |
+| ----------------------------- | -------------------------------------- | ------------------------------------------------------------------- |
+| `docker-compose.prod.yml`     | Server with the Remnawave panel        | Prebuilt image, `remnawave-network` network, port is not published   |
+| `docker-compose.external.yml` | Standalone (external) server, no panel | Prebuilt image, `remnawave-webhook-bot` network, port not published  |
+| `docker-compose.dev.yml`      | Development                            | Built from source, mounts `./src` and `./locales`                    |
 
-Создайте на сервере файл `docker-compose.yml` и перенесите в него содержимое выбранного варианта. Все дальнейшие
-команды выполняются стандартным `docker compose`:
+Create a `docker-compose.yml` file on the server and copy the contents of the chosen variant into it. All
+further commands use plain `docker compose`:
 
 ```bash
 cd /opt/remnawave/webhook && sudo nano docker-compose.yml
 ```
 
-### Шаг 2: Настройка конфигурации
+### Step 2: Configuration
 
-Создайте файл `.env` рядом с `docker-compose.yml` и перенесите в него содержимое `.env.example`:
+Create an `.env` file next to `docker-compose.yml` and copy the contents of `.env.example` into it:
 
 ```bash
 cd /opt/remnawave/webhook && sudo nano .env
 ```
 
-Обратите внимание:
+Please note:
 
-- Чат следует преобразовать в супергруппу с топиками до добавления бота, иначе сервис
-  https://t.me/username_to_id_bot вернет некорректный идентификатор чата.
-- Значение `WEBHOOK_SECRET_HEADER` берется из окружения Remnawave: `sudo nano /opt/remnawave/.env`.
+- The chat must be converted into a supergroup with topics **before** adding the bot, otherwise
+  https://t.me/username_to_id_bot will return an incorrect chat ID.
+- The `WEBHOOK_SECRET_HEADER` value comes from the Remnawave environment: `sudo nano /opt/remnawave/.env`.
 
-В нижней части конфигурации размещены параметры фильтрации обрабатываемых событий. Перечень событий приведен
-в разделе «Поддерживаемые события», а также в документации https://docs.rw/docs/features/webhooks.
+The bottom part of the configuration contains the event filtering options. The list of events is given in the
+"Supported events" section and in the documentation at https://docs.rw/docs/features/webhooks.
 
 ```dotenv
-# Настройки бота Telegram
-# Чтобы получить айди чата можно использовать: https://t.me/username_to_id_bot
+# Telegram bot settings
+# To get the chat ID you can use: https://t.me/username_to_id_bot
 TELEGRAM_BOT_TOKEN=your_bot_token_here
 TELEGRAM_CHAT_ID=your_chat_id_here
 
-# Настройка топиков Telegram для посылки уведомлений
-# Чтобы получить айди топика - скопируйте ссылку на сообщение.
-# Пример: https://t.me/c/123123123/[2]/21 - 2 это и есть айди топика.
+# Telegram topics used to route notifications
+# To get a topic ID, copy a link to any message in it.
+# Example: https://t.me/c/123123123/[2]/21 - 2 is the topic ID.
 
-# Пользователи: создан, изменен, продлен, истек, лимит трафика
+# Users: created, modified, renewed, expired, traffic limit
 TOPIC_USER=
-# Ноды: создана, включена/выключена, потеря/восстановление связи, трафик
+# Nodes: created, enabled/disabled, connection lost/restored, traffic
 TOPIC_NODE=
-# Сервис: запуск панели, входы в панель, API-токены
+# Service: panel start, panel logins, API tokens
 TOPIC_SERVICE=
-# Ошибки: превышен лимит уведомлений и прочие сбои (если пусто - используется TOPIC_SERVICE)
+# Errors: notification limit exceeded and other failures (falls back to TOPIC_SERVICE if empty)
 TOPIC_ERRORS=
-# Системные статусы бота: сводки падений нод, ежедневная статистика пользователей
+# Bot system statuses: node failure summaries, daily user statistics
 TOPIC_STATUS=
-# Отчеты торрент-блокировщика: обнаружен торрент-трафик (если пусто - используется TOPIC_NODE)
+# Torrent blocker reports: torrent traffic detected (falls back to TOPIC_NODE if empty)
 TOPIC_TORRENT_BLOCKER=
-# Устройства HWID: добавлено/удалено устройство (если пусто - используется TOPIC_USER)
+# HWID devices: device added/removed (falls back to TOPIC_USER if empty)
 TOPIC_USER_HWID_DEVICES=
-# Биллинг нод: напоминания об оплате и просрочке
+# Node billing: payment and overdue reminders
 TOPIC_CRM=
 
-# Настройки вебхука
+# Webhook settings
 WEBHOOK_SECRET_HEADER=your_webhook_secret_here
 WEBHOOK_HOST=0.0.0.0
 WEBHOOK_PORT=8089
 WEBHOOK_PATH=/
 
-# Выбор языка (ru, en)
+# Language selection (ru, en)
 LANGUAGE=ru
 LOCALES_DIR=locales
 
-# Таймзона для отображения времени (UTC, Europe/Moscow, Europe/Samara, Asia/Yekaterinburg итд)
-# Зоны: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+# Timezone used for displaying time (UTC, Europe/Moscow, Europe/Samara, Asia/Yekaterinburg, etc.)
+# Zones: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 TIMEZONE=Europe/Moscow
 
-# Формат отображения времени (по умолчанию: %d.%m.%Y %H:%M:%S)
+# Time display format (default: %d.%m.%Y %H:%M:%S)
 # %d.%m.%Y %H:%M:%S = 01.11.2025 23:04:10
 # %Y-%m-%d %H:%M:%S = 2025-11-01 23:04:10
 TIME_FORMAT="%d.%m.%Y %H:%M:%S"
 
-# Сервис подсчета и вывода последних упавших нод (вывод в топик TOPIC_STATUS)
+# Service that counts and reports recently failed nodes (posted to TOPIC_STATUS)
 ENABLE_CONNECTION_LOSS_STATS=false
-# Время хранения метрик падений в часах (по умолчанию: 24)
+# Retention of failure metrics, in hours (default: 24)
 CONNECTION_LOSS_STATS_HOURS=24
-# Интервал отправки отчетов о потерях соединения в часах (по умолчанию: 3)
+# Interval between connection loss reports, in hours (default: 3)
 CONNECTION_LOSS_REPORT_INTERVAL_HOURS=3
 
-# Сервис ежедневной статистики user.created и user.first_connected пользователей (вывод в топик TOPIC_STATUS)
+# Daily statistics service for user.created and user.first_connected (posted to TOPIC_STATUS)
 ENABLE_USER_DAILY_STATS=false
-# Время отправки отчета в формате HH:MM (по умолчанию: 00:00)
+# Report time in HH:MM format (default: 00:00)
 USER_DAILY_STATS_TIME=00:00
 ```
 
-## 🚀 Обновление
+## 🚀 Updating
 
-Обновление выполняется загрузкой актуального образа:
+Updating is done by pulling the current image:
 
 ```bash
 cd /opt/remnawave/webhook && sudo docker compose pull && sudo docker compose up -d
 ```
 
-При обновлении рекомендуется сверить `.env` с актуальным `.env.example` и при необходимости
-дополнить конфигурацию новыми переменными: `cd /opt/remnawave/webhook && sudo nano .env`.
+When updating, it is recommended to compare your `.env` with the current `.env.example` and add any new
+variables if needed: `cd /opt/remnawave/webhook && sudo nano .env`.
 
-## ▶️ Запуск
+## ▶️ Running
 
-Все команды приведены для установки в директорию `/opt/remnawave/webhook`.
+All commands assume installation into the `/opt/remnawave/webhook` directory.
 
-Запуск:
+Start:
 
 ```bash
 cd /opt/remnawave/webhook && sudo docker compose up -d
 ```
 
-Перезапуск:
+Restart:
 
 ```shell
 cd /opt/remnawave/webhook && sudo docker compose down && sudo docker compose up -d
 ```
 
-Просмотр логов:
+View logs:
 
 ```bash
 sudo docker logs remnawave-webhook-bot
 ```
 
-Сборка из исходников применяется только при разработке, с конфигурацией `docker-compose.dev.yml`:
+Building from source is only used for development, with the `docker-compose.dev.yml` configuration:
 
 ```bash
 sudo docker compose up -d --build
 ```
 
-## 🔐 Подключение к Remnawave
+## 🔐 Connecting to Remnawave
 
-### Вариант A: обработчик на сервере с панелью
+### Option A: handler on the server with the panel
 
-Реверс прокси и TLS не требуются. Панель и обработчик находятся в одной сети Docker
-(`remnawave-network`), поэтому события передаются напрямую по внутреннему адресу, минуя внешнюю сеть.
+A reverse proxy and TLS are not required. The panel and the handler are in the same Docker network
+(`remnawave-network`), so events are delivered directly over the internal address, bypassing the external network.
 
-Укажите переменные окружения панели: `sudo nano /opt/remnawave/.env`
+Set the panel environment variables: `sudo nano /opt/remnawave/.env`
 
 ```dotenv
 ### WEBHOOK ###
@@ -175,40 +181,40 @@ WEBHOOK_URL=http://remnawave-webhook-bot:8089/
 WEBHOOK_SECRET_HEADER=a12m7ca8h...
 ```
 
-Перезапустите Remnawave:
+Restart Remnawave:
 
 ```bash
 cd /opt/remnawave && sudo docker compose down && sudo docker compose up -d
 ```
 
-Проверка работоспособности с сервера с панелью:
+Health check from the server with the panel:
 
 ```bash
 sudo docker exec remnawave-webhook-bot python -c "import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8089/health').read())"
 ```
 
-### Вариант B: обработчик на отдельном сервере
+### Option B: handler on a separate server
 
-Панель обращается к обработчику через внешнюю сеть, поэтому обязательны публичный домен, TLS
-и реверс прокси. Готовые примеры конфигураций находятся в директории [examples](examples):
+The panel reaches the handler over the external network, so a public domain, TLS and a reverse proxy are
+mandatory. Ready-to-use configuration examples are located in the [examples](https://github.com/hteppl/remnawave-webhook-bot/tree/master/examples) directory:
 
-| Реверс прокси | Файл примера                                                 |
+| Reverse proxy | Example file                                                 |
 | ------------- | ------------------------------------------------------------ |
-| Caddy         | [examples/Caddyfile](examples/Caddyfile)                     |
-| nginx         | [examples/nginx.conf](examples/nginx.conf)                   |
-| Traefik       | [examples/traefik-dynamic.yml](examples/traefik-dynamic.yml) |
+| Caddy         | [examples/Caddyfile](https://github.com/hteppl/remnawave-webhook-bot/blob/master/examples/Caddyfile)                     |
+| nginx         | [examples/nginx.conf](https://github.com/hteppl/remnawave-webhook-bot/blob/master/examples/nginx.conf)                   |
+| Traefik       | [examples/traefik-dynamic.yml](https://github.com/hteppl/remnawave-webhook-bot/blob/master/examples/traefik-dynamic.yml) |
 
-Порт наружу не публикуется, поэтому реверс прокси должен быть запущен в Docker и подключен к сети
-`remnawave-webhook-bot`: обращение выполняется по внутреннему адресу `http://remnawave-webhook-bot:8089`.
-После изменения конфигурации реверс прокси соответствующий сервис необходимо перезапустить.
+The port is not published externally, so the reverse proxy must run in Docker and be connected to the
+`remnawave-webhook-bot` network: it reaches the handler at the internal address `http://remnawave-webhook-bot:8089`.
+After changing the reverse proxy configuration, the corresponding service must be restarted.
 
-Проверка доступности:
+Availability check:
 
 ```bash
-curl https://webhook.your_address.com/health   # ожидается ответ OK
+curl https://webhook.your_address.com/health   # expected response: OK
 ```
 
-Переменные окружения панели:
+Panel environment variables:
 
 ```dotenv
 ### WEBHOOK ###
@@ -217,49 +223,51 @@ WEBHOOK_URL=https://webhook.your_address.com/
 WEBHOOK_SECRET_HEADER=a12m7ca8h...
 ```
 
-Значение `WEBHOOK_SECRET_HEADER` должно совпадать в конфигурациях панели и обработчика: этим ключом
-подписываются и проверяются входящие запросы.
+The `WEBHOOK_SECRET_HEADER` value must match in the panel and handler configurations: this key is used to
+sign and verify incoming requests.
 
-## 🌐 Установка на внешний сервер
+## 🌐 Installing on an external server
 
-Сценарий: панель Remnawave размещена на одном сервере, обработчик вебхуков - на другом. Панель отправляет
-события на публичный HTTPS-адрес обработчика.
+Scenario: the Remnawave panel is hosted on one server and the webhook handler on another. The panel sends
+events to the handler's public HTTPS address.
 
-**Требуется:** сервер с Docker, домен (например `webhook.your_address.com`) с A-записью на этот сервер
-и реверс прокси с TLS.
+**Required:** a server with Docker, a domain (for example `webhook.your_address.com`) with an A record
+pointing to that server, and a reverse proxy with TLS.
 
-1. Создайте рабочую директорию, например `/opt/webhook`, и разместите в ней `docker-compose.yml`
-   с содержимым `docker-compose.external.yml` из репозитория:
+1. Create a working directory, for example `/opt/webhook`, and place a `docker-compose.yml` in it with the
+   contents of `docker-compose.external.yml` from the repository:
 
    ```bash
    sudo mkdir -p /opt/webhook && cd /opt/webhook && sudo nano docker-compose.yml
    ```
 
-2. Создайте `.env` с содержимым `.env.example` и заполните его:
+2. Create an `.env` with the contents of `.env.example` and fill it in:
 
    ```bash
    cd /opt/webhook && sudo nano .env
    ```
 
-   Обязательные параметры: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` и `WEBHOOK_SECRET_HEADER`, совпадающий
-   со значением в конфигурации панели. Параметры `WEBHOOK_HOST=0.0.0.0` и `WEBHOOK_PORT=8089` изменению
-   не подлежат: они определяют адрес внутри контейнера.
+   Required parameters: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` and `WEBHOOK_SECRET_HEADER`, matching the
+   value in the panel configuration. The `WEBHOOK_HOST=0.0.0.0` and `WEBHOOK_PORT=8089` parameters must not be
+   changed: they define the address inside the container.
 
-3. Запустите сервис:
+3. Start the service:
 
    ```bash
    cd /opt/webhook && sudo docker compose up -d
    ```
 
-   Порт наружу не публикуется: контейнер доступен только внутри сети `remnawave-webhook-bot`.
+   The port is not published externally: the container is only reachable inside the `remnawave-webhook-bot`
+   network.
 
-4. Настройте реверс прокси по примерам из директории [examples](examples) и проверьте доступность:
+4. Configure the reverse proxy using the examples from the [examples](https://github.com/hteppl/remnawave-webhook-bot/tree/master/examples) directory and check
+   availability:
 
    ```bash
-   curl https://webhook.your_address.com/health   # ожидается ответ OK
+   curl https://webhook.your_address.com/health   # expected response: OK
    ```
 
-5. На сервере с панелью укажите адрес обработчика и перезапустите Remnawave:
+5. On the server with the panel, set the handler address and restart Remnawave:
 
    ```dotenv
    ### WEBHOOK ###
@@ -272,93 +280,93 @@ WEBHOOK_SECRET_HEADER=a12m7ca8h...
    cd /opt/remnawave && sudo docker compose down && sudo docker compose up -d
    ```
 
-6. Проверьте логи: после перезапуска панели поступает событие `service.panel_started`.
+6. Check the logs: after the panel restarts, a `service.panel_started` event arrives.
 
    ```bash
    sudo docker logs -f remnawave-webhook-bot
    ```
 
-### Диагностика
+### Troubleshooting
 
-| Симптом                   | Причина и решение                                                                                                                                                                                     |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `403` в логах обработчика | Значение `WEBHOOK_SECRET_HEADER` не совпадает со значением в конфигурации панели                                                                                                                      |
-| `404` в логах обработчика | Путь в `WEBHOOK_URL` не соответствует `WEBHOOK_PATH` (по умолчанию `/`)                                                                                                                               |
-| События не поступают      | При установке рядом с панелью - контейнеры в разных сетях Docker; при установке на отдельном сервере - панель не получает доступ к домену: проверьте DNS, TLS-сертификат и правила межсетевого экрана |
+| Symptom                     | Cause and solution                                                                                                                                                                             |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `403` in the handler logs   | The `WEBHOOK_SECRET_HEADER` value does not match the one in the panel configuration                                                                                                            |
+| `404` in the handler logs   | The path in `WEBHOOK_URL` does not match `WEBHOOK_PATH` (default `/`)                                                                                                                          |
+| No events arriving          | When installed next to the panel - the containers are in different Docker networks; when installed on a separate server - the panel cannot reach the domain: check DNS, the TLS certificate and firewall rules |
 
-## 📊 Поддерживаемые события
+## 📊 Supported events
 
-### События пользователей (`user.*`)
+### User events (`user.*`)
 
-- `user.created` - Создание пользователя
-- `user.modified` - Изменение пользователя
-- `user.deleted` - Удаление пользователя
-- `user.disabled` - Отключение пользователя
-- `user.enabled` - Включение пользователя
-- `user.limited` - Ограничение пользователя
-- `user.expired` - Истечение срока пользователя
-- `user.revoked` - Отзыв доступа пользователя
-- `user.traffic_reset` - Сброс трафика
-- `user.first_connected` - Первое подключение
-- `user.bandwidth_usage_threshold_reached` - Достижение лимита трафика
-- `user.not_connected` - Пользователь давно не подключался (требует `NOT_CONNECTED_USERS_NOTIFICATIONS_ENABLED=true` в
-  панели)
-- `user.expiration` - Уведомления об истечении срока (требует `EXPIRATION_NOTIFICATIONS_ENABLED=true` в панели)
+- `user.created` - User created
+- `user.modified` - User modified
+- `user.deleted` - User deleted
+- `user.disabled` - User disabled
+- `user.enabled` - User enabled
+- `user.limited` - User limited
+- `user.expired` - User subscription expired
+- `user.revoked` - User access revoked
+- `user.traffic_reset` - Traffic reset
+- `user.first_connected` - First connection
+- `user.bandwidth_usage_threshold_reached` - Traffic threshold reached
+- `user.not_connected` - User has not connected for a long time (requires
+  `NOT_CONNECTED_USERS_NOTIFICATIONS_ENABLED=true` in the panel)
+- `user.expiration` - Expiration notifications (requires `EXPIRATION_NOTIFICATIONS_ENABLED=true` in the panel)
 
-Устаревшие события, удаленные в панели v2.8.0 и замененные на `user.expiration`. Обрабатываются для совместимости
-с предыдущими версиями панели:
+Deprecated events, removed in panel v2.8.0 and replaced by `user.expiration`. Still handled for compatibility
+with previous panel versions:
 
 - `user.expires_in_72_hours`, `user.expires_in_48_hours`, `user.expires_in_24_hours`, `user.expired_24_hours_ago`
 
-### События устройств HWID (`user_hwid_devices.*`)
+### HWID device events (`user_hwid_devices.*`)
 
-- `user_hwid_devices.added` - Добавлено устройство
-- `user_hwid_devices.deleted` - Удалено устройство
+- `user_hwid_devices.added` - Device added
+- `user_hwid_devices.deleted` - Device removed
 
-### События узлов (`node.*`)
+### Node events (`node.*`)
 
-- `node.created` - Создание узла
-- `node.modified` - Изменение узла
-- `node.disabled` - Отключение узла
-- `node.enabled` - Включение узла
-- `node.deleted` - Удаление узла
-- `node.connection_lost` - Потеря соединения
-- `node.connection_restored` - Восстановление соединения
-- `node.traffic_notify` - Уведомление о трафике
+- `node.created` - Node created
+- `node.modified` - Node modified
+- `node.disabled` - Node disabled
+- `node.enabled` - Node enabled
+- `node.deleted` - Node deleted
+- `node.connection_lost` - Connection lost
+- `node.connection_restored` - Connection restored
+- `node.traffic_notify` - Traffic notification
 
-### Биллинг-события (`crm.infra_billing_*`)
+### Billing events (`crm.infra_billing_*`)
 
-- `crm.infra_billing_node_payment_in_7_days` - Оплата через 7 дней
-- `crm.infra_billing_node_payment_in_48hrs` - Оплата через 48 часов
-- `crm.infra_billing_node_payment_in_24hrs` - Оплата через 24 часа
-- `crm.infra_billing_node_payment_due_today` - Оплата сегодня
-- `crm.infra_billing_node_payment_overdue_24hrs` - Просрочка 24 часа
-- `crm.infra_billing_node_payment_overdue_48hrs` - Просрочка 48 часов
-- `crm.infra_billing_node_payment_overdue_7_days` - Просрочка 7 дней
+- `crm.infra_billing_node_payment_in_7_days` - Payment due in 7 days
+- `crm.infra_billing_node_payment_in_48hrs` - Payment due in 48 hours
+- `crm.infra_billing_node_payment_in_24hrs` - Payment due in 24 hours
+- `crm.infra_billing_node_payment_due_today` - Payment due today
+- `crm.infra_billing_node_payment_overdue_24hrs` - Overdue by 24 hours
+- `crm.infra_billing_node_payment_overdue_48hrs` - Overdue by 48 hours
+- `crm.infra_billing_node_payment_overdue_7_days` - Overdue by 7 days
 
-Биллинг-события агрегируются: при поступлении нескольких уведомлений в течение 3 секунд отправляется одно
-сводное сообщение.
+Billing events are aggregated: if several notifications arrive within 3 seconds, a single summary message is
+sent.
 
-### Сервисные события (`service.*`)
+### Service events (`service.*`)
 
-- `service.panel_started` - Запуск панели
-- `service.login_attempt_success` - Успешный вход
-- `service.login_attempt_failed` - Неудачная попытка входа
-- `service.subpage_config_changed` - Изменена конфигурация подписочной страницы
-- `service.api_token_created` - Создан API токен
-- `service.api_token_deleted` - Удален API токен
+- `service.panel_started` - Panel started
+- `service.login_attempt_success` - Successful login
+- `service.login_attempt_failed` - Failed login attempt
+- `service.subpage_config_changed` - Subscription page configuration changed
+- `service.api_token_created` - API token created
+- `service.api_token_deleted` - API token deleted
 
-### События торрент-блокировщика (`torrent_blocker.*`)
+### Torrent blocker events (`torrent_blocker.*`)
 
-Требуется панель Remnawave версии 2.7.0 и выше.
+Requires Remnawave panel version 2.7.0 or newer.
 
-- `torrent_blocker.report` - Отчет о торрент-активности (узел, пользователь, статус блокировки, IP, протокол/сеть,
-  источник и назначение)
+- `torrent_blocker.report` - Torrent activity report (node, user, blocking status, IP, protocol/network, source
+  and destination)
 
-### События ошибок (`errors.*`)
+### Error events (`errors.*`)
 
-- `errors.bandwidth_usage_threshold_reached_max_notifications` - Достигнут лимит уведомлений о пороге трафика
+- `errors.bandwidth_usage_threshold_reached_max_notifications` - Traffic threshold notification limit reached
 
-## 📄 Лицензия
+## 📄 License
 
-[LICENSE](LICENSE)
+This project is licensed under the GNU General Public License v3.0. See [LICENSE](https://github.com/hteppl/remnawave-webhook-bot/blob/master/LICENSE) for details.
