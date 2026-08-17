@@ -1,6 +1,6 @@
-<img src="https://raw.githubusercontent.com/hteppl/remnawave-webhook-bot/master/.github/images/logo.webp" alt="Remnawave Webhook Bot" width="800px">
+<img src="https://raw.githubusercontent.com/hteppl/remnawave-webhook-bot/master/.github/images/logo.webp" alt="remnawave-webhook-bot" width="800px">
 
-# Remnawave Webhook Bot
+# remnawave-webhook-bot
 
 **English** | [Русский](https://github.com/hteppl/remnawave-webhook-bot/blob/master/README_ru.md)
 
